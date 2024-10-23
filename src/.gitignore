@@ -19,3 +19,9 @@ web-build/
 expo-env.d.ts
 src/app-example
 # @end expo-cli
+
+android
+
+app.db
+migrations
+app.db-journal
