@@ -2,8 +2,8 @@ import Svg, { Path, Circle } from 'react-native-svg';
 const Logo = (props) => (
   <Svg
     xmlns='http://www.w3.org/2000/svg'
-    width={75}
-    height={74}
+    width={'100%'}
+    height={'100%'}
     fill='none'
     {...props}
   >

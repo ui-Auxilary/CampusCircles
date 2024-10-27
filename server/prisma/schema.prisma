@@ -16,14 +16,30 @@ datasource db {
 model User {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
   name          String
+  username      String
   email         String
   password      String
   profile       Profile?
 
   eventIDs      String[]        @db.ObjectId
-  events        Event[]         @relation(fields: [eventIDs], references: [id])  
+  events        Event[]         @relation(fields: [eventIDs], references: [id])
+
+  friendIds     String[]        @db.ObjectId
+
+  invitationIDs String[]        @db.ObjectId
+  invitations   Invitation[]    @relation(fields: [invitationIDs], references: [id])  
 
   eventsCreated Event[]         @relation("EventsCreator")
+}
+
+model Invitation {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  eventID       String          @unique
+
+  inviteeIDs    String[]        @db.ObjectId
+  invitees      User[]          @relation(fields: [inviteeIDs], references: [id])
+
+  status        String
 }
 
 model Tag {

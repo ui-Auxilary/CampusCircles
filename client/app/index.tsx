@@ -46,10 +46,7 @@ export default function Home() {
         <Text style={styles.heroTitle}>Campus Circles</Text>
         <Text style={styles.heroSubtitle}>Discover new mates on Campus</Text>
         <TouchableOpacity style={styles.startButton}>
-          <Link
-            style={{ textAlign: 'center' }}
-            href={{ pathname: 'login', params: { name: 'Bacon' } }}
-          >
+          <Link style={{ textAlign: 'center' }} href={{ pathname: 'login' }}>
             <Text style={styles.startText}>Get started</Text>
           </Link>
         </TouchableOpacity>
@@ -113,6 +110,7 @@ const styles = StyleSheet.create({
     width: 180,
     justifyContent: 'center',
     alignSelf: 'center',
+    zIndex: 2,
   },
   startText: {
     color: '#FFFFFF',

@@ -16,6 +16,12 @@ export default function Layout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name='create-profile'
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }
