@@ -29,7 +29,7 @@
     },
     "plugins": [
       "expo-router",
-      "@prisma/react-native"
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
