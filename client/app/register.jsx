@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import Logo from '@/components/Logo';
+import Logo from '../assets/campuslogo.svg';
 import { Link, router } from 'expo-router';
 import axios from 'axios';
 
@@ -46,7 +46,7 @@ const Register = () => {
     <View style={styles.container}>
       <View style={styles.loginContainer}>
         <View style={styles.loginWrapper}>
-          <Text style={styles.loginTitle}>Register</Text>
+          <Text style={styles.registerTitle}>Register</Text>
           <View>
             <Text style={styles.inputLabel}>Full name</Text>
             <TextInput
@@ -92,7 +92,9 @@ const Register = () => {
             <Text style={S.txtLrg}>Register</Text>
           </TouchableOpacity>
         </View>
-        <Logo style={styles.logo} />
+
+        <Logo width={'20%'} style={styles.logo} />
+
         <View style={styles.loginFooter}>
           <Link href={{ pathname: 'login' }}>
             <Text style={styles.registerText}>
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#3A72FF',
     padding: 20,
-    paddingVertical: 80,
+    paddingVertical: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -136,9 +138,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 10,
   },
-  loginTitle: {
+  registerTitle: {
     fontFamily: 'Lexend_700Bold',
-    fontSize: 32,
+    fontSize: 36,
     color: '#FFFFFF',
   },
   inputField: {
@@ -159,8 +161,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     top: 0,
-    height: 100,
-    width: 100,
   },
   loginFooter: {
     alignItems: 'center',
