@@ -1,25 +1,31 @@
-import { Stack } from 'expo-router/stack';
+import { Stack } from "expo-router/stack";
 
 export default function Layout() {
   return (
     <Stack>
-      <Stack.Screen name='index' />
+      <Stack.Screen name="index" />
       <Stack.Screen
-        name='login'
+        name="login"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name='register'
+        name="register"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name='create-profile'
+        name="create-profile"
         options={{
           headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="temp-create" // DELETE THIS LATER
+        options={{
+          headerShown: true,
         }}
       />
     </Stack>
