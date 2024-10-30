@@ -10,6 +10,9 @@ import Logo from '@/components/Logo';
 import { Link, router } from 'expo-router';
 import axios from 'axios';
 
+import S from '../styles/global';
+import { BASE_URL } from '@/constants/api';
+
 const Register = () => {
   const [user, setUser] = useState({
     name: '',
@@ -29,7 +32,7 @@ const Register = () => {
     };
 
     axios
-      .post('https://6601-123-208-248-87.ngrok-free.app/users', userData)
+      .post(`${BASE_URL}/users`, userData)
       .then(() => {
         router.push('/create-profile');
       })
@@ -85,8 +88,8 @@ const Register = () => {
               placeholder='Password'
             />
           </View>
-          <TouchableOpacity onPress={handleRegister} style={styles.loginButton}>
-            <Text style={styles.loginText}>Register</Text>
+          <TouchableOpacity onPress={handleRegister} style={S.btnLrg}>
+            <Text style={S.txtLrg}>Register</Text>
           </TouchableOpacity>
         </View>
         <Logo style={styles.logo} />
@@ -158,20 +161,6 @@ const styles = StyleSheet.create({
     top: 0,
     height: 100,
     width: 100,
-  },
-  loginButton: {
-    paddingHorizontal: 10,
-    backgroundColor: '#76DA69',
-    height: 55,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  loginText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontFamily: 'Lexend_700Bold',
   },
   loginFooter: {
     alignItems: 'center',

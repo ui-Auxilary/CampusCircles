@@ -5,30 +5,53 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Logo from '@/components/Logo';
 import { Link } from 'expo-router';
 
+import S from '../styles/global';
+import axios from 'axios';
+import { BASE_URL } from '@/constants/api';
+
 const Login = () => {
+  const [loginData, setLoginData] = useState({
+    username: '',
+    password: '',
+  });
+
+  const handleLogin = async () => {
+    console.log('posting');
+    await axios.post(`${BASE_URL}/users/login`, loginData);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.loginContainer}>
         <View style={styles.loginWrapper}>
           <Text style={styles.loginTitle}>Login</Text>
           <View>
-            <Text style={styles.inputLabel}>Username</Text>
-            <TextInput style={styles.inputField} placeholder='Username' />
+            <Text style={styles.inputLabel}>Email/Username</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setLoginData({ ...loginData, username: val })
+              }
+              style={styles.inputField}
+              placeholder='Email/Username'
+            />
           </View>
           <View>
             <Text style={styles.inputLabel}>Password</Text>
             <TextInput
+              onChangeText={(val) =>
+                setLoginData({ ...loginData, password: val })
+              }
               secureTextEntry={true}
               style={styles.inputField}
               placeholder='Password'
             />
           </View>
-          <TouchableOpacity style={styles.loginButton}>
-            <Text style={styles.loginText}>Login</Text>
+          <TouchableOpacity style={S.btnLrg} onPress={handleLogin}>
+            <Text style={S.txtLrg}>Login</Text>
           </TouchableOpacity>
         </View>
         <Logo style={styles.logo} />
