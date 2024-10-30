@@ -19,7 +19,7 @@ model User {
 
   photo           String?
   gender          String
-  age             String
+  age             Int
   mbti            String
   bio             String
   interests       String[]
@@ -42,7 +42,7 @@ model Event {
   name            String
   location        String
   date            DateTime
-  time            String
+  time            DateTime
   description     String?
   public          Boolean         @default(true)
   society         Boolean         @default(false)
@@ -58,6 +58,12 @@ model Event {
   updatedAt       DateTime        @updatedAt
 }
 
+enum InvitationStatus {
+  pending
+  accepted
+  rejected
+}
+
 model Invitation {
   id              String           @id @default(auto()) @map("_id") @db.ObjectId
   event           Event            @relation("EventInvitations", fields: [eventId], references: [id])
@@ -66,7 +72,7 @@ model Invitation {
   inviteeId       String           @db.ObjectId
   inviter         User             @relation("InvitationsSent", fields: [inviterId], references: [id])
   inviterId       String           @db.ObjectId
-  status          String           @default("pending") // Possible statuses: pending, accepted, rejected
+  status          InvitationStatus @default(pending)
 }
 
 model Tag {
