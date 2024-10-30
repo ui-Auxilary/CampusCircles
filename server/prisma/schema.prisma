@@ -44,23 +44,22 @@ model Invitation {
 
 model Tag {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  
-  eventIDs      String[]        @db.ObjectId
-  event         Event[]         @relation(fields: [eventIDs], references: [id])  
+
+ 
 }
 
 model Event {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
   name          String
+  photo         String
   location      String
   date          String
   time          String
   description   String?
   public        Boolean         @default(true)
   society       Boolean         @default(true)
+ 
 
-  tagIDs        String[]        @unique @db.ObjectId  
-  tags          Tag[]           @relation(fields: [tagIDs], references: [id])  
 
   attendeeIDs   String[]        @unique @db.ObjectId
   attendees     User[]          @relation(fields: [attendeeIDs], references: [id])  
