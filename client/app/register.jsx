@@ -136,9 +136,21 @@ const Register = () => {
           </TouchableOpacity>
         </View>
 
-        <Logo width={"20%"} style={styles.logo} />
+        {/* <Logo width={'20%'} style={styles.logo} /> */}
+        <View style={styles.lineBreak}>
+          <Text style={styles.lineBreakText}>OR</Text>
+        </View>
 
-        <View style={styles.loginFooter}>
+        <TouchableOpacity onPress={handleOAuth} style={styles.swg}>
+          <Image
+            style={styles.googleLogo}
+            source={require("../assets/google.png")}
+          />
+          <Text style={styles.swgText}>Sign up with google</Text>
+          <View />
+        </TouchableOpacity>
+
+        <View style={styles.registerFooter}>
           <Link href={{ pathname: "login" }}>
             <Text style={styles.registerText}>
               Already have an account? Log in
@@ -165,7 +177,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#3A72FF",
     padding: 20,
-    paddingVertical: 60,
+    paddingVertical: 20,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -203,7 +215,7 @@ const styles = StyleSheet.create({
   logo: {
     position: "absolute",
     left: 0,
-    top: 0,
+    top: 10,
   },
   registerFooter: {
     alignItems: "center",
@@ -218,6 +230,34 @@ const styles = StyleSheet.create({
     backgroundColor: "#ad24c9",
     height: 50,
     justifyContent: "center",
+    borderRadius: 5,
+    position: "absolute",
+    top: 90,
+    right: 40,
+  },
+  lineBreak: {
+    height: 3,
+    position: "relative",
+    backgroundColor: "#FFFFFF",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  lineBreakText: {
+    position: "absolute",
+    backgroundColor: "#3A72FF",
+    paddingHorizontal: 20,
+    color: "#FFFFFF",
+    zIndex: 2,
+    fontFamily: "Lexend_700Bold",
+  },
+  swg: {
+    marginTop: 20,
+    padding: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#FFFFFF",
     borderRadius: 5,
     position: "absolute",
     top: 90,

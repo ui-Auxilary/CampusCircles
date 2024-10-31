@@ -6,20 +6,20 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Image,
+  ScrollView,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocalSearchParams } from 'expo-router';
 import Logo from '../assets/logo2.svg';
 
 import S from '../styles/global';
-import axios from 'axios';
-import { BASE_URL } from '@/constants/api';
 
 const CreateProfile = () => {
   const params = useLocalSearchParams();
   const [profileData, setProfileData] = useState({
     name: '',
-    age: 0,
+    age: '',
     language: '',
     bio: '',
     mbti: '',
@@ -27,29 +27,9 @@ const CreateProfile = () => {
     courses: '',
   });
 
-  useEffect(() => {
-    console.log('Params', params);
-    if (params.id) {
-      // Set context
-    }
-  }, []);
-
-  const handleCreateProfile = () => {
-    console.log(profileData);
-    let userData = profileData;
-    userData.interests = userData.interests.split(',');
-    userData.courses = userData.courses.split(',');
-
-    axios
-      .put(`${BASE_URL}/users/${params.id}`, userData)
-      .then(() => {
-        console.log('Successfully created user profile');
-        // Navigate to wizard or homepage for now
-      })
-      .catch((e) => console.log(e));
-  };
   return (
     <View style={styles.container}>
+      <Logo style={styles.logo} width={50} height={50} />
       <Logo style={styles.logo} width={50} height={50} />
       <View style={styles.profileHeader}>
         <Text style={styles.headerTitle}>Create Profile</Text>
@@ -83,7 +63,7 @@ const CreateProfile = () => {
             <Text style={styles.inputLabel}>Age</Text>
             <TextInput
               onChangeText={(val) =>
-                setProfileData({ ...profileData, age: parseInt(val) })
+                setProfileData({ ...profileData, age: val })
               }
               value={profileData.age}
               style={styles.inputField}
@@ -92,6 +72,29 @@ const CreateProfile = () => {
             />
           </View>
         </View>
+        <View style={styles.inputBlock}>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Language</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, language: val })
+              }
+              value={profileData.language}
+              style={styles.inputField}
+              placeholder='Language 1, language 2...'
+            />
+          </View>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Bio</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, bio: val })
+              }
+              value={profileData.bio}
+              style={styles.inputField}
+              placeholder='Write about yourself!'
+            />
+          </View>
         <View style={styles.inputBlock}>
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Language</Text>
@@ -150,9 +153,43 @@ const CreateProfile = () => {
               placeholder='Course 1, course 2...'
             />
           </View>
+        <View style={styles.inputBlock}>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>MBTI</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, mbti: val })
+              }
+              value={profileData.mbti}
+              style={styles.inputField}
+              placeholder='Your MBTI'
+            />
+          </View>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Interests</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, interests: val })
+              }
+              value={profileData.interests}
+              style={styles.inputField}
+              placeholder='Interest 1, interest 2...'
+            />
+          </View>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Courses</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, courses: val })
+              }
+              value={profileData.courses}
+              style={styles.inputField}
+              placeholder='Course 1, course 2...'
+            />
+          </View>
         </View>
         <View style={styles.loginFooter}></View>
-        <TouchableOpacity onPress={handleCreateProfile} style={S.btnMed}>
+        <TouchableOpacity style={S.btnMed}>
           <Text style={S.txtLrg}>Create</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -182,6 +219,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Lexend_700Bold',
   },
   inputBlock: {},
+  inputBlock: {},
   inputRow: {
     width: '100%',
     backgroundColor: '#FFFFFF',
@@ -193,12 +231,15 @@ const styles = StyleSheet.create({
     gap: 20,
     borderBottomColor: '#EEEEEE',
     borderBottomWidth: 2,
+    borderBottomColor: '#EEEEEE',
+    borderBottomWidth: 2,
   },
   inputField: {
     paddingHorizontal: 15,
     width: '70%',
     borderBottomColor: '#D9D9D9',
     borderBottomWidth: 2,
+    zIndex: 2,
     zIndex: 2,
   },
   inputLabel: {
@@ -229,6 +270,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     zIndex: 2,
+    zIndex: 2,
   },
   logo: {
     position: 'absolute',
@@ -244,6 +286,15 @@ const styles = StyleSheet.create({
   },
   profileImgContainer: {
     height: 150,
+    backgroundColor: '#EEEEEE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 5,
+  },
+  profileImg: {
+    width: 120,
+    height: 120,
+    borderRadius: 100,
     backgroundColor: '#EEEEEE',
     alignItems: 'center',
     justifyContent: 'center',
