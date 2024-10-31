@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,75 +11,91 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  username      String          @unique
-  email         String          @unique
-  password      String
-  profile       Profile?
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  username        String          @unique
+  email           String          @unique
+  password        String
 
-  eventIDs      String[]        @db.ObjectId
-  events        Event[]         @relation(fields: [eventIDs], references: [id])
+  photo           String?
+  gender          String
+  age             Int
+  mbti            String
+  bio             String
+  interests       String[]
+  courses         String[]
 
-  friendIds     String[]        @db.ObjectId
+  eventsCreated   Event[]         @relation("EventsCreated")
+  eventsAttend    EventAttendee[] @relation("EventAttendees")
 
-  invitationIDs String[]        @db.ObjectId
-  invitations   Invitation[]    @relation(fields: [invitationIDs], references: [id])  
+  invReceived     Invitation[]    @relation("InvitationsReceived")
+  invSent         Invitation[]    @relation("InvitationsSent")
 
-  eventsCreated Event[]         @relation("EventsCreator")
-}
+  friendIds       String[]        @db.ObjectId
 
-model Invitation {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  eventID       String          @unique
-
-  inviteeIDs    String[]        @db.ObjectId
-  invitees      User[]          @relation(fields: [inviteeIDs], references: [id])
-
-  status        String
-}
-
-model Tag {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  
-  eventIDs      String[]        @db.ObjectId
-  event         Event[]         @relation(fields: [eventIDs], references: [id])  
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 }
 
 model Event {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  location      String
-  date          String
-  time          String
-  description   String?
-  public        Boolean         @default(true)
-  society       Boolean         @default(true)
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  location        String
+  date            DateTime
+  time            DateTime
+  description     String?
+  public          Boolean         @default(true)
+  society         Boolean         @default(false)
 
-  tagIDs        String[]        @unique @db.ObjectId  
-  tags          Tag[]           @relation(fields: [tagIDs], references: [id])  
+  eventTags       EventTag[]      @relation("EventTagLinks")
+  eventAttendees  EventAttendee[] @relation("EventAttendees")
+  invitations     Invitation[]    @relation("EventInvitations")
 
-  attendeeIDs   String[]        @unique @db.ObjectId
-  attendees     User[]          @relation(fields: [attendeeIDs], references: [id])  
+  creator         User            @relation("EventsCreated", fields: [creatorId], references: [id])
+  creatorId       String          @db.ObjectId
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-
-  creatorId     String          @unique @db.ObjectId  
-  creator       User            @relation("EventsCreator", fields: [creatorId], references: [id])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 }
 
-model Profile {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  photo         String
-  gender        String
-  age           String
-  mbti          String
-  bio           String
-  interests     String[]       
-  courses       String[]    
+enum InvitationStatus {
+  pending
+  accepted
+  rejected
+}
 
-  userId        String          @unique @db.ObjectId 
-  user          User            @relation(fields: [userId], references: [id])
+model Invitation {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  event           Event            @relation("EventInvitations", fields: [eventId], references: [id])
+  eventId         String           @db.ObjectId
+  invitee         User             @relation("InvitationsReceived", fields: [inviteeId], references: [id])
+  inviteeId       String           @db.ObjectId
+  inviter         User             @relation("InvitationsSent", fields: [inviterId], references: [id])
+  inviterId       String           @db.ObjectId
+  status          InvitationStatus @default(pending)
+}
+
+model Tag {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  eventTags       EventTag[]      @relation("EventTagLinks")
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model EventAttendee {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  event           Event           @relation("EventAttendees", fields: [eventId], references: [id])
+  eventId         String          @db.ObjectId
+  user            User            @relation("EventAttendees", fields: [userId], references: [id])
+  userId          String          @db.ObjectId
+}
+
+model EventTag {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  event           Event           @relation("EventTagLinks", fields: [eventId], references: [id])
+  eventId         String          @db.ObjectId
+  tag             Tag             @relation("EventTagLinks", fields: [tagId], references: [id])
+  tagId           String          @db.ObjectId
 }
