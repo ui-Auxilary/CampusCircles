@@ -1,6 +1,6 @@
 import { Router } from "express";
 import userRoute from "./user-route.js";
-import eventRoute from "./event-route.js";
+import OAuthRoute from "./oauth-route.js";
 
 const indexRoute = Router();
 
@@ -9,6 +9,6 @@ indexRoute.get("", async (req, res) => {
 });
 
 indexRoute.use("/users", userRoute);
-indexRoute.use("/events", eventRoute);
+indexRoute.use("/swg", OAuthRoute);
 
 export default indexRoute;
