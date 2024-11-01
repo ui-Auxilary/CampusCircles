@@ -1,26 +1,30 @@
-import { Stack, Link, router } from "expo-router";
 import React, { useState } from "react";
+import { Stack, Link, router } from "expo-router";
 import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
 import {
   StyleSheet,
   View,
   Image,
   Text,
-  ScrollView,
   Pressable,
   TextInput,
-  Alert,
-  TouchableOpacity,
 } from "react-native";
 
-import * as ImagePicker from "expo-image-picker";
+// imported assets
 
 import pic from "../assets/images/Image.png";
 import unchecked from "../assets/images/unchecked.png";
 import checked from "../assets/images/checked.png";
+import createButton from "../assets/images/createbutton.png";
+
+///////////////////////////////////////////////////////////////////////////////
+// APP ////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 export default function App() {
-  // data fields defined in for Event
+  // Data for event
+
   const [event, setEvent] = useState({
     id: "",
     name: "",
@@ -30,7 +34,7 @@ export default function App() {
     time: "",
     description: "",
     publicEvent: true,
-    society: true,
+    society: false,
     tagID: "Hang",
     attendeeIds: [],
     createdAt: new Date(),
@@ -38,11 +42,11 @@ export default function App() {
     creatorId: "",
   });
 
-  // data fields other
   const [image, setImage] = useState(null);
 
-  // retrieve type of event as container style depends on it
-  const getType = () => {
+  // retrieve tag
+
+  const getTag = () => {
     switch (event.tagID) {
       case "Study":
         return styles.containerStudy;
@@ -55,7 +59,8 @@ export default function App() {
     }
   };
 
-  // image selection
+  // onPress functions
+
   const handleImagePick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -65,9 +70,24 @@ export default function App() {
     });
 
     if (!result.canceled) {
+      setEvent({ ...event, photo: result.assets[0].uri });
       setImage(result.assets[0].uri);
     }
   };
+
+  const toggleTag = (tag) => {
+    setEvent({ ...event, tagID: tag });
+  };
+
+  const togglePrivacy = () => {
+    setEvent({ ...event, publicEvent: !event.publicEvent });
+  };
+
+  const toggleSociety = () => {
+    setEvent({ ...event, society: !event.society });
+  };
+
+  //
 
   const handleCreate = () => {
     const eventData = {
@@ -89,14 +109,14 @@ export default function App() {
   /////////////////////////////////////////////////////////////////////////////
 
   return (
-    <View style={getType()}>
+    <View style={getTag()}>
       <View style={[styles.typeContainer, styles.shadow]}>
         <Pressable
           style={[
             styles.typeButtonFirst,
             event.tagID === "Hang" && styles.typeButtonFirstInverted,
           ]}
-          onPress={() => setEvent({ ...event, tagID: "Hang" })}
+          onPress={() => toggleTag("Hang")}
         >
           <Text
             style={[
@@ -112,7 +132,7 @@ export default function App() {
             styles.typeButton,
             event.tagID === "Study" && styles.typeButtonInverted,
           ]}
-          onPress={() => setEvent({ ...event, tagID: "Study" })}
+          onPress={() => toggleTag("Study")}
         >
           <Text
             style={[
@@ -128,7 +148,7 @@ export default function App() {
             styles.typeButton,
             event.tagID === "Eat" && styles.typeButtonInverted,
           ]}
-          onPress={() => setEvent({ ...event, tagID: "Eat" })}
+          onPress={() => toggleTag("Eat")}
         >
           <Text
             style={[
@@ -144,7 +164,7 @@ export default function App() {
             styles.typeButtonLast,
             event.tagID === "Other" && styles.typeButtonLastInverted,
           ]}
-          onPress={() => setEvent({ ...event, tagID: "Other" })}
+          onPress={() => toggleTag("Other")}
         >
           <Text
             style={[
@@ -161,8 +181,8 @@ export default function App() {
         {/* image */}
         <View style={styles.imageContainer}>
           <Pressable onPress={handleImagePick} style={styles.imageContainer}>
-            {event.image ? (
-              <Image style={styles.fullImage} source={{ uri: event.image }} />
+            {event.photo ? (
+              <Image style={styles.fullImage} source={{ uri: image }} />
             ) : (
               <Image style={styles.iconImage} source={pic} />
             )}
@@ -202,13 +222,13 @@ export default function App() {
       </View>
 
       {/* privacy */}
-      <View style={styles.privacyContainer}>
+      <View style={[styles.privacyContainer, styles.shadow]}>
         <Pressable
           style={[
             styles.privacyButtonLeft,
             event.publicEvent === true && styles.privacyButtonLeftInverted,
           ]}
-          onPress={() => setEvent({ ...event, publicEvent: true })}
+          onPress={togglePrivacy}
         >
           <Text
             style={[
@@ -224,7 +244,7 @@ export default function App() {
             styles.privacyButtonRight,
             event.publicEvent === false && styles.privacyButtonRightInverted,
           ]}
-          onPress={() => setEvent({ ...event, publicEvent: false })}
+          onPress={togglePrivacy}
         >
           <Text
             style={[
@@ -237,10 +257,24 @@ export default function App() {
         </Pressable>
       </View>
 
-      {/* society check */}
-      <View style={styles.societyContainer}></View>
-      {/* create button */}
-      <Pressable style={styles.createButton}></Pressable>
+      <View style={[styles.societyCreateContainer, styles.horiz]}>
+        {/* society check */}
+        <Pressable onPress={toggleSociety}>
+          <Image
+            source={event.society ? checked : unchecked}
+            style={styles.iconImage}
+          />
+        </Pressable>
+        <Text style={styles.label}>Society</Text>
+
+        {/* create button */}
+        <Pressable
+          onPress={handleCreate}
+          style={[styles.createButton, styles.shadow]}
+        >
+          <Text style={styles.createText}>Create</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -280,7 +314,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     borderRadius: 10,
-    marginTop: 25,
+    marginVertical: 25,
   },
   typeButtonFirst: {
     backgroundColor: "white",
@@ -391,7 +425,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 25,
     overflow: "hidden",
-    marginTop: 15,
   },
   fullImage: {
     height: "100%",
@@ -410,16 +443,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   // Society
-  societyContainer: {},
+  societyCreateContainer: {
+    width: "80%",
+    marginTop: 25,
+  },
   // Create
-  createButton: {},
+  createButton: {
+    backgroundColor: "#76DA69",
+    paddingHorizontal: 27.5,
+    paddingVertical: 12.5,
+    borderRadius: 15,
+    marginLeft: 100, // hardcoded
+  },
+  createText: {
+    color: "#FFFFFF",
+    fontSize: "25",
+    fontWeight: "bold",
+  },
   // Other
   horiz: {
     columnGap: 15,
     flexDirection: "row",
   },
   verti: {
-    marginTop: 15,
     rowGap: 5,
     flexDirection: "column",
   },
