@@ -3,6 +3,7 @@ NOTES
 - create onPress post request needs to be fixed (status code 404)
 - create onPress needs to populate incomplete fields right now (attendeeIds, createdAt, creatorId)
 - create button onPress needs to redirect user event detail page
+- add permission for image picker
 */
 
 import React, { useState } from "react";
