@@ -95,7 +95,10 @@ export default function App() {
     };
 
     axios
-      .post("https://6601-123-208-248-87.ngrok-free.app/users", eventData)
+      .post(
+        "https://6601-123-208-248-87.ngrok-free.app/events/create",
+        eventData
+      )
       .then(() => {
         router.push("/create-event"); // ???
       })
