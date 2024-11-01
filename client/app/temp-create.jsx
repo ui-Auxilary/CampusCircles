@@ -1,3 +1,10 @@
+/*
+NOTES
+- create onPress post request needs to be fixed (status code 404)
+- create onPress needs to populate incomplete fields right now (attendeeIds, createdAt, creatorId)
+- create button onPress needs to redirect user event detail page
+*/
+
 import React, { useState } from "react";
 import { Stack, Link, router } from "expo-router";
 import axios from "axios";
@@ -9,6 +16,7 @@ import {
   Text,
   Pressable,
   TextInput,
+  Alert,
 } from "react-native";
 
 // imported assets
@@ -16,7 +24,6 @@ import {
 import pic from "../assets/images/Image.png";
 import unchecked from "../assets/images/unchecked.png";
 import checked from "../assets/images/checked.png";
-import createButton from "../assets/images/createbutton.png";
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -24,8 +31,7 @@ import createButton from "../assets/images/createbutton.png";
 
 export default function App() {
   // Data for event
-
-  const [event, setEvent] = useState({
+  const defaultEventData = {
     id: "",
     name: "",
     photo: "",
@@ -40,11 +46,15 @@ export default function App() {
     createdAt: new Date(),
     updatedAt: new Date(),
     creatorId: "",
-  });
-
+  };
+  const [event, setEvent] = useState(defaultEventData);
   const [image, setImage] = useState(null);
 
-  // retrieve tag
+  // Functions to handle changes to event details
+
+  const handleInputChange = (field, value) => {
+    setEvent((prevEvent) => ({ ...prevEvent, [field]: value }));
+  };
 
   const getTag = () => {
     switch (event.tagID) {
@@ -58,8 +68,6 @@ export default function App() {
         return styles.containerHang;
     }
   };
-
-  // onPress functions
 
   const handleImagePick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -87,24 +95,46 @@ export default function App() {
     setEvent({ ...event, society: !event.society });
   };
 
-  //
+  const validateDate = (value) => {
+    const datePattern = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+    return datePattern.test(value);
+  };
+
+  const validateTime = (value) => {
+    const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+    return timePattern.test(value);
+  };
+
+  // Function to handle post request creating event
 
   const handleCreate = () => {
-    const eventData = {
-      ...event,
-    };
+    if (!validateDate(event.date)) {
+      Alert.alert(
+        "Invalid Date Format",
+        "Please enter date in DD/MM/YYYY format."
+      );
+      return;
+    }
+
+    if (!validateTime(event.time)) {
+      Alert.alert(
+        "Invalid Time Format",
+        "Please enter time in 24-hour HH:MM format."
+      );
+      return;
+    }
 
     axios
-      .post(
-        "https://6601-123-208-248-87.ngrok-free.app/events/create",
-        eventData
-      )
-      .then(() => {
-        router.push("/create-event"); // ???
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+      .post("https://6601-123-208-248-87.ngrok-free.app/events/create", event)
+      .then(() => router.push("/create-event"))
+      .catch((e) => console.log(e));
+
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setEvent(defaultEventData);
+    setImage(null);
   };
 
   /////////////////////////////////////////////////////////////////////////////
@@ -195,12 +225,22 @@ export default function App() {
         <View style={styles.verti}>
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Event Name</Text>
-            <View style={[styles.field, { width: 200 }]}></View>
+            <TextInput
+              style={[styles.field, { width: 200 }]}
+              placeholder="Enter event name"
+              value={event.name}
+              onChangeText={(value) => handleInputChange("name", value)}
+            />
           </View>
           {/* location */}
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Location</Text>
-            <View style={[styles.field, { width: 200 }]}></View>
+            <TextInput
+              style={[styles.field, { width: 200 }]}
+              placeholder="Enter event location"
+              value={event.location}
+              onChangeText={(value) => handleInputChange("location", value)}
+            />
           </View>
         </View>
       </View>
@@ -209,19 +249,35 @@ export default function App() {
         {/* Date */}
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Date</Text>
-          <View style={[styles.field, { width: 180 }]}></View>
+          <TextInput
+            style={[styles.field, { width: 180 }]}
+            placeholder="DD/MM/YYYY"
+            value={event.date}
+            onChangeText={(value) => handleInputChange("date", value)}
+          />
         </View>
         {/* Time */}
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Time</Text>
-          <View style={[styles.field, { width: 180 }]}></View>
+          <TextInput
+            style={[styles.field, { width: 180 }]}
+            placeholder="HH:MM"
+            value={event.time}
+            onChangeText={(value) => handleInputChange("time", value)}
+          />
         </View>
       </View>
 
       {/* description */}
       <View style={styles.detailContainer}>
         <Text style={styles.label}>Description</Text>
-        <View style={styles.descriptionContainer}></View>
+        <TextInput
+          style={styles.descriptionContainer}
+          placeholder="Describe the event details"
+          value={event.description}
+          onChangeText={(value) => handleInputChange("description", value)}
+          multiline
+        />
       </View>
 
       {/* privacy */}
@@ -419,6 +475,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 10,
     height: 45,
+    padding: 5,
   },
   imageContainer: {
     backgroundColor: "#FFFFFF",
@@ -444,6 +501,7 @@ const styles = StyleSheet.create({
     height: 160,
     width: 375,
     borderRadius: 10,
+    padding: 10,
   },
   // Society
   societyCreateContainer: {
