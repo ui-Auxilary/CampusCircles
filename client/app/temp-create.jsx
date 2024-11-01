@@ -25,6 +25,7 @@ import {
 import pic from '../assets/images/Image.png';
 import unchecked from '../assets/images/unchecked.png';
 import checked from '../assets/images/checked.png';
+import { BASE_URL } from '@/constants/api';
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -33,20 +34,23 @@ import checked from '../assets/images/checked.png';
 export default function App() {
   // Data for event
   const defaultEventData = {
-    id: '',
     name: '',
     photo: '',
     location: '',
-    date: '',
-    time: '',
+    date: new Date(),
+    time: new Date(),
     description: '',
-    publicEvent: true,
+    public: true,
+    eventTags: {},
+    eventAttendees: {},
     society: false,
-    tagID: 'Hang',
-    attendeeIds: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    creatorId: '',
+    invitations: {},
+    creatorId: {
+      // Connect event to temporary user for now
+      connect: {
+        id: '6722204d9e232f55d0a0903c',
+      },
+    },
   };
   const [event, setEvent] = useState(defaultEventData);
   const [image, setImage] = useState(null);
@@ -125,8 +129,9 @@ export default function App() {
       return;
     }
 
+    // Change base_url in constants instead of directly modifying
     axios
-      .post('https://6601-123-208-248-87.ngrok-free.app/events/create', event)
+      .post(`${BASE_URL}/events/create`, event)
       .then(() => router.push('/create-event'))
       .catch((e) => console.log(e));
 
