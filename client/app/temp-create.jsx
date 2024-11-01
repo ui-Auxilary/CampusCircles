@@ -1,39 +1,63 @@
-import { Stack, Link, router } from 'expo-router';
+/*
+NOTES
+- create onPress post request needs to be fixed (status code 404)
+- create onPress needs to populate incomplete fields right now (attendeeIds, createdAt, creatorId)
+- create button onPress needs to redirect user event detail page
+- add permission for image picker
+*/
+
 import React, { useState } from 'react';
+import { Stack, Link, router } from 'expo-router';
 import axios from 'axios';
+import * as ImagePicker from 'expo-image-picker';
 import {
   StyleSheet,
   View,
   Image,
   Text,
-  ScrollView,
   Pressable,
   TextInput,
   Alert,
-  TouchableOpacity,
 } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { BASE_URL } from '@/constants/api';
-// import image from '../assets/images/image.png';
+
+// imported assets
+
+import pic from '../assets/images/Image.png';
+import unchecked from '../assets/images/unchecked.png';
+import checked from '../assets/images/checked.png';
+
+///////////////////////////////////////////////////////////////////////////////
+// APP ////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 export default function App() {
-  // data fields defined in for Event
-  const [event, setEvent] = useState({
-    name: 'asd',
-    photo: 'asd',
-    location: 'asd',
-    date: new Date(),
-    time: new Date(),
-    description: 'sad',
+  // Data for event
+  const defaultEventData = {
+    id: '',
+    name: '',
+    photo: '',
+    location: '',
+    date: '',
+    time: '',
+    description: '',
     publicEvent: true,
-    society: true,
-  });
+    society: false,
+    tagID: 'Hang',
+    attendeeIds: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    creatorId: '',
+  };
+  const [event, setEvent] = useState(defaultEventData);
+  const [image, setImage] = useState(null);
 
-  // data fields other
-  const [image, setImage] = useState('');
+  // Functions to handle changes to event details
 
-  // retrieve type of event as container style depends on it
-  const getType = () => {
+  const handleInputChange = (field, value) => {
+    setEvent((prevEvent) => ({ ...prevEvent, [field]: value }));
+  };
+
+  const getTag = () => {
     switch (event.tagID) {
       case 'Study':
         return styles.containerStudy;
@@ -46,7 +70,6 @@ export default function App() {
     }
   };
 
-  // image selection
   const handleImagePick = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -56,32 +79,63 @@ export default function App() {
     });
 
     if (!result.canceled) {
+      setEvent({ ...event, photo: result.assets[0].uri });
       setImage(result.assets[0].uri);
     }
   };
 
+  const toggleTag = (tag) => {
+    setEvent({ ...event, tagID: tag });
+  };
+
+  const togglePrivacy = () => {
+    setEvent({ ...event, publicEvent: !event.publicEvent });
+  };
+
+  const toggleSociety = () => {
+    setEvent({ ...event, society: !event.society });
+  };
+
+  const validateDate = (value) => {
+    const datePattern = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
+    return datePattern.test(value);
+  };
+
+  const validateTime = (value) => {
+    const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+    return timePattern.test(value);
+  };
+
+  // Function to handle post request creating event
+
   const handleCreate = () => {
-    const eventData = {
-      ...event,
-      eventTags: {},
-      eventAttendees: {},
-      invitations: {},
-      creator: {
-        connect: {
-          id: '6722204d9e232f55d0a0903c',
-        },
-      },
-    }; // change fields
+    if (!validateDate(event.date)) {
+      Alert.alert(
+        'Invalid Date Format',
+        'Please enter date in DD/MM/YYYY format.'
+      );
+      return;
+    }
+
+    if (!validateTime(event.time)) {
+      Alert.alert(
+        'Invalid Time Format',
+        'Please enter time in 24-hour HH:MM format.'
+      );
+      return;
+    }
 
     axios
-      .post(`${BASE_URL}/events/create`, eventData)
-      .then(() => {
-        router.push('/create-event'); // create router
-      })
-      .catch((e) => {
-        console.log(e);
-        // Raise error message
-      });
+      .post('https://6601-123-208-248-87.ngrok-free.app/events/create', event)
+      .then(() => router.push('/create-event'))
+      .catch((e) => console.log(e));
+
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setEvent(defaultEventData);
+    setImage(null);
   };
 
   /////////////////////////////////////////////////////////////////////////////
@@ -89,154 +143,199 @@ export default function App() {
   /////////////////////////////////////////////////////////////////////////////
 
   return (
-    <ScrollView>
-      <TouchableOpacity onPress={handleCreate} style={styles.createButton}>
-        <Text>Create</Text>
-      </TouchableOpacity>
-      <View style={getType()}>
-        <View style={[styles.typeContainer, styles.shadow]}>
-          <Pressable
+    <View style={getTag()}>
+      <View style={[styles.typeContainer, styles.shadow]}>
+        <Pressable
+          style={[
+            styles.typeButtonFirst,
+            event.tagID === 'Hang' && styles.typeButtonFirstInverted,
+          ]}
+          onPress={() => toggleTag('Hang')}
+        >
+          <Text
             style={[
-              styles.typeButtonFirst,
-              event.tagID === 'Hang' && styles.typeButtonFirstInverted,
+              styles.typeText,
+              event.tagID === 'Hang' && styles.typeTextInverted,
             ]}
-            onPress={() => setEvent({ ...event, tagID: 'Hang' })}
           >
-            <Text
-              style={[
-                styles.typeText,
-                event.tagID === 'Hang' && styles.typeTextInverted,
-              ]}
-            >
-              Hang
-            </Text>
-          </Pressable>
-          <Pressable
+            Hang
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.typeButton,
+            event.tagID === 'Study' && styles.typeButtonInverted,
+          ]}
+          onPress={() => toggleTag('Study')}
+        >
+          <Text
             style={[
-              styles.typeButton,
-              event.tagID === 'Study' && styles.typeButtonInverted,
+              styles.typeText,
+              event.tagID === 'Study' && styles.typeTextInverted,
             ]}
-            onPress={() => setEvent({ ...event, tagID: 'Study' })}
           >
-            <Image src={image} />
-            <Text
-              style={[
-                styles.typeText,
-                event.tagID === 'Study' && styles.typeTextInverted,
-              ]}
-            >
-              Study
-            </Text>
-          </Pressable>
-          <Pressable
+            Study
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.typeButton,
+            event.tagID === 'Eat' && styles.typeButtonInverted,
+          ]}
+          onPress={() => toggleTag('Eat')}
+        >
+          <Text
             style={[
-              styles.typeButton,
-              event.tagID === 'Eat' && styles.typeButtonInverted,
+              styles.typeText,
+              event.tagID === 'Eat' && styles.typeTextInverted,
             ]}
-            onPress={() => setEvent({ ...event, tagID: 'Eat' })}
           >
-            <Text
-              style={[
-                styles.typeText,
-                event.tagID === 'Eat' && styles.typeTextInverted,
-              ]}
-            >
-              Eat
-            </Text>
-          </Pressable>
-          <Pressable
+            Eat
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.typeButtonLast,
+            event.tagID === 'Other' && styles.typeButtonLastInverted,
+          ]}
+          onPress={() => toggleTag('Other')}
+        >
+          <Text
             style={[
-              styles.typeButtonLast,
-              event.tagID === 'Other' && styles.typeButtonLastInverted,
+              styles.typeText,
+              event.tagID === 'Other' && styles.typeTextInverted,
             ]}
-            onPress={() => setEvent({ ...event, tagID: 'Other' })}
           >
-            <Text
-              style={[
-                styles.typeText,
-                event.tagID === 'Other' && styles.typeTextInverted,
-              ]}
-            >
-              Other
-            </Text>
-          </Pressable>
-        </View>
+            Other
+          </Text>
+        </Pressable>
+      </View>
 
+      <View style={styles.horiz}>
         {/* image */}
         <View style={styles.imageContainer}>
           <Pressable onPress={handleImagePick} style={styles.imageContainer}>
-            {image ? (
+            {event.photo ? (
               <Image style={styles.fullImage} source={{ uri: image }} />
             ) : (
-              <Image
-                style={styles.iconImage}
-                source={require('../assets/images/Image.png')}
-              />
+              <Image style={styles.iconImage} source={pic} />
             )}
           </Pressable>
         </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Event Name</Text>
-          <View style={[styles.field, { width: 200 }]}></View>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Location</Text>
-          <View style={[styles.field, { width: 200 }]}></View>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Date</Text>
-          <View style={[styles.field, { width: 150 }]}></View>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Time</Text>
-          <View style={[styles.field, { width: 150 }]}></View>
-        </View>
-
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Description</Text>
-          <View style={[styles.field, { width: 350 }]}></View>
-        </View>
-
-        <View style={styles.privacyContainer}>
-          <Pressable
-            style={[
-              styles.privacyButtonLeft,
-              event.publicEvent === true && styles.privacyButtonLeftInverted,
-            ]}
-            onPress={() => setEvent({ ...event, publicEvent: true })}
-          >
-            <Text
-              style={[
-                styles.privacyText,
-                event.publicEvent === true && styles.privacyTextInverted,
-              ]}
-            >
-              Public
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[
-              styles.privacyButtonRight,
-              event.publicEvent === false && styles.privacyButtonRightInverted,
-            ]}
-            onPress={() => setEvent({ ...event, publicEvent: false })}
-          >
-            <Text
-              style={[
-                styles.privacyText,
-                event.publicEvent === false && styles.privacyTextInverted,
-              ]}
-            >
-              Private
-            </Text>
-          </Pressable>
+        {/* event name */}
+        <View style={styles.verti}>
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Event Name</Text>
+            <TextInput
+              style={[styles.field, { width: 200 }]}
+              placeholder='Enter event name'
+              value={event.name}
+              onChangeText={(value) => handleInputChange('name', value)}
+            />
+          </View>
+          {/* location */}
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Location</Text>
+            <TextInput
+              style={[styles.field, { width: 200 }]}
+              placeholder='Enter event location'
+              value={event.location}
+              onChangeText={(value) => handleInputChange('location', value)}
+            />
+          </View>
         </View>
       </View>
-    </ScrollView>
+
+      <View style={styles.horiz}>
+        {/* Date */}
+        <View style={styles.detailContainer}>
+          <Text style={styles.label}>Date</Text>
+          <TextInput
+            style={[styles.field, { width: 180 }]}
+            placeholder='DD/MM/YYYY'
+            value={event.date}
+            onChangeText={(value) => handleInputChange('date', value)}
+          />
+        </View>
+        {/* Time */}
+        <View style={styles.detailContainer}>
+          <Text style={styles.label}>Time</Text>
+          <TextInput
+            style={[styles.field, { width: 180 }]}
+            placeholder='HH:MM'
+            value={event.time}
+            onChangeText={(value) => handleInputChange('time', value)}
+          />
+        </View>
+      </View>
+
+      {/* description */}
+      <View style={styles.detailContainer}>
+        <Text style={styles.label}>Description</Text>
+        <TextInput
+          style={styles.descriptionContainer}
+          placeholder='Describe the event details'
+          value={event.description}
+          onChangeText={(value) => handleInputChange('description', value)}
+          multiline
+        />
+      </View>
+
+      {/* privacy */}
+      <View style={[styles.privacyContainer, styles.shadow]}>
+        <Pressable
+          style={[
+            styles.privacyButtonLeft,
+            event.publicEvent === true && styles.privacyButtonLeftInverted,
+          ]}
+          onPress={togglePrivacy}
+        >
+          <Text
+            style={[
+              styles.privacyText,
+              event.publicEvent === true && styles.privacyTextInverted,
+            ]}
+          >
+            Public
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.privacyButtonRight,
+            event.publicEvent === false && styles.privacyButtonRightInverted,
+          ]}
+          onPress={togglePrivacy}
+        >
+          <Text
+            style={[
+              styles.privacyText,
+              event.publicEvent === false && styles.privacyTextInverted,
+            ]}
+          >
+            Private
+          </Text>
+        </Pressable>
+      </View>
+
+      <View style={[styles.societyCreateContainer, styles.horiz]}>
+        {/* society check */}
+        <Pressable onPress={toggleSociety}>
+          <Image
+            source={event.society ? checked : unchecked}
+            style={styles.iconImage}
+          />
+        </Pressable>
+        <Text style={styles.label}>Society</Text>
+
+        {/* create button */}
+        <Pressable
+          onPress={handleCreate}
+          style={[styles.createButton, styles.shadow]}
+        >
+          <Text style={styles.createText}>Create</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
@@ -250,32 +349,32 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E7948D',
     alignItems: 'center',
-    rowGap: 25,
+    rowGap: 5,
   },
   containerStudy: {
     flex: 1,
     backgroundColor: '#A0B7EF',
     alignItems: 'center',
-    rowGap: 25,
+    rowGap: 5,
   },
   containerEat: {
     flex: 1,
     backgroundColor: '#F0D074',
     alignItems: 'center',
-    rowGap: 25,
+    rowGap: 5,
   },
   containerOther: {
     flex: 1,
     backgroundColor: '#EEEEEE',
     alignItems: 'center',
-    rowGap: 25,
+    rowGap: 5,
   },
   // Type Selector
   typeContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     borderRadius: 10,
-    marginTop: 25,
+    marginVertical: 25,
   },
   typeButtonFirst: {
     backgroundColor: 'white',
@@ -325,6 +424,7 @@ const styles = StyleSheet.create({
   },
   // Privacy Selector
   privacyContainer: {
+    marginTop: 15,
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -332,26 +432,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
-    paddingHorizontal: 50,
+    paddingHorizontal: 65,
     paddingVertical: 10,
   },
   privacyButtonRight: {
     backgroundColor: 'white',
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
-    paddingHorizontal: 50,
+    paddingHorizontal: 65,
     paddingVertical: 10,
   },
   privacyButtonLeftInverted: {
     backgroundColor: '#3A72FF',
-    paddingHorizontal: 50,
+    paddingHorizontal: 65,
     paddingVertical: 10,
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
   },
   privacyButtonRightInverted: {
     backgroundColor: '#3A72FF',
-    paddingHorizontal: 50,
+    paddingHorizontal: 65,
     paddingVertical: 10,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
@@ -366,7 +466,6 @@ const styles = StyleSheet.create({
   },
   // Event Details
   detailContainer: {
-    width: '80%',
     rowGap: 5,
   },
   label: {
@@ -376,17 +475,17 @@ const styles = StyleSheet.create({
   field: {
     backgroundColor: '#FFF',
     borderRadius: 10,
-    height: 50,
+    height: 45,
+    padding: 5,
   },
   imageContainer: {
     backgroundColor: '#FFFFFF',
-    height: 175,
-    width: 390,
+    height: 160,
+    width: 160,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 25,
     overflow: 'hidden',
-    marginTop: 15,
   },
   fullImage: {
     height: '100%',
@@ -394,15 +493,42 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   iconImage: {
-    height: 50,
-    width: 50,
+    height: 30,
+    width: 30,
     resizeMode: 'contain',
+  },
+  descriptionContainer: {
+    backgroundColor: '#FFFFFF',
+    height: 160,
+    width: 375,
+    borderRadius: 10,
+    padding: 10,
+  },
+  // Society
+  societyCreateContainer: {
+    width: '80%',
+    marginTop: 25,
+  },
+  // Create
+  createButton: {
+    backgroundColor: '#76DA69',
+    paddingHorizontal: 27.5,
+    paddingVertical: 12.5,
+    borderRadius: 15,
+    marginLeft: 100, // hardcoded
+  },
+  createText: {
+    color: '#FFFFFF',
+    fontSize: '25',
+    fontWeight: 'bold',
   },
   // Other
   horiz: {
+    columnGap: 15,
     flexDirection: 'row',
   },
   verti: {
+    rowGap: 5,
     flexDirection: 'column',
   },
   shadow: {
@@ -410,8 +536,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  },
-  createButton: {
-    padding: 20,
   },
 });
