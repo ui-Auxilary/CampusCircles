@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import image from "../assets/images/image.png";
 
 export default function App() {
   // data fields defined in for Event
@@ -35,6 +34,7 @@ export default function App() {
   });
 
   // data fields other
+  const photo = require("../assets/images/Image.png");
   const [image, setImage] = useState<string | null>(null);
 
   // retrieve type of event as container style depends on it
@@ -67,22 +67,16 @@ export default function App() {
 
   const handleCreate = () => {
     const eventData = {
-      profile: {},
-      events: {},
-      eventsCreated: {},
-      friendIds: [],
-      invitations: {},
-      ...user,
-    }; // change fields
+      ...event,
+    };
 
     axios
       .post("https://6601-123-208-248-87.ngrok-free.app/users", eventData)
       .then(() => {
-        router.push("/create-event"); // create router
+        router.push("/create-event"); // ???
       })
       .catch((e) => {
         console.log(e);
-        // Raise error message
       });
   };
 
@@ -159,45 +153,54 @@ export default function App() {
         </Pressable>
       </View>
 
-      {/* image */}
-      <View style={styles.imageContainer}>
-        <Pressable onPress={handleImagePick} style={styles.imageContainer}>
-          {image ? (
-            <Image style={styles.fullImage} source={{ uri: image }} />
-          ) : (
-            <Image
-              style={styles.iconImage}
-              source={require("../assets/images/Image.png")}
-            />
-          )}
-        </Pressable>
+      <View style={styles.horiz}>
+        {/* image */}
+        <View style={styles.imageContainer}>
+          <Pressable onPress={handleImagePick} style={styles.imageContainer}>
+            {photo ? (
+              <Image style={styles.fullImage} source={{ uri: photo }} />
+            ) : (
+              <Image
+                style={styles.iconImage}
+                source={require("../assets/images/Image.png")}
+              />
+            )}
+          </Pressable>
+        </View>
+        {/* event name */}
+        <View style={styles.verti}>
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Event Name</Text>
+            <View style={[styles.field, { width: 200 }]}></View>
+          </View>
+          {/* location */}
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Location</Text>
+            <View style={[styles.field, { width: 200 }]}></View>
+          </View>
+        </View>
       </View>
 
-      <View style={styles.detailContainer}>
-        <Text style={styles.label}>Event Name</Text>
-        <View style={[styles.field, { width: 200 }]}></View>
+      <View style={styles.horiz}>
+        {/* Date */}
+        <View style={styles.detailContainer}>
+          <Text style={styles.label}>Date</Text>
+          <View style={[styles.field, { width: 180 }]}></View>
+        </View>
+        {/* Time */}
+        <View style={styles.detailContainer}>
+          <Text style={styles.label}>Time</Text>
+          <View style={[styles.field, { width: 180 }]}></View>
+        </View>
       </View>
 
-      <View style={styles.detailContainer}>
-        <Text style={styles.label}>Location</Text>
-        <View style={[styles.field, { width: 200 }]}></View>
-      </View>
-
-      <View style={styles.detailContainer}>
-        <Text style={styles.label}>Date</Text>
-        <View style={[styles.field, { width: 150 }]}></View>
-      </View>
-
-      <View style={styles.detailContainer}>
-        <Text style={styles.label}>Time</Text>
-        <View style={[styles.field, { width: 150 }]}></View>
-      </View>
-
+      {/* description */}
       <View style={styles.detailContainer}>
         <Text style={styles.label}>Description</Text>
-        <View style={[styles.field, { width: 350 }]}></View>
+        <View style={styles.descriptionContainer}></View>
       </View>
 
+      {/* privacy */}
       <View style={styles.privacyContainer}>
         <Pressable
           style={[
@@ -232,6 +235,10 @@ export default function App() {
           </Text>
         </Pressable>
       </View>
+
+      {/* society check */}
+
+      {/* create button */}
     </View>
   );
 }
@@ -246,7 +253,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#E7948D",
     alignItems: "center",
-    rowGap: 25,
+    rowGap: 5,
   },
   containerStudy: {
     flex: 1,
@@ -321,6 +328,7 @@ const styles = StyleSheet.create({
   },
   // Privacy Selector
   privacyContainer: {
+    marginTop: 15,
     flexDirection: "row",
     justifyContent: "center",
   },
@@ -328,26 +336,26 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
-    paddingHorizontal: 50,
+    paddingHorizontal: 65,
     paddingVertical: 10,
   },
   privacyButtonRight: {
     backgroundColor: "white",
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
-    paddingHorizontal: 50,
+    paddingHorizontal: 65,
     paddingVertical: 10,
   },
   privacyButtonLeftInverted: {
     backgroundColor: "#3A72FF",
-    paddingHorizontal: 50,
+    paddingHorizontal: 65,
     paddingVertical: 10,
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
   },
   privacyButtonRightInverted: {
     backgroundColor: "#3A72FF",
-    paddingHorizontal: 50,
+    paddingHorizontal: 65,
     paddingVertical: 10,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
@@ -362,7 +370,6 @@ const styles = StyleSheet.create({
   },
   // Event Details
   detailContainer: {
-    width: "80%",
     rowGap: 5,
   },
   label: {
@@ -372,12 +379,12 @@ const styles = StyleSheet.create({
   field: {
     backgroundColor: "#FFF",
     borderRadius: 10,
-    height: 50,
+    height: 45,
   },
   imageContainer: {
     backgroundColor: "#FFFFFF",
-    height: 175,
-    width: 390,
+    height: 160,
+    width: 160,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
@@ -394,11 +401,20 @@ const styles = StyleSheet.create({
     width: 50,
     resizeMode: "contain",
   },
+  descriptionContainer: {
+    backgroundColor: "#FFFFFF",
+    height: 160,
+    width: 375,
+    borderRadius: 10,
+  },
   // Other
   horiz: {
+    columnGap: 15,
     flexDirection: "row",
   },
   verti: {
+    marginTop: 15,
+    rowGap: 5,
     flexDirection: "column",
   },
   shadow: {
