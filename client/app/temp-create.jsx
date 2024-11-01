@@ -12,7 +12,12 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
+
 import * as ImagePicker from "expo-image-picker";
+
+import pic from "../assets/images/Image.png";
+import unchecked from "../assets/images/unchecked.png";
+import checked from "../assets/images/checked.png";
 
 export default function App() {
   // data fields defined in for Event
@@ -34,8 +39,7 @@ export default function App() {
   });
 
   // data fields other
-  const photo = require("../assets/images/Image.png");
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState(null);
 
   // retrieve type of event as container style depends on it
   const getType = () => {
@@ -157,13 +161,10 @@ export default function App() {
         {/* image */}
         <View style={styles.imageContainer}>
           <Pressable onPress={handleImagePick} style={styles.imageContainer}>
-            {photo ? (
-              <Image style={styles.fullImage} source={{ uri: photo }} />
+            {event.image ? (
+              <Image style={styles.fullImage} source={{ uri: event.image }} />
             ) : (
-              <Image
-                style={styles.iconImage}
-                source={require("../assets/images/Image.png")}
-              />
+              <Image style={styles.iconImage} source={pic} />
             )}
           </Pressable>
         </View>
@@ -237,8 +238,9 @@ export default function App() {
       </View>
 
       {/* society check */}
-
+      <View style={styles.societyContainer}></View>
       {/* create button */}
+      <Pressable style={styles.createButton}></Pressable>
     </View>
   );
 }
@@ -259,19 +261,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#A0B7EF",
     alignItems: "center",
-    rowGap: 25,
+    rowGap: 5,
   },
   containerEat: {
     flex: 1,
     backgroundColor: "#F0D074",
     alignItems: "center",
-    rowGap: 25,
+    rowGap: 5,
   },
   containerOther: {
     flex: 1,
     backgroundColor: "#EEEEEE",
     alignItems: "center",
-    rowGap: 25,
+    rowGap: 5,
   },
   // Type Selector
   typeContainer: {
@@ -397,8 +399,8 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   iconImage: {
-    height: 50,
-    width: 50,
+    height: 30,
+    width: 30,
     resizeMode: "contain",
   },
   descriptionContainer: {
@@ -407,6 +409,10 @@ const styles = StyleSheet.create({
     width: 375,
     borderRadius: 10,
   },
+  // Society
+  societyContainer: {},
+  // Create
+  createButton: {},
   // Other
   horiz: {
     columnGap: 15,
