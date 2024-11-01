@@ -43,7 +43,8 @@ model Event {
   location        String
   date            DateTime
   time            DateTime
-  description     String?
+  photo           String?
+  description     String
   public          Boolean         @default(true)
   society         Boolean         @default(false)
 
