@@ -22,6 +22,12 @@ export default function Layout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name='(tabs)'
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocalSearchParams } from 'expo-router';
+import { Link, useLocalSearchParams, router } from 'expo-router';
 import Logo from '../assets/logo2.svg';
 
 import S from '../styles/global';
@@ -45,8 +45,10 @@ const CreateProfile = () => {
       .then(() => {
         console.log('Successfully created user profile');
         // Navigate to wizard or homepage for now
+        router.push('/(tabs)');
       })
       .catch((e) => console.log(e));
+    router.push('/(tabs)');
   };
   return (
     <View style={styles.container}>
