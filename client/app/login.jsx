@@ -21,7 +21,10 @@ const Login = () => {
 
   const handleLogin = async () => {
     console.log('posting');
-    await axios.post(`${BASE_URL}/users/login`, loginData);
+    await axios
+      .post(`${BASE_URL}/users/login`, loginData)
+      .then((data) => console.log('DATA', data))
+      .catch((e) => console.log(e));
   };
 
   return (

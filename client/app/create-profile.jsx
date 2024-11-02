@@ -4,48 +4,160 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Image,
+  ScrollView,
 } from 'react-native';
-import React from 'react';
-import Logo from '@/components/LogoVariation';
-import { Link } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocalSearchParams, router } from 'expo-router';
+import Logo from '../assets/logo2.svg';
+
+import S from '../styles/global';
+import axios from 'axios';
+import { BASE_URL } from '@/constants/api';
 
 const CreateProfile = () => {
+  const params = useLocalSearchParams();
+  const [profileData, setProfileData] = useState({
+    name: '',
+    age: 0,
+    language: '',
+    bio: '',
+    mbti: '',
+    interests: '',
+    courses: '',
+  });
+
+  useEffect(() => {
+    console.log('Params', params);
+    if (params.id) {
+      // Set context
+    }
+  }, []);
+
+  const handleCreateProfile = () => {
+    console.log(profileData);
+    let userData = profileData;
+    userData.interests = userData.interests.split(',');
+    userData.courses = userData.courses.split(',');
+
+    axios
+      .put(`${BASE_URL}/users/${params.id}`, userData)
+      .then(() => {
+        console.log('Successfully created user profile');
+        // Navigate to wizard or homepage for now
+        router.push('/(tabs)');
+      })
+      .catch((e) => console.log(e));
+    router.push('/(tabs)');
+  };
   return (
     <View style={styles.container}>
-      <Logo style={styles.logo} />
+      <Logo style={styles.logo} width={50} height={50} />
       <View style={styles.profileHeader}>
         <Text style={styles.headerTitle}>Create Profile</Text>
       </View>
-      <View style={styles.createContainer}>
-        <View style={styles.profileImgContainer}>{/* Image stuff*/}</View>
-        <View style={styles.inputRow}>
-          <Text style={styles.inputLabel}>Name</Text>
-          <TextInput style={styles.inputField} placeholder='Enter name...' />
+      <ScrollView style={styles.createContainer}>
+        <View style={styles.profileImgContainer}>
+          {params.picture ? (
+            <Image style={styles.profileImg} src={params.picture} />
+          ) : (
+            <Image
+              style={styles.profileImg}
+              source={{
+                uri: 'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg',
+              }}
+            />
+          )}
         </View>
-        <View style={styles.inputRow}>
-          <Text style={styles.inputLabel}>Age</Text>
-          <TextInput style={styles.inputField} placeholder='Enter age...' />
+        <View style={styles.inputBlock}>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Name</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, name: val })
+              }
+              value={params.name || profileData.name}
+              style={styles.inputField}
+              placeholder='Enter name'
+            />
+          </View>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Age</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, age: parseInt(val) })
+              }
+              value={profileData.age}
+              style={styles.inputField}
+              keyboardType='numeric'
+              placeholder='Enter age'
+            />
+          </View>
         </View>
-        <View style={styles.inputRow}>
-          <Text style={styles.inputLabel}>Language</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder='Enter language...'
-          />
+        <View style={styles.inputBlock}>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Language</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, language: val })
+              }
+              value={profileData.language}
+              style={styles.inputField}
+              placeholder='Language 1, language 2...'
+            />
+          </View>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Bio</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, bio: val })
+              }
+              value={profileData.bio}
+              style={styles.inputField}
+              placeholder='Write about yourself!'
+            />
+          </View>
         </View>
-        <View style={styles.inputRow}>
-          <Text style={styles.inputLabel}>Age</Text>
-          <TextInput style={styles.inputField} placeholder='Enter age...' />
+        <View style={styles.inputBlock}>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>MBTI</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, mbti: val })
+              }
+              value={profileData.mbti}
+              style={styles.inputField}
+              placeholder='Your MBTI'
+            />
+          </View>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Interests</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, interests: val })
+              }
+              value={profileData.interests}
+              style={styles.inputField}
+              placeholder='Interest 1, interest 2...'
+            />
+          </View>
+          <View style={styles.inputRow}>
+            <Text style={styles.inputLabel}>Courses</Text>
+            <TextInput
+              onChangeText={(val) =>
+                setProfileData({ ...profileData, courses: val })
+              }
+              value={profileData.courses}
+              style={styles.inputField}
+              placeholder='Course 1, course 2...'
+            />
+          </View>
         </View>
-
-        <View style={styles.loginFooter}>
-          <Link href={{ pathname: 'register' }}>
-            <Text style={styles.registerText}>
-              Don't have an account? Register here
-            </Text>
-          </Link>
-        </View>
-      </View>
+        <View style={styles.loginFooter}></View>
+        <TouchableOpacity onPress={handleCreateProfile} style={S.btnMed}>
+          <Text style={S.txtLrg}>Create</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -71,6 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: 'Lexend_700Bold',
   },
+  inputBlock: {},
   inputRow: {
     width: '100%',
     backgroundColor: '#FFFFFF',
@@ -80,12 +193,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 20,
+    borderBottomColor: '#EEEEEE',
+    borderBottomWidth: 2,
   },
   inputField: {
     paddingHorizontal: 15,
     width: '70%',
     borderBottomColor: '#D9D9D9',
     borderBottomWidth: 2,
+    zIndex: 2,
   },
   inputLabel: {
     color: '#000000',
@@ -114,6 +230,7 @@ const styles = StyleSheet.create({
   registerText: {
     color: '#FFFFFF',
     fontSize: 16,
+    zIndex: 2,
   },
   logo: {
     position: 'absolute',
@@ -126,10 +243,17 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     height: '100%',
     width: '100%',
-    backgroundColor: '#EEEEEE',
   },
   profileImgContainer: {
     height: 150,
-    backgroundColor: 'aqua',
+    backgroundColor: '#EEEEEE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 5,
+  },
+  profileImg: {
+    width: 120,
+    height: 120,
+    borderRadius: 100,
   },
 });
