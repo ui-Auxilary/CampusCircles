@@ -1,9 +1,7 @@
 /*
 NOTES
 - LATER create button onPress needs to redirect user event detail page
-- NOW need invalidated create form if fields are not filled properly
 - NOW add permission for image picker
-- NOW fix tag?
 */
 
 import {
@@ -15,13 +13,12 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
-import { router } from "expo-router";
+import React, { useState, useEffect } from "react";
+import { router, useNavigation } from "expo-router";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 
 // imported assets
-
 import pic from "../../assets/images/Image.png";
 import unchecked from "../../assets/images/unchecked.png";
 import checked from "../../assets/images/checked.png";
@@ -32,42 +29,45 @@ import { BASE_URL } from "@/constants/api";
 ///////////////////////////////////////////////////////////////////////////////
 
 const CreateTab = () => {
-  // Data for event
+  const [eventType, setEventType] = useState("Hang");
+
   const defaultEventData = {
     name: "",
     photo: "",
     location: "",
-    date: new Date(),
-    time: new Date(),
+    date: "",
+    time: "",
     description: "",
-    public: true,
-    tagID: {
-      create: {
-        name: "Hang",
-        events: {},
-      },
-    },
+    publicEvent: true,
+    tagID: eventType,
     eventAttendees: {},
     society: false,
     invitations: {},
     creatorId: {
-      // Connect event to temporary user for now
       connect: {
         id: "6722204d9e232f55d0a0903c",
       },
     },
   };
+
   const [event, setEvent] = useState(defaultEventData);
   const [image, setImage] = useState(null);
+  const navigation = useNavigation();
 
-  // Functions to handle changes to event details
+  // Clear form on component mount or when navigated to
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      resetForm();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const handleInputChange = (field, value) => {
     setEvent((prevEvent) => ({ ...prevEvent, [field]: value }));
   };
 
   const getTag = () => {
-    switch (event.tagID) {
+    switch (eventType) {
       case "Study":
         return styles.containerStudy;
       case "Eat":
@@ -94,6 +94,7 @@ const CreateTab = () => {
   };
 
   const toggleTag = (tag) => {
+    setEventType(tag);
     setEvent({ ...event, tagID: tag });
   };
 
@@ -115,15 +116,21 @@ const CreateTab = () => {
     return timePattern.test(value);
   };
 
-  // Function to handle post request creating event
+  const validateForm = () => {
+    const requiredFields = ["name", "location", "date", "time", "description"];
+    for (let field of requiredFields) {
+      if (!event[field]) {
+        Alert.alert("Form Incomplete", `Please fill out the ${field} field.`);
+        return false;
+      }
+    }
 
-  const handleCreate = () => {
     if (!validateDate(event.date)) {
       Alert.alert(
         "Invalid Date Format",
         "Please enter date in DD/MM/YYYY format."
       );
-      return;
+      return false;
     }
 
     if (!validateTime(event.time)) {
@@ -131,20 +138,29 @@ const CreateTab = () => {
         "Invalid Time Format",
         "Please enter time in 24-hour HH:MM format."
       );
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleCreate = () => {
+    if (!validateForm()) {
       return;
     }
 
-    // Change base_url in constants instead of directly modifying
     axios
       .post(`${BASE_URL}/events/create`, event)
-      .then(() => router.push("/create-event"))
+      .then(() => {
+        router.push("/create-event");
+      })
       .catch((e) => console.log(e));
 
     resetForm();
   };
 
   const resetForm = () => {
-    setEvent(defaultEventData);
+    setEvent({ ...defaultEventData, tagID: eventType });
     setImage(null);
   };
 
@@ -158,14 +174,14 @@ const CreateTab = () => {
         <Pressable
           style={[
             styles.typeButtonFirst,
-            event.tagID === "Hang" && styles.typeButtonFirstInverted,
+            eventType === "Hang" && styles.typeButtonFirstInverted,
           ]}
           onPress={() => toggleTag("Hang")}
         >
           <Text
             style={[
               styles.typeText,
-              event.tagID === "Hang" && styles.typeTextInverted,
+              eventType === "Hang" && styles.typeTextInverted,
             ]}
           >
             Hang
@@ -174,14 +190,14 @@ const CreateTab = () => {
         <Pressable
           style={[
             styles.typeButton,
-            event.tagID === "Study" && styles.typeButtonInverted,
+            eventType === "Study" && styles.typeButtonInverted,
           ]}
           onPress={() => toggleTag("Study")}
         >
           <Text
             style={[
               styles.typeText,
-              event.tagID === "Study" && styles.typeTextInverted,
+              eventType === "Study" && styles.typeTextInverted,
             ]}
           >
             Study
@@ -190,14 +206,14 @@ const CreateTab = () => {
         <Pressable
           style={[
             styles.typeButton,
-            event.tagID === "Eat" && styles.typeButtonInverted,
+            eventType === "Eat" && styles.typeButtonInverted,
           ]}
           onPress={() => toggleTag("Eat")}
         >
           <Text
             style={[
               styles.typeText,
-              event.tagID === "Eat" && styles.typeTextInverted,
+              eventType === "Eat" && styles.typeTextInverted,
             ]}
           >
             Eat
@@ -206,14 +222,14 @@ const CreateTab = () => {
         <Pressable
           style={[
             styles.typeButtonLast,
-            event.tagID === "Other" && styles.typeButtonLastInverted,
+            eventType === "Other" && styles.typeButtonLastInverted,
           ]}
           onPress={() => toggleTag("Other")}
         >
           <Text
             style={[
               styles.typeText,
-              event.tagID === "Other" && styles.typeTextInverted,
+              eventType === "Other" && styles.typeTextInverted,
             ]}
           >
             Other
@@ -222,7 +238,7 @@ const CreateTab = () => {
       </View>
 
       <View style={styles.horiz}>
-        {/* image */}
+        {/* Image */}
         <View style={styles.imageContainer}>
           <Pressable onPress={handleImagePick} style={styles.imageContainer}>
             {event.photo ? (
@@ -232,7 +248,7 @@ const CreateTab = () => {
             )}
           </Pressable>
         </View>
-        {/* event name */}
+        {/* Event Name */}
         <View style={styles.verti}>
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Event Name</Text>
@@ -243,7 +259,7 @@ const CreateTab = () => {
               onChangeText={(value) => handleInputChange("name", value)}
             />
           </View>
-          {/* location */}
+          {/* Location */}
           <View style={styles.detailContainer}>
             <Text style={styles.label}>Location</Text>
             <TextInput
@@ -279,7 +295,7 @@ const CreateTab = () => {
         </View>
       </View>
 
-      {/* description */}
+      {/* Description */}
       <View style={styles.detailContainer}>
         <Text style={styles.label}>Description</Text>
         <TextInput
@@ -291,7 +307,7 @@ const CreateTab = () => {
         />
       </View>
 
-      {/* privacy */}
+      {/* Privacy */}
       <View style={[styles.privacyContainer, styles.shadow]}>
         <Pressable
           style={[
@@ -328,7 +344,7 @@ const CreateTab = () => {
       </View>
 
       <View style={[styles.societyCreateContainer, styles.horiz]}>
-        {/* society check */}
+        {/* Society Check */}
         <Pressable onPress={toggleSociety}>
           <Image
             source={event.society ? checked : unchecked}
@@ -337,7 +353,7 @@ const CreateTab = () => {
         </Pressable>
         <Text style={styles.label}>Society</Text>
 
-        {/* create button */}
+        {/* Create Button */}
         <Pressable
           onPress={handleCreate}
           style={[styles.createButton, styles.shadow]}
@@ -348,7 +364,6 @@ const CreateTab = () => {
     </View>
   );
 };
-
 /////////////////////////////////////////////////////////////////////////////
 // STYLE ////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
