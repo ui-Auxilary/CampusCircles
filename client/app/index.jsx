@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useEffect } from 'react';
 
-import Logo from '@/components/Logo';
+import Logo from '../assets/campuslogo.svg';
 
 import {
   Lexend_400Regular,
@@ -13,7 +13,7 @@ import {
   useFonts,
 } from '@expo-google-fonts/lexend';
 import * as SplashScreen from 'expo-splash-screen';
-import Splash from '@/components/Splash';
+import Splash from '../assets/campsplash.svg';
 import BG from '@/components/SplashBG';
 
 SplashScreen.preventAutoHideAsync();
@@ -53,9 +53,9 @@ export default function Home() {
       </View>
       <View style={styles.splashContainer}>
         <BG style={{ position: 'absolute', transform: [{ scale: 0.9 }] }} />
-        <Splash style={{ transform: [{ scale: 0.9 }] }} />
+        <Splash style={styles.logo} width={'70%'} />
       </View>
-      <Logo style={styles.campusLogo} />
+      <Logo style={styles.campusLogo} width={'20%'} height={'10%'} />
     </View>
   );
 }
@@ -129,6 +129,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     textAlign: 'center',
     fontFamily: 'Lexend_700Bold',
+  },
+  logo: {
+    transform: [{ scale: 1 }],
   },
   heroSubtitle: {
     fontSize: 22,

@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 
-const Tab = () => {
+const ProfileTab = () => {
   return (
     <View>
-      <Text>Tab</Text>
+      <Text>Profile</Text>
     </View>
   );
 };
 
-export default Tab;
+export default ProfileTab;
