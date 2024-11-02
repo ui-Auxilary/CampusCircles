@@ -59,7 +59,6 @@ export default function Home() {
         <Splash style={styles.logo} width={"70%"} />
       </View>
       <Logo style={styles.campusLogo} width={"20%"} height={"10%"} />
-      <Logo style={styles.campusLogo} width={"20%"} height={"10%"} />
     </View>
   );
 }
