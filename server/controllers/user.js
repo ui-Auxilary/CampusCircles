@@ -5,18 +5,34 @@ export const createUser = async (req, res) => {
 
   let userData = req.body;
 
+  let defaultUser = {
+    photo: '',
+    gender: '',
+    age: 0,
+    bio: '',
+    mbti: '',
+    interests: [],
+    courses: [],
+    eventsAttend: {},
+    eventsCreated: {},
+    invReceived: {},
+    invSent: {},
+    friendIds: [],
+  };
+
   userData['username'] = userData['username'].toLowerCase();
   userData['email'] = userData['email'].toLowerCase();
 
   try {
     const user = await prisma.user.create({
-      data: userData,
+      data: { ...userData, ...defaultUser },
     });
 
+    console.log('USER created', user);
     res.status(201).json({
       status: true,
       message: 'User created successfully',
-      data: user,
+      data: user.id,
     });
   } catch (e) {
     console.log(e);
@@ -69,6 +85,41 @@ export const loginUser = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   const users = await prisma.user.findMany();
+
+  res.json({
+    status: true,
+    message: 'Users fetched successfully',
+    data: users,
+  });
+};
+
+export const updateUser = async (req, res) => {
+  console.log('ID', req.params.id);
+  let userData = req.body;
+  console.log('data', userData);
+  const users = await prisma.user.update({
+    where: {
+      id: req.params.id,
+    },
+    data: {
+      name: userData.name || undefined,
+      username: userData.username || undefined,
+      email: userData.email || undefined,
+      password: userData.password || undefined,
+      photo: userData.photo || undefined,
+      gender: userData.gender || undefined,
+      age: userData.age || undefined,
+      bio: userData.bio || undefined,
+      mbti: userData.mbti || undefined,
+      interests: userData.interests || undefined,
+      courses: userData.courses || undefined,
+      eventsAttend: userData.eventsAttend || undefined,
+      eventsCreated: userData.eventsCreated || undefined,
+      invReceived: userData.invReceived || undefined,
+      invSent: userData.invSent || undefined,
+      friendIds: userData.friendIds || undefined,
+    },
+  });
 
   res.json({
     status: true,
