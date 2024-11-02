@@ -41,7 +41,12 @@ const CreateTab = () => {
     time: new Date(),
     description: "",
     public: true,
-    tagID: "Hang",
+    tagID: {
+      create: {
+        name: "Hang",
+        events: {},
+      },
+    },
     eventAttendees: {},
     society: false,
     invitations: {},
