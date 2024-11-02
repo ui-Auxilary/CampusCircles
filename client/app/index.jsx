@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useEffect } from 'react';
 
-import Logo from '@/components/Logo';
+import Logo from '../assets/campuslogo.svg';
 
 import {
   Lexend_400Regular,
@@ -55,7 +55,7 @@ export default function Home() {
         <BG style={{ position: 'absolute', transform: [{ scale: 0.9 }] }} />
         <Splash style={styles.logo} width={'70%'} />
       </View>
-      <Logo style={styles.campusLogo} />
+      <Logo style={styles.campusLogo} width={'20%'} height={'10%'} />
     </View>
   );
 }
