@@ -1,15 +1,14 @@
 /*
 NOTES
-- create onPress post request needs to be fixed (status code 404)
-- create onPress needs to populate incomplete fields right now (attendeeIds, createdAt, creatorId)
+- invalid create if fields not filled
 - create button onPress needs to redirect user event detail page
 - add permission for image picker
 */
 
-import React, { useState } from 'react';
-import { Stack, Link, router } from 'expo-router';
-import axios from 'axios';
-import * as ImagePicker from 'expo-image-picker';
+import React, { useState } from "react";
+import { Stack, Link, router } from "expo-router";
+import axios from "axios";
+import * as ImagePicker from "expo-image-picker";
 import {
   StyleSheet,
   View,
@@ -18,14 +17,14 @@ import {
   Pressable,
   TextInput,
   Alert,
-} from 'react-native';
+} from "react-native";
 
 // imported assets
 
-import pic from '../assets/images/Image.png';
-import unchecked from '../assets/images/unchecked.png';
-import checked from '../assets/images/checked.png';
-import { BASE_URL } from '@/constants/api';
+import pic from "../assets/images/Image.png";
+import unchecked from "../assets/images/unchecked.png";
+import checked from "../assets/images/checked.png";
+import { BASE_URL } from "@/constants/api";
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -34,12 +33,12 @@ import { BASE_URL } from '@/constants/api';
 export default function App() {
   // Data for event
   const defaultEventData = {
-    name: '',
-    photo: '',
-    location: '',
+    name: "",
+    photo: "",
+    location: "",
     date: new Date(),
     time: new Date(),
-    description: '',
+    description: "",
     public: true,
     eventTags: {},
     eventAttendees: {},
@@ -48,7 +47,7 @@ export default function App() {
     creatorId: {
       // Connect event to temporary user for now
       connect: {
-        id: '6722204d9e232f55d0a0903c',
+        id: "6722204d9e232f55d0a0903c",
       },
     },
   };
@@ -63,11 +62,11 @@ export default function App() {
 
   const getTag = () => {
     switch (event.tagID) {
-      case 'Study':
+      case "Study":
         return styles.containerStudy;
-      case 'Eat':
+      case "Eat":
         return styles.containerEat;
-      case 'Other':
+      case "Other":
         return styles.containerOther;
       default:
         return styles.containerHang;
@@ -115,16 +114,16 @@ export default function App() {
   const handleCreate = () => {
     if (!validateDate(event.date)) {
       Alert.alert(
-        'Invalid Date Format',
-        'Please enter date in DD/MM/YYYY format.'
+        "Invalid Date Format",
+        "Please enter date in DD/MM/YYYY format."
       );
       return;
     }
 
     if (!validateTime(event.time)) {
       Alert.alert(
-        'Invalid Time Format',
-        'Please enter time in 24-hour HH:MM format.'
+        "Invalid Time Format",
+        "Please enter time in 24-hour HH:MM format."
       );
       return;
     }
@@ -132,7 +131,7 @@ export default function App() {
     // Change base_url in constants instead of directly modifying
     axios
       .post(`${BASE_URL}/events/create`, event)
-      .then(() => router.push('/create-event'))
+      .then(() => router.push("/create-event"))
       .catch((e) => console.log(e));
 
     resetForm();
@@ -153,14 +152,14 @@ export default function App() {
         <Pressable
           style={[
             styles.typeButtonFirst,
-            event.tagID === 'Hang' && styles.typeButtonFirstInverted,
+            event.tagID === "Hang" && styles.typeButtonFirstInverted,
           ]}
-          onPress={() => toggleTag('Hang')}
+          onPress={() => toggleTag("Hang")}
         >
           <Text
             style={[
               styles.typeText,
-              event.tagID === 'Hang' && styles.typeTextInverted,
+              event.tagID === "Hang" && styles.typeTextInverted,
             ]}
           >
             Hang
@@ -169,14 +168,14 @@ export default function App() {
         <Pressable
           style={[
             styles.typeButton,
-            event.tagID === 'Study' && styles.typeButtonInverted,
+            event.tagID === "Study" && styles.typeButtonInverted,
           ]}
-          onPress={() => toggleTag('Study')}
+          onPress={() => toggleTag("Study")}
         >
           <Text
             style={[
               styles.typeText,
-              event.tagID === 'Study' && styles.typeTextInverted,
+              event.tagID === "Study" && styles.typeTextInverted,
             ]}
           >
             Study
@@ -185,14 +184,14 @@ export default function App() {
         <Pressable
           style={[
             styles.typeButton,
-            event.tagID === 'Eat' && styles.typeButtonInverted,
+            event.tagID === "Eat" && styles.typeButtonInverted,
           ]}
-          onPress={() => toggleTag('Eat')}
+          onPress={() => toggleTag("Eat")}
         >
           <Text
             style={[
               styles.typeText,
-              event.tagID === 'Eat' && styles.typeTextInverted,
+              event.tagID === "Eat" && styles.typeTextInverted,
             ]}
           >
             Eat
@@ -201,14 +200,14 @@ export default function App() {
         <Pressable
           style={[
             styles.typeButtonLast,
-            event.tagID === 'Other' && styles.typeButtonLastInverted,
+            event.tagID === "Other" && styles.typeButtonLastInverted,
           ]}
-          onPress={() => toggleTag('Other')}
+          onPress={() => toggleTag("Other")}
         >
           <Text
             style={[
               styles.typeText,
-              event.tagID === 'Other' && styles.typeTextInverted,
+              event.tagID === "Other" && styles.typeTextInverted,
             ]}
           >
             Other
@@ -233,9 +232,9 @@ export default function App() {
             <Text style={styles.label}>Event Name</Text>
             <TextInput
               style={[styles.field, { width: 200 }]}
-              placeholder='Enter event name'
+              placeholder="Enter event name"
               value={event.name}
-              onChangeText={(value) => handleInputChange('name', value)}
+              onChangeText={(value) => handleInputChange("name", value)}
             />
           </View>
           {/* location */}
@@ -243,9 +242,9 @@ export default function App() {
             <Text style={styles.label}>Location</Text>
             <TextInput
               style={[styles.field, { width: 200 }]}
-              placeholder='Enter event location'
+              placeholder="Enter event location"
               value={event.location}
-              onChangeText={(value) => handleInputChange('location', value)}
+              onChangeText={(value) => handleInputChange("location", value)}
             />
           </View>
         </View>
@@ -257,9 +256,9 @@ export default function App() {
           <Text style={styles.label}>Date</Text>
           <TextInput
             style={[styles.field, { width: 180 }]}
-            placeholder='DD/MM/YYYY'
+            placeholder="DD/MM/YYYY"
             value={event.date}
-            onChangeText={(value) => handleInputChange('date', value)}
+            onChangeText={(value) => handleInputChange("date", value)}
           />
         </View>
         {/* Time */}
@@ -267,9 +266,9 @@ export default function App() {
           <Text style={styles.label}>Time</Text>
           <TextInput
             style={[styles.field, { width: 180 }]}
-            placeholder='HH:MM'
+            placeholder="HH:MM"
             value={event.time}
-            onChangeText={(value) => handleInputChange('time', value)}
+            onChangeText={(value) => handleInputChange("time", value)}
           />
         </View>
       </View>
@@ -279,9 +278,9 @@ export default function App() {
         <Text style={styles.label}>Description</Text>
         <TextInput
           style={styles.descriptionContainer}
-          placeholder='Describe the event details'
+          placeholder="Describe the event details"
           value={event.description}
-          onChangeText={(value) => handleInputChange('description', value)}
+          onChangeText={(value) => handleInputChange("description", value)}
           multiline
         />
       </View>
@@ -352,121 +351,121 @@ const styles = StyleSheet.create({
   // Background
   containerHang: {
     flex: 1,
-    backgroundColor: '#E7948D',
-    alignItems: 'center',
+    backgroundColor: "#E7948D",
+    alignItems: "center",
     rowGap: 5,
   },
   containerStudy: {
     flex: 1,
-    backgroundColor: '#A0B7EF',
-    alignItems: 'center',
+    backgroundColor: "#A0B7EF",
+    alignItems: "center",
     rowGap: 5,
   },
   containerEat: {
     flex: 1,
-    backgroundColor: '#F0D074',
-    alignItems: 'center',
+    backgroundColor: "#F0D074",
+    alignItems: "center",
     rowGap: 5,
   },
   containerOther: {
     flex: 1,
-    backgroundColor: '#EEEEEE',
-    alignItems: 'center',
+    backgroundColor: "#EEEEEE",
+    alignItems: "center",
     rowGap: 5,
   },
   // Type Selector
   typeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     borderRadius: 10,
     marginVertical: 25,
   },
   typeButtonFirst: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   typeButton: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   typeButtonLast: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   typeButtonFirstInverted: {
-    backgroundColor: '#3A72FF',
+    backgroundColor: "#3A72FF",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
   },
   typeButtonInverted: {
-    backgroundColor: '#3A72FF',
+    backgroundColor: "#3A72FF",
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   typeButtonLastInverted: {
-    backgroundColor: '#3A72FF',
+    backgroundColor: "#3A72FF",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
   },
   typeText: {
-    color: '#454545',
+    color: "#454545",
     fontSize: 25,
   },
   typeTextInverted: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 25,
   },
   // Privacy Selector
   privacyContainer: {
     marginTop: 15,
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
   },
   privacyButtonLeft: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
     paddingHorizontal: 65,
     paddingVertical: 10,
   },
   privacyButtonRight: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
     paddingHorizontal: 65,
     paddingVertical: 10,
   },
   privacyButtonLeftInverted: {
-    backgroundColor: '#3A72FF',
+    backgroundColor: "#3A72FF",
     paddingHorizontal: 65,
     paddingVertical: 10,
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
   },
   privacyButtonRightInverted: {
-    backgroundColor: '#3A72FF',
+    backgroundColor: "#3A72FF",
     paddingHorizontal: 65,
     paddingVertical: 10,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
   },
   privacyText: {
-    color: '#454545',
+    color: "#454545",
     fontSize: 20,
   },
   privacyTextInverted: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 20,
   },
   // Event Details
@@ -474,36 +473,36 @@ const styles = StyleSheet.create({
     rowGap: 5,
   },
   label: {
-    color: '#454545',
+    color: "#454545",
     fontSize: 20,
   },
   field: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     borderRadius: 10,
     height: 45,
     padding: 5,
   },
   imageContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     height: 160,
     width: 160,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 25,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   fullImage: {
-    height: '100%',
-    width: '100%',
-    resizeMode: 'cover',
+    height: "100%",
+    width: "100%",
+    resizeMode: "cover",
   },
   iconImage: {
     height: 30,
     width: 30,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   descriptionContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     height: 160,
     width: 375,
     borderRadius: 10,
@@ -511,33 +510,33 @@ const styles = StyleSheet.create({
   },
   // Society
   societyCreateContainer: {
-    width: '80%',
+    width: "80%",
     marginTop: 25,
   },
   // Create
   createButton: {
-    backgroundColor: '#76DA69',
+    backgroundColor: "#76DA69",
     paddingHorizontal: 27.5,
     paddingVertical: 12.5,
     borderRadius: 15,
     marginLeft: 100, // hardcoded
   },
   createText: {
-    color: '#FFFFFF',
-    fontSize: '25',
-    fontWeight: 'bold',
+    color: "#FFFFFF",
+    fontSize: "25",
+    fontWeight: "bold",
   },
   // Other
   horiz: {
     columnGap: 15,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   verti: {
     rowGap: 5,
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   shadow: {
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
