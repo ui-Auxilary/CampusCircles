@@ -23,9 +23,9 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
-        name="temp-create" // DELETE THIS LATER
+        name="(tabs)"
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
       />
     </Stack>

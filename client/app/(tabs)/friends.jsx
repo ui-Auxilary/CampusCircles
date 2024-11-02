@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 
-const Tab = () => {
+const FriendTab = () => {
   return (
     <View>
-      <Text>Tab</Text>
+      <Text>Friends</Text>
     </View>
   );
 };
 
-export default Tab;
+export default FriendTab;
