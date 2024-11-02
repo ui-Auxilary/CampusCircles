@@ -7,17 +7,19 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocalSearchParams } from 'expo-router';
 import Logo from '../assets/logo2.svg';
 
 import S from '../styles/global';
+import axios from 'axios';
+import { BASE_URL } from '@/constants/api';
 
 const CreateProfile = () => {
   const params = useLocalSearchParams();
   const [profileData, setProfileData] = useState({
     name: '',
-    age: '',
+    age: 0,
     language: '',
     bio: '',
     mbti: '',
@@ -25,6 +27,27 @@ const CreateProfile = () => {
     courses: '',
   });
 
+  useEffect(() => {
+    console.log('Params', params);
+    if (params.id) {
+      // Set context
+    }
+  }, []);
+
+  const handleCreateProfile = () => {
+    console.log(profileData);
+    let userData = profileData;
+    userData.interests = userData.interests.split(',');
+    userData.courses = userData.courses.split(',');
+
+    axios
+      .put(`${BASE_URL}/users/${params.id}`, userData)
+      .then(() => {
+        console.log('Successfully created user profile');
+        // Navigate to wizard or homepage for now
+      })
+      .catch((e) => console.log(e));
+  };
   return (
     <View style={styles.container}>
       <Logo style={styles.logo} width={50} height={50} />
@@ -60,7 +83,7 @@ const CreateProfile = () => {
             <Text style={styles.inputLabel}>Age</Text>
             <TextInput
               onChangeText={(val) =>
-                setProfileData({ ...profileData, age: val })
+                setProfileData({ ...profileData, age: parseInt(val) })
               }
               value={profileData.age}
               style={styles.inputField}
@@ -129,7 +152,7 @@ const CreateProfile = () => {
           </View>
         </View>
         <View style={styles.loginFooter}></View>
-        <TouchableOpacity style={S.btnMed}>
+        <TouchableOpacity onPress={handleCreateProfile} style={S.btnMed}>
           <Text style={S.txtLrg}>Create</Text>
         </TouchableOpacity>
       </ScrollView>

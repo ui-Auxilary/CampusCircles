@@ -3,7 +3,11 @@ import { useNavigation } from "@react-navigation/native";
 import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useEffect } from "react";
 
+<<<<<<< HEAD
 import Logo from "@/components/Logo";
+=======
+import Logo from '../assets/campuslogo.svg';
+>>>>>>> c01ae6d (feat: Connect user create profile to backend)
 
 import {
   Lexend_400Regular,
@@ -58,7 +62,7 @@ export default function Home() {
         <BG style={{ position: "absolute", transform: [{ scale: 0.9 }] }} />
         <Splash style={{ transform: [{ scale: 0.9 }] }} />
       </View>
-      <Logo style={styles.campusLogo} />
+      <Logo style={styles.campusLogo} width={'20%'} height={'10%'} />
     </View>
   );
 }

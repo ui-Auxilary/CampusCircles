@@ -67,18 +67,17 @@ const Register = () => {
   };
   const handleRegister = () => {
     const userData = {
-      profile: {},
-      events: {},
-      eventsCreated: {},
-      friendIds: [],
-      invitations: {},
       ...user,
     };
 
     axios
       .post(`${BASE_URL}/users`, userData)
-      .then(() => {
-        router.push('/create-profile');
+      .then(({ data }) => {
+        console.log('USR DATA', data);
+        router.push({
+          pathname: '/create-profile',
+          params: { id: data.data },
+        });
       })
       .catch((e) => {
         console.log(e);
