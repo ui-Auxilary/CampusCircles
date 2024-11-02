@@ -1,8 +1,9 @@
 /*
 NOTES
-- create button onPress needs to redirect user event detail page
-- need invalidated create form if fields are not filled properly
-- add permission for image picker
+- LATER create button onPress needs to redirect user event detail page
+- NOW need invalidated create form if fields are not filled properly
+- NOW add permission for image picker
+- NOW fix tag?
 */
 
 import {
@@ -40,7 +41,7 @@ const CreateTab = () => {
     time: new Date(),
     description: "",
     public: true,
-    eventTags: {},
+    tagID: "Hang",
     eventAttendees: {},
     society: false,
     invitations: {},
