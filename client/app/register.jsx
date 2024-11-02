@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Logo from '../assets/campuslogo.svg';
+import Logo from '../assets/campuslogo.svg';
 import { Link, router } from 'expo-router';
 import axios from 'axios';
 
@@ -90,6 +91,7 @@ const Register = () => {
       <View style={styles.loginContainer}>
         <View style={styles.loginWrapper}>
           <Text style={styles.registerTitle}>Register</Text>
+          <Text style={styles.registerTitle}>Register</Text>
           <View>
             <Text style={styles.inputLabel}>Full name</Text>
             <TextInput
@@ -136,21 +138,9 @@ const Register = () => {
           </TouchableOpacity>
         </View>
 
-        {/* <Logo width={'20%'} style={styles.logo} /> */}
-        <View style={styles.lineBreak}>
-          <Text style={styles.lineBreakText}>OR</Text>
-        </View>
+        <Logo width={'20%'} style={styles.logo} />
 
-        <TouchableOpacity onPress={handleOAuth} style={styles.swg}>
-          <Image
-            style={styles.googleLogo}
-            source={require('../assets/google.png')}
-          />
-          <Text style={styles.swgText}>Sign up with google</Text>
-          <View />
-        </TouchableOpacity>
-
-        <View style={styles.registerFooter}>
+        <View style={styles.loginFooter}>
           <Link href={{ pathname: 'login' }}>
             <Text style={styles.registerText}>
               Already have an account? Log in
@@ -177,7 +167,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#3A72FF',
     padding: 20,
-    paddingVertical: 20,
+    paddingVertical: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -194,7 +184,9 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   registerTitle: {
+  registerTitle: {
     fontFamily: 'Lexend_700Bold',
+    fontSize: 36,
     fontSize: 36,
     color: '#FFFFFF',
   },
@@ -215,7 +207,7 @@ const styles = StyleSheet.create({
   logo: {
     position: 'absolute',
     left: 0,
-    top: 10,
+    top: 0,
   },
   registerFooter: {
     alignItems: 'center',
