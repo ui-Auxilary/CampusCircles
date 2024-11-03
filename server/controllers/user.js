@@ -67,12 +67,12 @@ export const loginUser = async (req, res) => {
       },
     });
 
-    console.log('USER', user);
+    console.log('USER', user.id);
 
     res.status(201).json({
       status: true,
       message: 'User exists, logging them in',
-      data: user,
+      data: user.id,
     });
   } catch (e) {
     console.log('Invalid username or password', e);
@@ -81,6 +81,20 @@ export const loginUser = async (req, res) => {
       message: 'Invalid username or password',
     });
   }
+};
+
+export const getUser = async (req, res) => {
+  const user = await prisma.user.findFirst({
+    where: {
+      id: req.params.id,
+    },
+  });
+
+  res.json({
+    status: true,
+    message: 'Users fetched successfully',
+    data: user,
+  });
 };
 
 export const getUsers = async (req, res) => {

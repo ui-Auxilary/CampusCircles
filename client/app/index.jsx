@@ -1,6 +1,13 @@
 import { Stack, Link } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
-import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native';
 import { useEffect } from 'react';
 
 import Logo from '../assets/campuslogo.svg';
