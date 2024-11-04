@@ -30,6 +30,9 @@
     "plugins": ["expo-router", "expo-font"],
     "experiments": {
       "typedRoutes": true
+    },
+    "androidNavigationBar": {
+      "visible": "sticky-immersive"
     }
   }
 }

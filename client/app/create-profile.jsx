@@ -14,9 +14,11 @@ import Logo from '../assets/logo2.svg';
 import S from '../styles/global';
 import axios from 'axios';
 import { BASE_URL } from '@/constants/api';
+import { getUserData } from '@/hooks/userContext';
 
 const CreateProfile = () => {
   const params = useLocalSearchParams();
+  const { setUserId } = getUserData();
   const [profileData, setProfileData] = useState({
     name: '',
     age: 0,
@@ -31,6 +33,7 @@ const CreateProfile = () => {
     console.log('Params', params);
     if (params.id) {
       // Set context
+      setUserId(params.id);
     }
   }, []);
 
