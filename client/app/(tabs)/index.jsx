@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import React from "react";
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React from 'react';
 
 const HomeTab = () => {
   return (
@@ -20,7 +20,7 @@ const HomeTab = () => {
 };
 
 const styles = StyleSheet.create({
-  homepage: { backgroundColor: "#EEEEEE" },
+  homepage: { backgroundColor: '#EEEEEE' },
   titleContainer: { flex: 1 },
   notifications: { flex: 5 },
   events: { flex: 5 },
