@@ -6,19 +6,26 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Pressable,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocalSearchParams, router } from 'expo-router';
 import Logo from '../assets/logo2.svg';
+
+import { Picker } from '@react-native-picker/picker';
 
 import S from '../styles/global';
 import axios from 'axios';
 import { BASE_URL } from '@/constants/api';
 import { getUserData } from '@/hooks/userContext';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const CreateProfile = () => {
+  const pickerRef = useRef();
+
   const params = useLocalSearchParams();
   const { setUserId } = getUserData();
+  const [selectedLanguage, setSelectedLanguage] = useState();
   const [profileData, setProfileData] = useState({
     name: '',
     age: 0,
@@ -29,8 +36,20 @@ const CreateProfile = () => {
     courses: '',
   });
 
+  function open() {
+    pickerRef.current.focus();
+  }
+
+  function close() {
+    pickerRef.current.blur();
+  }
+
   useEffect(() => {
-    console.log('Params', params);
+    console.log(
+      'Params',
+      params,
+      JSON.parse(params.data || JSON.stringify(''))['bio']
+    );
     if (params.id) {
       // Set context
       setUserId(params.id);
@@ -72,6 +91,7 @@ const CreateProfile = () => {
             />
           )}
         </View>
+
         <View style={styles.inputBlock}>
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Name</Text>
@@ -80,7 +100,7 @@ const CreateProfile = () => {
                 setProfileData({ ...profileData, name: val })
               }
               value={params.name || profileData.name}
-              style={styles.inputField}
+              style={[styles.inputField, { minWidth: 200 }]}
               placeholder='Enter name'
             />
           </View>
@@ -91,69 +111,105 @@ const CreateProfile = () => {
                 setProfileData({ ...profileData, age: parseInt(val) })
               }
               value={profileData.age}
-              style={styles.inputField}
+              style={[styles.inputField]}
               keyboardType='numeric'
-              placeholder='Enter age'
+              placeholder='0'
             />
           </View>
         </View>
         <View style={styles.inputBlock}>
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Language</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, language: val })
+            <TouchableOpacity
+              style={{ flex: 1, alignItems: 'flex-end' }}
+              onPress={() =>
+                router.push({ pathname: '/edit', params: { type: 'language' } })
               }
-              value={profileData.language}
-              style={styles.inputField}
-              placeholder='Language 1, language 2...'
-            />
+            >
+              <Ionicons name={'arrow-forward'} size={20} />
+            </TouchableOpacity>
+            {/* <View
+              style={{
+                flex: 1,
+                padding: 0,
+                margin: 0,
+              }}
+            >
+              <Picker
+                ref={pickerRef}
+                onFocus={() => console.log('Pressed')}
+                selectedValue={selectedLanguage}
+                onValueChange={(itemValue, itemIndex) =>
+                  setSelectedLanguage(itemValue)
+                }
+              >
+                <Picker.Item label='Java' value='java' />
+                <Picker.Item label='JavaScript' value='js' />
+              </Picker>
+            </View> */}
           </View>
           <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>Bio</Text>
-            <TextInput
+            <Text style={styles.inputLabel}>Self introduction</Text>
+            <TouchableOpacity
+              style={{ flex: 1, alignItems: 'flex-end' }}
+              onPress={() =>
+                router.push({
+                  pathname: '/edit',
+                  params: { type: 'intro' },
+                })
+              }
+            >
+              <Ionicons name={'arrow-forward'} size={20} />
+            </TouchableOpacity>
+            {/* <TextInput
               onChangeText={(val) =>
                 setProfileData({ ...profileData, bio: val })
               }
               value={profileData.bio}
               style={styles.inputField}
               placeholder='Write about yourself!'
-            />
+            /> */}
           </View>
         </View>
         <View style={styles.inputBlock}>
-          <View style={styles.inputRow}>
+          <View style={[styles.inputRow, { paddingVertical: 0 }]}>
             <Text style={styles.inputLabel}>MBTI</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, mbti: val })
+            <TouchableOpacity
+              style={{ flex: 1, alignItems: 'flex-end' }}
+              onPress={() =>
+                router.push({
+                  pathname: '/edit',
+                  params: { type: 'mbti' },
+                })
               }
-              value={profileData.mbti}
-              style={styles.inputField}
-              placeholder='Your MBTI'
-            />
+            >
+              <Ionicons name={'arrow-forward'} size={20} />
+            </TouchableOpacity>
           </View>
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Interests</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, interests: val })
+            <TouchableOpacity
+              style={{ flex: 1, alignItems: 'flex-end' }}
+              onPress={() =>
+                router.push({
+                  pathname: '/edit',
+                  params: { type: 'interests' },
+                })
               }
-              value={profileData.interests}
-              style={styles.inputField}
-              placeholder='Interest 1, interest 2...'
-            />
+            >
+              <Ionicons name={'arrow-forward'} size={20} />
+            </TouchableOpacity>
           </View>
           <View style={styles.inputRow}>
             <Text style={styles.inputLabel}>Courses</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, courses: val })
+            <TouchableOpacity
+              style={{ flex: 1, alignItems: 'flex-end' }}
+              onPress={() =>
+                router.push({ pathname: '/edit', params: { type: 'courses' } })
               }
-              value={profileData.courses}
-              style={styles.inputField}
-              placeholder='Course 1, course 2...'
-            />
+            >
+              <Ionicons name={'arrow-forward'} size={20} />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.loginFooter}></View>
@@ -186,7 +242,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: 'Lexend_700Bold',
   },
-  inputBlock: {},
+  inputBlock: {
+    marginTop: 10,
+  },
   inputRow: {
     width: '100%',
     backgroundColor: '#FFFFFF',
@@ -198,6 +256,7 @@ const styles = StyleSheet.create({
     gap: 20,
     borderBottomColor: '#EEEEEE',
     borderBottomWidth: 2,
+    minHeight: 50,
   },
   inputField: {
     paddingHorizontal: 15,
@@ -205,6 +264,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#D9D9D9',
     borderBottomWidth: 2,
     zIndex: 2,
+    textAlign: 'right',
+    width: 'auto',
+    fontFamily: 'Lexend_400Regular',
   },
   inputLabel: {
     color: '#000000',
