@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createUser,
   getUsers,
+  getUser,
   loginUser,
   updateUser,
   getUserNotifs,

@@ -21,7 +21,10 @@ model User {
   gender          String
   age             Int
   mbti            String
+  degree          String
+  studyYear       String
   bio             String
+  languages       String[]
   interests       String[]
   courses         String[]
 

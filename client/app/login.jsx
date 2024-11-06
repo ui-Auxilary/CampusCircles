@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import Logo from '@/components/Logo';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 
 import S from '../styles/global';
 import axios from 'axios';
@@ -23,7 +23,9 @@ const Login = () => {
     console.log('posting');
     await axios
       .post(`${BASE_URL}/users/login`, loginData)
-      .then((data) => console.log('DATA', data))
+      .then(({ data }) => {
+        router.push({ pathname: '/(tabs)', params: { id: data.data } });
+      })
       .catch((e) => console.log(e));
   };
 

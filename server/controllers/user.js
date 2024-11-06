@@ -83,6 +83,20 @@ export const loginUser = async (req, res) => {
   }
 };
 
+export const getUser = async (req, res) => {
+  const user = await prisma.user.findFirst({
+    where: {
+      id: req.params.id,
+    },
+  });
+
+  res.json({
+    status: true,
+    message: "Users fetched successfully",
+    data: user,
+  });
+};
+
 export const getUsers = async (req, res) => {
   const users = await prisma.user.findMany();
 
