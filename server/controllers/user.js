@@ -11,6 +11,8 @@ export const createUser = async (req, res) => {
     age: 0,
     bio: "",
     mbti: "",
+    degree: "",
+    studyYear: "",
     interests: [],
     courses: [],
     eventsAttend: {},
