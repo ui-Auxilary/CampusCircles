@@ -131,11 +131,11 @@ export const updateUser = async (req, res) => {
 // Ethan: function used on index (homepage)
 export const getUserNotifs = async (req, res) => {
   try {
-    // find invitations matching user ID and is still pending
     const userId = req.params.id;
     const notifications = await prisma.invitation.findMany({
-      // extract invitations inviter name and photo, and event name
+      // find invitations matching user ID and is still pending
       where: { inviteeId: userId, status: "pending" },
+      // extract invitations inviter name and photo, and event name
       include: {
         inviter: {
           select: { name: true, photo: true },
@@ -143,6 +143,10 @@ export const getUserNotifs = async (req, res) => {
         event: {
           select: { name: true },
         },
+      },
+      // order notifs based on recency
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
@@ -160,19 +164,26 @@ export const getUserNotifs = async (req, res) => {
   }
 };
 
+// Ethan: function used on index (homepage)
 export const getUserEvents = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    // get events user created
+    // get events user created in order of creation
     const eventsCreated = await prisma.event.findMany({
       where: { creatorId: userId },
+      orderBy: { createdAt: "desc" },
     });
 
-    // get events user attending
+    // get events user attending in order of most upcoming dates
     const eventsAttending = await prisma.eventAttendee.findMany({
       where: { userId: userId },
       include: { event: true },
+      orderBy: {
+        event: {
+          date: "asc",
+        },
+      },
     });
 
     // extract only event object from eventsAttending
