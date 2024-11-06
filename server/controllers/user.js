@@ -1,16 +1,16 @@
-import prisma from '../client.js';
+import prisma from "../client.js";
 
 export const createUser = async (req, res) => {
-  console.log('Request', req.body);
+  console.log("Request", req.body);
 
   let userData = req.body;
 
   let defaultUser = {
-    photo: '',
-    gender: '',
+    photo: "",
+    gender: "",
     age: 0,
-    bio: '',
-    mbti: '',
+    bio: "",
+    mbti: "",
     interests: [],
     courses: [],
     eventsAttend: {},
@@ -20,31 +20,31 @@ export const createUser = async (req, res) => {
     friendIds: [],
   };
 
-  userData['username'] = userData['username'].toLowerCase();
-  userData['email'] = userData['email'].toLowerCase();
+  userData["username"] = userData["username"].toLowerCase();
+  userData["email"] = userData["email"].toLowerCase();
 
   try {
     const user = await prisma.user.create({
       data: { ...userData, ...defaultUser },
     });
 
-    console.log('USER created', user);
+    console.log("USER created", user);
     res.status(201).json({
       status: true,
-      message: 'User created successfully',
+      message: "User created successfully",
       data: user.id,
     });
   } catch (e) {
     console.log(e);
     res.status(500).json({
       status: false,
-      message: 'Server error',
+      message: "Server error",
     });
   }
 };
 
 export const loginUser = async (req, res) => {
-  console.log('Request', req.body);
+  console.log("Request", req.body);
   let { username, password } = req.body;
   try {
     const user = await prisma.user.findFirstOrThrow({
@@ -67,18 +67,18 @@ export const loginUser = async (req, res) => {
       },
     });
 
-    console.log('USER', user);
+    console.log("USER", user);
 
     res.status(201).json({
       status: true,
-      message: 'User exists, logging them in',
+      message: "User exists, logging them in",
       data: user,
     });
   } catch (e) {
-    console.log('Invalid username or password', e);
+    console.log("Invalid username or password", e);
     res.status(500).json({
       status: false,
-      message: 'Invalid username or password',
+      message: "Invalid username or password",
     });
   }
 };
@@ -88,15 +88,15 @@ export const getUsers = async (req, res) => {
 
   res.json({
     status: true,
-    message: 'Users fetched successfully',
+    message: "Users fetched successfully",
     data: users,
   });
 };
 
 export const updateUser = async (req, res) => {
-  console.log('ID', req.params.id);
+  console.log("ID", req.params.id);
   let userData = req.body;
-  console.log('data', userData);
+  console.log("data", userData);
   const users = await prisma.user.update({
     where: {
       id: req.params.id,
@@ -123,7 +123,72 @@ export const updateUser = async (req, res) => {
 
   res.json({
     status: true,
-    message: 'Users fetched successfully',
+    message: "Users fetched successfully",
     data: users,
   });
+};
+
+// Ethan: function used on index (homepage)
+export const getUserNotifs = async (req, res) => {
+  try {
+    // find invitations matching user ID and is still pending
+    const userId = req.params.id;
+    const notifications = await prisma.invitation.findMany({
+      // extract invitations inviter name and photo, and event name
+      where: { inviteeId: userId, status: "pending" },
+      include: {
+        inviter: {
+          select: { name: true, photo: true },
+        },
+        event: {
+          select: { name: true },
+        },
+      },
+    });
+
+    res.json({
+      status: true,
+      message: "Notifications fetched successfully",
+      data: notifications,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({
+      status: false,
+      message: "Server error",
+    });
+  }
+};
+
+export const getUserEvents = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    // get events user created
+    const eventsCreated = await prisma.event.findMany({
+      where: { creatorId: userId },
+    });
+
+    // get events user attending
+    const eventsAttending = await prisma.eventAttendee.findMany({
+      where: { userId: userId },
+      include: { event: true },
+    });
+
+    // extract only event object from eventsAttending
+    res.json({
+      status: true,
+      message: "User events fetched successfully",
+      data: {
+        created: eventsCreated,
+        attending: eventsAttending.map((attendee) => attendee.event),
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({
+      status: false,
+      message: "Server error",
+    });
+  }
 };
