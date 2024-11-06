@@ -19,7 +19,7 @@ import cross from "../../assets/images/cross.png";
 const HomeTab = () => {
   const { setUserId } = getUserData();
   const { id } = useLocalSearchParams();
-  const [notifications, setNotifications] = useState();
+  const [notifications, setNotifications] = useState([]);
   const [events, setEvents] = useState({ created: [], attending: [] });
 
   useEffect(() => {
@@ -129,10 +129,12 @@ const styles = StyleSheet.create({
   notifications: {
     flex: 3,
     marginVertical: 10,
+    rowGap: 15,
   },
   events: {
     flex: 4,
     marginVertical: 10,
+    rowGap: 15,
   },
   text: {
     paddingLeft: 7.5,
