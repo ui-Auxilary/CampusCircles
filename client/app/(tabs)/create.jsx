@@ -196,201 +196,199 @@ const CreateTab = () => {
   /////////////////////////////////////////////////////////////////////////////
 
   return (
-    <ScrollView>
-      <View style={getTag()}>
-        <View style={[styles.typeContainer, styles.shadow]}>
-          <Pressable
+    <View style={getTag()}>
+      <View style={[styles.typeContainer, styles.shadow]}>
+        <Pressable
+          style={[
+            styles.typeButtonFirst,
+            eventType === "Hang" && styles.typeButtonFirstInverted,
+          ]}
+          onPress={() => toggleTag("Hang")}
+        >
+          <Text
             style={[
-              styles.typeButtonFirst,
-              eventType === "Hang" && styles.typeButtonFirstInverted,
+              styles.typeText,
+              eventType === "Hang" && styles.typeTextInverted,
             ]}
-            onPress={() => toggleTag("Hang")}
           >
-            <Text
-              style={[
-                styles.typeText,
-                eventType === "Hang" && styles.typeTextInverted,
-              ]}
-            >
-              Hang
-            </Text>
-          </Pressable>
-          <Pressable
+            Hang
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.typeButton,
+            eventType === "Study" && styles.typeButtonInverted,
+          ]}
+          onPress={() => toggleTag("Study")}
+        >
+          <Text
             style={[
-              styles.typeButton,
-              eventType === "Study" && styles.typeButtonInverted,
+              styles.typeText,
+              eventType === "Study" && styles.typeTextInverted,
             ]}
-            onPress={() => toggleTag("Study")}
           >
-            <Text
-              style={[
-                styles.typeText,
-                eventType === "Study" && styles.typeTextInverted,
-              ]}
-            >
-              Study
-            </Text>
-          </Pressable>
-          <Pressable
+            Study
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.typeButton,
+            eventType === "Eat" && styles.typeButtonInverted,
+          ]}
+          onPress={() => toggleTag("Eat")}
+        >
+          <Text
             style={[
-              styles.typeButton,
-              eventType === "Eat" && styles.typeButtonInverted,
+              styles.typeText,
+              eventType === "Eat" && styles.typeTextInverted,
             ]}
-            onPress={() => toggleTag("Eat")}
           >
-            <Text
-              style={[
-                styles.typeText,
-                eventType === "Eat" && styles.typeTextInverted,
-              ]}
-            >
-              Eat
-            </Text>
-          </Pressable>
-          <Pressable
+            Eat
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.typeButtonLast,
+            eventType === "Other" && styles.typeButtonLastInverted,
+          ]}
+          onPress={() => toggleTag("Other")}
+        >
+          <Text
             style={[
-              styles.typeButtonLast,
-              eventType === "Other" && styles.typeButtonLastInverted,
+              styles.typeText,
+              eventType === "Other" && styles.typeTextInverted,
             ]}
-            onPress={() => toggleTag("Other")}
           >
-            <Text
-              style={[
-                styles.typeText,
-                eventType === "Other" && styles.typeTextInverted,
-              ]}
-            >
-              Other
-            </Text>
+            Other
+          </Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.horiz}>
+        {/* Image */}
+        <View style={styles.imageContainer}>
+          <Pressable onPress={handleImagePick} style={styles.imageContainer}>
+            {event.photo ? (
+              <Image style={styles.fullImage} source={{ uri: image }} />
+            ) : (
+              <Image style={styles.iconImage} source={pic} />
+            )}
           </Pressable>
         </View>
-
-        <View style={styles.horiz}>
-          {/* Image */}
-          <View style={styles.imageContainer}>
-            <Pressable onPress={handleImagePick} style={styles.imageContainer}>
-              {event.photo ? (
-                <Image style={styles.fullImage} source={{ uri: image }} />
-              ) : (
-                <Image style={styles.iconImage} source={pic} />
-              )}
-            </Pressable>
-          </View>
-          {/* Event Name */}
-          <View style={styles.verti}>
-            <View style={styles.detailContainer}>
-              <Text style={styles.label}>Event Name</Text>
-              <TextInput
-                style={[styles.field, { width: 200 }]}
-                placeholder="Enter event name"
-                value={event.name}
-                onChangeText={(value) => handleInputChange("name", value)}
-              />
-            </View>
-            {/* Location */}
-            <View style={styles.detailContainer}>
-              <Text style={styles.label}>Location</Text>
-              <TextInput
-                style={[styles.field, { width: 200 }]}
-                placeholder="Enter event location"
-                value={event.location}
-                onChangeText={(value) => handleInputChange("location", value)}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.horiz}>
-          {/* Date */}
+        {/* Event Name */}
+        <View style={styles.verti}>
           <View style={styles.detailContainer}>
-            <Text style={styles.label}>Date</Text>
+            <Text style={styles.label}>Event Name</Text>
             <TextInput
-              style={[styles.field, { width: 180 }]}
-              placeholder="DD/MM/YYYY"
-              value={event.date}
-              onChangeText={(value) => handleInputChange("date", value)}
+              style={[styles.field, { width: 200 }]}
+              placeholder="Enter event name"
+              value={event.name}
+              onChangeText={(value) => handleInputChange("name", value)}
             />
           </View>
-          {/* Time */}
+          {/* Location */}
           <View style={styles.detailContainer}>
-            <Text style={styles.label}>Time</Text>
+            <Text style={styles.label}>Location</Text>
             <TextInput
-              style={[styles.field, { width: 180 }]}
-              placeholder="HH:MM"
-              value={event.time}
-              onChangeText={(value) => handleInputChange("time", value)}
+              style={[styles.field, { width: 200 }]}
+              placeholder="Enter event location"
+              value={event.location}
+              onChangeText={(value) => handleInputChange("location", value)}
             />
           </View>
-        </View>
-
-        {/* Description */}
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={styles.descriptionContainer}
-            placeholder="Describe the event details"
-            value={event.description}
-            onChangeText={(value) => handleInputChange("description", value)}
-            multiline
-          />
-        </View>
-
-        {/* Privacy */}
-        <View style={[styles.privacyContainer, styles.shadow]}>
-          <Pressable
-            style={[
-              styles.privacyButtonLeft,
-              event.public === true && styles.privacyButtonLeftInverted,
-            ]}
-            onPress={togglePrivacy}
-          >
-            <Text
-              style={[
-                styles.privacyText,
-                event.public === true && styles.privacyTextInverted,
-              ]}
-            >
-              Public
-            </Text>
-          </Pressable>
-          <Pressable
-            style={[
-              styles.privacyButtonRight,
-              event.public === false && styles.privacyButtonRightInverted,
-            ]}
-            onPress={togglePrivacy}
-          >
-            <Text
-              style={[
-                styles.privacyText,
-                event.public === false && styles.privacyTextInverted,
-              ]}
-            >
-              Private
-            </Text>
-          </Pressable>
-        </View>
-
-        <View style={[styles.societyCreateContainer, styles.horiz]}>
-          {/* Society Check */}
-          <Pressable onPress={toggleSociety}>
-            <Image
-              source={event.society ? checked : unchecked}
-              style={styles.iconImage}
-            />
-          </Pressable>
-          <Text style={styles.label}>Society</Text>
-
-          {/* Create Button */}
-          <Pressable
-            onPress={handleCreate}
-            style={[styles.createButton, styles.shadow]}
-          >
-            <Text style={styles.createText}>Create</Text>
-          </Pressable>
         </View>
       </View>
-    </ScrollView>
+
+      <View style={styles.horiz}>
+        {/* Date */}
+        <View style={styles.detailContainer}>
+          <Text style={styles.label}>Date</Text>
+          <TextInput
+            style={[styles.field, { width: 180 }]}
+            placeholder="DD/MM/YYYY"
+            value={event.date}
+            onChangeText={(value) => handleInputChange("date", value)}
+          />
+        </View>
+        {/* Time */}
+        <View style={styles.detailContainer}>
+          <Text style={styles.label}>Time</Text>
+          <TextInput
+            style={[styles.field, { width: 180 }]}
+            placeholder="HH:MM"
+            value={event.time}
+            onChangeText={(value) => handleInputChange("time", value)}
+          />
+        </View>
+      </View>
+
+      {/* Description */}
+      <View style={styles.detailContainer}>
+        <Text style={styles.label}>Description</Text>
+        <TextInput
+          style={styles.descriptionContainer}
+          placeholder="Describe the event details"
+          value={event.description}
+          onChangeText={(value) => handleInputChange("description", value)}
+          multiline
+        />
+      </View>
+
+      {/* Privacy */}
+      <View style={[styles.privacyContainer, styles.shadow]}>
+        <Pressable
+          style={[
+            styles.privacyButtonLeft,
+            event.public === true && styles.privacyButtonLeftInverted,
+          ]}
+          onPress={togglePrivacy}
+        >
+          <Text
+            style={[
+              styles.privacyText,
+              event.public === true && styles.privacyTextInverted,
+            ]}
+          >
+            Public
+          </Text>
+        </Pressable>
+        <Pressable
+          style={[
+            styles.privacyButtonRight,
+            event.public === false && styles.privacyButtonRightInverted,
+          ]}
+          onPress={togglePrivacy}
+        >
+          <Text
+            style={[
+              styles.privacyText,
+              event.public === false && styles.privacyTextInverted,
+            ]}
+          >
+            Private
+          </Text>
+        </Pressable>
+      </View>
+
+      <View style={[styles.societyCreateContainer, styles.horiz]}>
+        {/* Society Check */}
+        <Pressable onPress={toggleSociety}>
+          <Image
+            source={event.society ? checked : unchecked}
+            style={styles.iconImage}
+          />
+        </Pressable>
+        <Text style={styles.label}>Society</Text>
+
+        {/* Create Button */}
+        <Pressable
+          onPress={handleCreate}
+          style={[styles.createButton, styles.shadow]}
+        >
+          <Text style={styles.createText}>Create</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 };
 /////////////////////////////////////////////////////////////////////////////
@@ -399,6 +397,9 @@ const CreateTab = () => {
 
 const styles = StyleSheet.create({
   // Background
+  global: {
+    flex: 1,
+  },
   containerHang: {
     flex: 1,
     backgroundColor: "#E7948D",
