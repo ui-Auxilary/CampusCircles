@@ -26,6 +26,7 @@ import pic from "../../assets/images/Image.png";
 import unchecked from "../../assets/images/unchecked.png";
 import checked from "../../assets/images/checked.png";
 import { BASE_URL } from "@/constants/api";
+import { getUserData } from "@/hooks/userContext";
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -33,6 +34,8 @@ import { BASE_URL } from "@/constants/api";
 
 const CreateTab = () => {
   // default event type and image
+  const { userId } = getUserData();
+
   const [eventType, setEventType] = useState("Hang");
   const [image, setImage] = useState(null);
 
@@ -60,11 +63,14 @@ const CreateTab = () => {
     invitations: {},
     creator: {
       connect: {
-        id: "6722204d9e232f55d0a0903c",
+        id: userId,
       },
     },
   };
 
+  useEffect(() => {
+    console.log("ID:", userId);
+  }, [userId]);
   // duplicate even object to return
   const [event, setEvent] = useState(defaultEventData);
 

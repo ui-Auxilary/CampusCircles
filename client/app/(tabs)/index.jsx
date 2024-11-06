@@ -18,17 +18,18 @@ import cross from "../../assets/images/cross.png";
 
 const HomeTab = () => {
   const { setUserId } = getUserData();
-  const { id } = useLocalSearchParams();
+  const params = useLocalSearchParams();
   const [notifications, setNotifications] = useState([]);
   const [events, setEvents] = useState({ created: [], attending: [] });
 
   useEffect(() => {
-    if (id) {
-      setUserId(id);
-      fetchUserNotifications(id);
-      fetchUserEvents(id);
+    if (params.id) {
+      console.log("Home ID", params);
+      setUserId(params.id);
+      fetchUserNotifications(params.id);
+      fetchUserEvents(params.id);
     }
-  }, [id]);
+  }, [params.id]);
 
   const fetchUserNotifications = async (userId) => {
     try {
