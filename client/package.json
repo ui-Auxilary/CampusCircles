@@ -46,7 +46,8 @@
     "react-native-ui-lib": "^7.32.0",
     "react-native-web": "~0.19.10",
     "expo-auth-session": "~5.5.2",
-    "expo-crypto": "~13.0.2"
+    "expo-crypto": "~13.0.2",
+    "@react-native-picker/picker": "2.7.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

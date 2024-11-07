@@ -6,45 +6,69 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Pressable,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocalSearchParams, router } from 'expo-router';
 import Logo from '../assets/logo2.svg';
+import Right from '../assets/chev-right.svg';
+
+import { Picker } from '@react-native-picker/picker';
 
 import S from '../styles/global';
 import axios from 'axios';
 import { BASE_URL } from '@/constants/api';
 import { getUserData } from '@/hooks/userContext';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const CreateProfile = () => {
+  const pickerRef = useRef();
+
   const params = useLocalSearchParams();
-  const { setUserId } = getUserData();
-  const [profileData, setProfileData] = useState({
-    name: '',
-    age: 0,
-    language: '',
-    bio: '',
-    mbti: '',
-    interests: '',
-    courses: '',
-  });
+  const { userId, setUserId, editData, setEditData } = getUserData();
+  const [selectedLanguage, setSelectedLanguage] = useState();
+
+  // const [editData, setEditData] = useState({
+  //   name: '',
+  //   age: 0,
+  //   languages: [],
+  //   bio: '',
+  //   mbti: '',
+  //   interests: '',
+  //   courses: '',
+  // });
+
+  function open() {
+    pickerRef.current.focus();
+  }
+
+  function close() {
+    pickerRef.current.blur();
+  }
 
   useEffect(() => {
-    console.log('Params', params);
+    if (params.data) {
+      setEditData(JSON.parse(params.data));
+    }
     if (params.id) {
       // Set context
       setUserId(params.id);
     }
   }, []);
 
-  const handleCreateProfile = () => {
-    console.log(profileData);
-    let userData = profileData;
-    userData.interests = userData.interests.split(',');
-    userData.courses = userData.courses.split(',');
+  useEffect(() => {
+    console.log('New data', editData);
+    console.log(editData?.languages ? editData.languages.join(', ') : '');
+  }, [editData]);
 
+  const handleCreateProfile = () => {
+    let userData = editData;
+    // userData.interests = userData.interests.split(',');
+    // userData.courses = userData.courses.split(',');
+
+    console.log('ID', userId, editData);
     axios
-      .put(`${BASE_URL}/users/${params.id}`, userData)
+      .put(`${BASE_URL}/users/${userId}`, userData)
       .then(() => {
         console.log('Successfully created user profile');
         // Navigate to wizard or homepage for now
@@ -59,108 +83,143 @@ const CreateProfile = () => {
       <View style={styles.profileHeader}>
         <Text style={styles.headerTitle}>Create Profile</Text>
       </View>
-      <ScrollView style={styles.createContainer}>
-        <View style={styles.profileImgContainer}>
-          {params.picture ? (
-            <Image style={styles.profileImg} src={params.picture} />
-          ) : (
-            <Image
-              style={styles.profileImg}
-              source={{
-                uri: 'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg',
-              }}
-            />
-          )}
+      <View style={styles.profileImgContainer}>
+        {params.picture ? (
+          <Image style={styles.profileImg} src={params.picture} />
+        ) : (
+          <Image
+            style={styles.profileImg}
+            source={{
+              uri: 'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg',
+            }}
+          />
+        )}
+      </View>
+
+      <View style={[styles.inputBlock, { marginTop: 0 }]}>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Name</Text>
+          <TextInput
+            onChangeText={(val) => setEditData({ ...editData, name: val })}
+            value={params.name || editData.name}
+            style={[styles.inputField, { minWidth: 200, maxWidth: 200 }]}
+            placeholder='Enter name'
+          />
         </View>
-        <View style={styles.inputBlock}>
-          <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>Name</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, name: val })
-              }
-              value={params.name || profileData.name}
-              style={styles.inputField}
-              placeholder='Enter name'
-            />
-          </View>
-          <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>Age</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, age: parseInt(val) })
-              }
-              value={profileData.age}
-              style={styles.inputField}
-              keyboardType='numeric'
-              placeholder='Enter age'
-            />
-          </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Age</Text>
+          <TextInput
+            onChangeText={(val) =>
+              setEditData({ ...editData, age: parseInt(val) })
+            }
+            value={editData.age}
+            style={[styles.inputField, { maxWidth: 55 }]}
+            keyboardType='numeric'
+            placeholder='0'
+          />
         </View>
-        <View style={styles.inputBlock}>
-          <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>Language</Text>
-            <TextInput
+      </View>
+      <View style={styles.inputBlock}>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Language</Text>
+          <TouchableOpacity
+            style={{ flex: 1, alignItems: 'flex-end' }}
+            onPress={() =>
+              router.push({ pathname: '/edit', params: { type: 'language' } })
+            }
+          >
+            <View style={styles.flexRow}>
+              <Text style={styles.paramText}>
+                {editData?.languages ? editData.languages.join(', ') : ''}
+              </Text>
+              <Right width={25} height={25} />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Self introduction</Text>
+          <TouchableOpacity
+            style={{ flex: 1, alignItems: 'flex-end' }}
+            onPress={() =>
+              router.push({
+                pathname: '/edit',
+                params: { type: 'intro' },
+              })
+            }
+          >
+            <Right width={25} height={25} />
+          </TouchableOpacity>
+          {/* <TextInput
               onChangeText={(val) =>
-                setProfileData({ ...profileData, language: val })
+                setEditData({ ...editData, bio: val })
               }
-              value={profileData.language}
-              style={styles.inputField}
-              placeholder='Language 1, language 2...'
-            />
-          </View>
-          <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>Bio</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, bio: val })
-              }
-              value={profileData.bio}
+              value={editData.bio}
               style={styles.inputField}
               placeholder='Write about yourself!'
-            />
-          </View>
+            /> */}
         </View>
-        <View style={styles.inputBlock}>
-          <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>MBTI</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, mbti: val })
-              }
-              value={profileData.mbti}
-              style={styles.inputField}
-              placeholder='Your MBTI'
-            />
-          </View>
-          <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>Interests</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, interests: val })
-              }
-              value={profileData.interests}
-              style={styles.inputField}
-              placeholder='Interest 1, interest 2...'
-            />
-          </View>
-          <View style={styles.inputRow}>
-            <Text style={styles.inputLabel}>Courses</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setProfileData({ ...profileData, courses: val })
-              }
-              value={profileData.courses}
-              style={styles.inputField}
-              placeholder='Course 1, course 2...'
-            />
-          </View>
+      </View>
+      <View style={styles.inputBlock}>
+        <View style={[styles.inputRow, { paddingVertical: 0 }]}>
+          <Text style={styles.inputLabel}>MBTI</Text>
+          <TouchableOpacity
+            style={{ flex: 1, alignItems: 'flex-end' }}
+            onPress={() =>
+              router.push({
+                pathname: '/edit',
+                params: { type: 'mbti' },
+              })
+            }
+          >
+            <Right width={25} height={25} />
+          </TouchableOpacity>
         </View>
-        <View style={styles.loginFooter}></View>
-        <TouchableOpacity onPress={handleCreateProfile} style={S.btnMed}>
-          <Text style={S.txtLrg}>Create</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      </View>
+      <View style={styles.inputBlock}>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Degree</Text>
+          <TouchableOpacity
+            style={{ flex: 1, alignItems: 'flex-end' }}
+            onPress={() =>
+              router.push({ pathname: '/edit', params: { type: 'degree' } })
+            }
+          >
+            <View style={styles.flexRow}>
+              <Text style={styles.paramText}>{editData.language}</Text>
+              <Right width={25} height={25} />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Interests</Text>
+          <TouchableOpacity
+            style={{ flex: 1, alignItems: 'flex-end' }}
+            onPress={() =>
+              router.push({
+                pathname: '/edit',
+                params: { type: 'interests' },
+              })
+            }
+          >
+            <Right width={25} height={25} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Courses</Text>
+          <TouchableOpacity
+            style={{ flex: 1, alignItems: 'flex-end' }}
+            onPress={() =>
+              router.push({ pathname: '/edit', params: { type: 'courses' } })
+            }
+          >
+            <Right width={25} height={25} />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <TouchableOpacity onPress={handleCreateProfile} style={S.btnMed}>
+        <Text style={S.txtLrg}>Create</Text>
+      </TouchableOpacity>
+      <View style={styles.loginFooter}></View>
     </View>
   );
 };
@@ -186,7 +245,13 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontFamily: 'Lexend_700Bold',
   },
-  inputBlock: {},
+  inputBlock: {
+    marginTop: 5,
+  },
+  paramText: {
+    color: '#C3B6B6',
+    fontFamily: 'Lexend_400Regular',
+  },
   inputRow: {
     width: '100%',
     backgroundColor: '#FFFFFF',
@@ -198,6 +263,7 @@ const styles = StyleSheet.create({
     gap: 20,
     borderBottomColor: '#EEEEEE',
     borderBottomWidth: 2,
+    minHeight: 50,
   },
   inputField: {
     paddingHorizontal: 15,
@@ -205,6 +271,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#D9D9D9',
     borderBottomWidth: 2,
     zIndex: 2,
+    textAlign: 'right',
+    width: 'auto',
+    fontFamily: 'Lexend_400Regular',
   },
   inputLabel: {
     color: '#000000',
@@ -248,15 +317,24 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   profileImgContainer: {
-    height: 150,
+    height: 140,
     backgroundColor: '#EEEEEE',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 5,
+    marginBottom: 5,
   },
   profileImg: {
     width: 120,
     height: 120,
     borderRadius: 100,
+  },
+  flexRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  inputCount: {
+    position: 'absolute',
+    right: 10,
   },
 });

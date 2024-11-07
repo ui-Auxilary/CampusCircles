@@ -1,0 +1,18 @@
+[
+  { "value": "ENTJ", "label": "ENTJ" },
+  { "value": "ENFJ", "label": "ENFJ" },
+  { "value": "ESFJ", "label": "ESFJ" },
+  { "value": "ESTJ", "label": "ESTJ" },
+  { "value": "ENTP", "label": "ENTP" },
+  { "value": "ENFP", "label": "ENFP" },
+  { "value": "ESFP", "label": "ESFP" },
+  { "value": "ESTP", "label": "ESTP" },
+  { "value": "INTJ", "label": "INTJ" },
+  { "value": "INFJ", "label": "INFJ" },
+  { "value": "ISFJ", "label": "ISFJ" },
+  { "value": "ISTJ", "label": "ISTJ" },
+  { "value": "INTP", "label": "INTP" },
+  { "value": "INFP", "label": "INFP" },
+  { "value": "ISFP", "label": "ISFP" },
+  { "value": "ISTP", "label": "ISTP" }
+]
