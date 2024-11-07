@@ -20,6 +20,12 @@ export default function EditMbti({ data, setData }) {
           setData({ ...data, mbti: itemValue });
         }}
       >
+        <Picker.Item
+          key=''
+          label={'Select MBTI (personality type)'}
+          value={null}
+          enabled={false}
+        />
         {mbti.map(({ label, value }, idx) => (
           <Picker.Item key={idx} label={label} value={value} />
         ))}

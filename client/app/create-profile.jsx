@@ -1,24 +1,22 @@
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
+  Image,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  Image,
-  ScrollView,
-  Pressable,
+  View,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, useLocalSearchParams, router } from 'expo-router';
-import Logo from '../assets/logo2.svg';
 import Right from '../assets/chev-right.svg';
+import Logo from '../assets/logo2.svg';
 
-import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
 
-import S from '../styles/global';
-import axios from 'axios';
 import { BASE_URL } from '@/constants/api';
 import { getUserData } from '@/hooks/userContext';
+import axios from 'axios';
+import S from '../styles/global';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const CreateProfile = () => {
@@ -27,24 +25,38 @@ const CreateProfile = () => {
   const params = useLocalSearchParams();
   const { userId, setUserId, editData, setEditData } = getUserData();
   const [selectedLanguage, setSelectedLanguage] = useState();
+  const [age, setAge] = useState(editData.age);
+  const [name, setName] = useState(editData.name);
 
-  // const [editData, setEditData] = useState({
-  //   name: '',
-  //   age: 0,
-  //   languages: [],
-  //   bio: '',
-  //   mbti: '',
-  //   interests: '',
-  //   courses: '',
-  // });
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+      base64: true,
+    });
 
-  function open() {
-    pickerRef.current.focus();
-  }
+    if (result) {
+      setEditData({
+        ...editData,
+        photo: result.assets ? result.assets[0].uri : '',
+      });
+    }
+  };
 
-  function close() {
-    pickerRef.current.blur();
-  }
+  const renderDegree = () => {
+    let studyYear = editData.studyYear;
+    let degree = editData.degree;
+
+    if (studyYear && degree) {
+      return `${studyYear} | ${degree}`;
+    } else if (studyYear) {
+      return `${studyYear}`;
+    } else if (degree) {
+      return `${degree}`;
+    }
+
+    return '';
+  };
 
   useEffect(() => {
     if (params.data) {
@@ -57,14 +69,13 @@ const CreateProfile = () => {
   }, []);
 
   useEffect(() => {
-    console.log('New data', editData);
-    console.log(editData?.languages ? editData.languages.join(', ') : '');
+    console.log('Data', editData);
   }, [editData]);
 
   const handleCreateProfile = () => {
     let userData = editData;
-    // userData.interests = userData.interests.split(',');
-    // userData.courses = userData.courses.split(',');
+    userData.interests = userData.interests.split(',');
+    userData.courses = userData.courses.split(',');
 
     console.log('ID', userId, editData);
     axios
@@ -75,6 +86,18 @@ const CreateProfile = () => {
         router.push('/(tabs)');
       })
       .catch((e) => console.log(e));
+
+    // Reset data
+    setEditData({
+      name: '',
+      age: 0,
+      languages: [],
+      bio: '',
+      mbti: '',
+      interests: '',
+      courses: '',
+    });
+
     router.push('/(tabs)');
   };
   return (
@@ -90,33 +113,57 @@ const CreateProfile = () => {
           <Image
             style={styles.profileImg}
             source={{
-              uri: 'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg',
+              uri:
+                editData.photo ||
+                'https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg',
             }}
           />
         )}
+        <TouchableOpacity style={styles.cameraIcon} onPress={pickImage}>
+          <Ionicons name={'camera'} size={30} color={'#FFFFFF'} />
+        </TouchableOpacity>
       </View>
 
       <View style={[styles.inputBlock, { marginTop: 0 }]}>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>Name</Text>
-          <TextInput
-            onChangeText={(val) => setEditData({ ...editData, name: val })}
-            value={params.name || editData.name}
-            style={[styles.inputField, { minWidth: 200, maxWidth: 200 }]}
-            placeholder='Enter name'
-          />
+          <View style={[styles.flexRow, styles.underline, { gap: 0 }]}>
+            <TextInput
+              onChangeText={(val) => {
+                let text = val.substring(0, 25);
+                setName(text);
+                setEditData({ ...editData, name: text });
+              }}
+              value={params.name || name}
+              style={[styles.inputField, { width: 195 }]}
+              placeholder='Enter name'
+            />
+            <Text style={styles.editCount}>
+              {editData.name.length || 0} / {25}
+            </Text>
+          </View>
         </View>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>Age</Text>
-          <TextInput
-            onChangeText={(val) =>
-              setEditData({ ...editData, age: parseInt(val) })
-            }
-            value={editData.age}
-            style={[styles.inputField, { maxWidth: 55 }]}
-            keyboardType='numeric'
-            placeholder='0'
-          />
+          <View style={[styles.flexRow, styles.underline, { gap: 0 }]}>
+            <TextInput
+              onChangeText={(val) => {
+                let text = val.substring(0, 3);
+                setAge(text);
+                setEditData({
+                  ...editData,
+                  ['age']: parseInt(text),
+                });
+              }}
+              value={age}
+              style={[styles.inputField, { width: 55 }]}
+              keyboardType='numeric'
+              placeholder='0'
+            />
+            <Text style={styles.editCount}>
+              {editData.age.toString().length || 0} / {3}
+            </Text>
+          </View>
         </View>
       </View>
       <View style={styles.inputBlock}>
@@ -129,7 +176,11 @@ const CreateProfile = () => {
             }
           >
             <View style={styles.flexRow}>
-              <Text style={styles.paramText}>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode='tail'
+                style={styles.paramText}
+              >
                 {editData?.languages ? editData.languages.join(', ') : ''}
               </Text>
               <Right width={25} height={25} />
@@ -137,7 +188,12 @@ const CreateProfile = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.inputRow}>
-          <Text style={styles.inputLabel}>Self introduction</Text>
+          <View stlye={styles.flexCol}>
+            <Text style={styles.inputLabel}>Self introduction</Text>
+            <Text ellipsizeMode='tail' numberOfLines={1} style={styles.bioText}>
+              {editData.bio || ''}
+            </Text>
+          </View>
           <TouchableOpacity
             style={{ flex: 1, alignItems: 'flex-end' }}
             onPress={() =>
@@ -171,7 +227,10 @@ const CreateProfile = () => {
               })
             }
           >
-            <Right width={25} height={25} />
+            <View style={styles.flexRow}>
+              <Text style={styles.paramText}>{editData.mbti || ''}</Text>
+              <Right width={25} height={25} />
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -185,7 +244,7 @@ const CreateProfile = () => {
             }
           >
             <View style={styles.flexRow}>
-              <Text style={styles.paramText}>{editData.language}</Text>
+              <Text style={styles.paramText}>{renderDegree()}</Text>
               <Right width={25} height={25} />
             </View>
           </TouchableOpacity>
@@ -201,7 +260,10 @@ const CreateProfile = () => {
               })
             }
           >
-            <Right width={25} height={25} />
+            <View style={styles.flexRow}>
+              <Text style={styles.paramText}>{editData.interests || ''}</Text>
+              <Right width={25} height={25} />
+            </View>
           </TouchableOpacity>
         </View>
         <View style={styles.inputRow}>
@@ -212,7 +274,10 @@ const CreateProfile = () => {
               router.push({ pathname: '/edit', params: { type: 'courses' } })
             }
           >
-            <Right width={25} height={25} />
+            <View style={styles.flexRow}>
+              <Text style={styles.paramText}>{editData.courses || ''}</Text>
+              <Right width={25} height={25} />
+            </View>
           </TouchableOpacity>
         </View>
       </View>
@@ -260,16 +325,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 20,
     borderBottomColor: '#EEEEEE',
     borderBottomWidth: 2,
     minHeight: 50,
   },
   inputField: {
+    color: '#C3B6B6',
     paddingHorizontal: 15,
     width: '70%',
-    borderBottomColor: '#D9D9D9',
-    borderBottomWidth: 2,
     zIndex: 2,
     textAlign: 'right',
     width: 'auto',
@@ -336,5 +399,38 @@ const styles = StyleSheet.create({
   inputCount: {
     position: 'absolute',
     right: 10,
+  },
+  editCount: {
+    color: '#AEAEB2',
+    fontSize: 12,
+    alignSelf: 'center',
+    fontFamily: 'Lexend_400Regular',
+  },
+  flexRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  flexCol: {
+    flexDirection: 'column',
+  },
+  underline: {
+    borderBottomColor: '#D9D9D9',
+    borderBottomWidth: 2,
+  },
+  bioText: {
+    width: '70%',
+    color: '#AEAEB2',
+    fontSize: 12,
+    fontFamily: 'Lexend_400Regular',
+  },
+  cameraIcon: {
+    position: 'absolute',
+    backgroundColor: '#81626763',
+    width: 120,
+    height: 120,
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

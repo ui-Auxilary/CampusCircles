@@ -126,6 +126,7 @@ export const updateUser = async (req, res) => {
       gender: userData.gender || undefined,
       age: userData.age || undefined,
       bio: userData.bio || undefined,
+      languages: userData.languages || undefined,
       mbti: userData.mbti || undefined,
       degree: userData.degree || undefined,
       studyYear: userData.studyYear || undefined,

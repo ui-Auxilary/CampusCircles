@@ -55,24 +55,11 @@ const Edit = () => {
   }, [params.type]);
 
   const handleSave = () => {
-    console.log(editData);
-
-    // axios
-    //   .put(`${BASE_URL}/users/${params.id}`, userData)
-    //   .then(() => {
-    //     console.log('Successfully created user profile');
-    //     // Navigate to wizard or homepage for now
-    //     router.push('/(tabs)');
-    //   })
-    //   .catch((e) => console.log(e));
     router.push({
       pathname: '/create-profile',
       params: { data: JSON.stringify(editData) },
     });
   };
-
-  switch (params.type) {
-  }
 
   return (
     <View style={styles.container}>
