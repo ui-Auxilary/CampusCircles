@@ -19,76 +19,43 @@ import axios from 'axios';
 import { BASE_URL } from '@/constants/api';
 import { getUserData } from '@/hooks/userContext';
 
-import languages from '../data/languages.json';
-import mbti from '../data/mbti.json';
+import EditLanguage from '@/components/Edit/EditLanguage';
+import EditIntroduction from '@/components/Edit/EditIntroduction';
+import EditMbti from '@/components/Edit/EditMbti';
+import EditBlock from '@/components/Edit/EditBlock';
+import EditDegree from '@/components/Edit/EditDegree';
 
 const Edit = () => {
   const pickerRef = useRef();
 
   const params = useLocalSearchParams();
-  const { setUserId } = getUserData();
-  const [selectedLanguage, setSelectedLanguage] = useState();
-  const [profileData, setProfileData] = useState({
-    name: '',
-    age: 0,
-    language: '',
-    bio: '',
-    mbti: '',
-    interests: '',
-    courses: '',
-  });
-
-  function open() {
-    pickerRef.current.focus();
-  }
-
-  function close() {
-    pickerRef.current.blur();
-  }
-
-  useEffect(() => {
-    console.log('Languagfe', selectedLanguage);
-  }, [selectedLanguage]);
+  const { editData, setEditData } = getUserData();
 
   const renderEditBlock = useCallback(() => {
     switch (params.type) {
       case 'language':
-        return (
-          <Picker
-            ref={pickerRef}
-            style={styles.selectBtn}
-            selectedValue={selectedLanguage}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedLanguage(itemValue)
-            }
-          >
-            {languages.map(({ label, value }, idx) => (
-              <Picker.Item key={idx} label={label} value={value} />
-            ))}
-          </Picker>
-        );
+        return <EditLanguage data={editData} setData={setEditData} />;
       case 'mbti':
+        return <EditMbti data={editData} setData={setEditData} />;
+      case 'intro':
+        return <EditIntroduction data={editData} setData={setEditData} />;
+      case 'degree':
+        return <EditDegree data={editData} setData={setEditData} />;
+      case 'courses':
         return (
-          <Picker
-            ref={pickerRef}
-            style={styles.selectBtn}
-            selectedValue={selectedLanguage}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedLanguage(itemValue)
-            }
-          >
-            {mbti.map(({ label, value }, idx) => (
-              <Picker.Item key={idx} label={label} value={value} />
-            ))}
-          </Picker>
+          <EditBlock data={editData} setData={setEditData} type={'courses'} />
+        );
+      case 'interests':
+        return (
+          <EditBlock data={editData} setData={setEditData} type={'interests'} />
         );
       default:
         return null;
     }
-  }, [params.type, selectedLanguage]);
+  }, [params.type]);
 
   const handleSave = () => {
-    console.log(profileData);
+    console.log(editData);
 
     // axios
     //   .put(`${BASE_URL}/users/${params.id}`, userData)
@@ -100,7 +67,7 @@ const Edit = () => {
     //   .catch((e) => console.log(e));
     router.push({
       pathname: '/create-profile',
-      params: { data: JSON.stringify(profileData) },
+      params: { data: JSON.stringify(editData) },
     });
   };
 
@@ -186,7 +153,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Lexend_400Regular',
   },
-
   loginButton: {
     paddingHorizontal: 10,
     backgroundColor: '#76DA69',

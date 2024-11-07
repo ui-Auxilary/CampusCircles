@@ -52,7 +52,7 @@ const ProfileTab = () => {
             </View>
             <Text style={styles.yearOfStudy}>3rd year | Computer science</Text>
           </View>
-          <LanguageRow languages={[]} />
+          <LanguageRow languages={userData.languages} />
         </View>
         <View style={styles.metricsContainer}>
           <View>

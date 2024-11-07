@@ -1,8 +1,11 @@
 import { View, Text, StyleSheet } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Language from './Language';
 
 export default function LanguageRow({ languages }) {
+  useEffect(() => {
+    console.log('Languages', languages);
+  }, []);
   return (
     <View style={styles.languageWrapper}>
       {languages
