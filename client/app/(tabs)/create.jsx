@@ -2,7 +2,6 @@
 NOTES
 - NOW on event creation, retrieve event ID, connect it to the user
 - NOW date time picker
-- NOW camera perms
 - NOW geomap thingy
 - NOW navigation to event details
 */
@@ -15,7 +14,6 @@ import {
   Pressable,
   TextInput,
   Alert,
-  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { router, useNavigation } from "expo-router";
@@ -34,13 +32,14 @@ import { getUserData } from "@/hooks/userContext";
 ///////////////////////////////////////////////////////////////////////////////
 
 const CreateTab = () => {
-  // default event type and image
+  // VARAIBLES
   const { userId } = getUserData();
-
+  const navigation = useNavigation();
   const [eventType, setEventType] = useState("Hang");
   const [image, setImage] = useState(null);
+  const [mediaLibraryPermissions, requestMediaLibraryPermissions] =
+    ImagePicker.useMediaLibraryPermissions();
 
-  // default event obj
   const defaultEventData = {
     name: "",
     photo: "",
@@ -69,22 +68,36 @@ const CreateTab = () => {
     },
   };
 
-  useEffect(() => {
-    console.log("ID:", userId);
-  }, [userId]);
-  // duplicate even object to return
   const [event, setEvent] = useState(defaultEventData);
 
-  // clear form on component mount or when navigated to
-  const navigation = useNavigation();
+  // FUNCTIONS: useEffect
+
+  const checkPermissions = async () => {
+    if (!mediaLibraryPermissions?.granted) {
+      const libraryStatus = await requestMediaLibraryPermissions();
+
+      if (!libraryStatus.granted) {
+        Alert.alert(
+          "Permissions Required",
+          "Please grant camera and media library permissions in settings to use this feature."
+        );
+      }
+    }
+  };
+
   useEffect(() => {
+    checkPermissions();
     const unsubscribe = navigation.addListener("focus", () => {
       resetForm();
     });
     return unsubscribe;
   }, [navigation]);
 
-  // functions: on form update
+  useEffect(() => {
+    console.log("ID:", userId);
+  }, [userId]);
+
+  // FUNCTIONS: on form update
 
   const handleInputChange = (field, value) => {
     setEvent((prevEvent) => ({ ...prevEvent, [field]: value }));
@@ -104,6 +117,11 @@ const CreateTab = () => {
   };
 
   const handleImagePick = async () => {
+    if (!mediaLibraryPermissions?.granted) {
+      const hasPermissions = await checkPermissions();
+      if (!hasPermissions) return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -112,7 +130,7 @@ const CreateTab = () => {
     });
 
     if (!result.canceled) {
-      setEvent({ ...event, photo: result.assets[0].uri });
+      setEvent((prev) => ({ ...prev, photo: result.assets[0].uri }));
       setImage(result.assets[0].uri);
     }
   };
@@ -129,7 +147,7 @@ const CreateTab = () => {
     setEvent({ ...event, society: !event.society });
   };
 
-  // functions: on form submission
+  // FUNCTOINS: on form submission
 
   const validateDate = (value) => {
     const datePattern = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
