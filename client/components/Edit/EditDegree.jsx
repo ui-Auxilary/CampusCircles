@@ -3,16 +3,18 @@ import React, { useRef, useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 
 import studyYear from '../../data/year.json';
+import { getUserData } from '@/hooks/userContext';
 export default function EditDegree({ data, setData }) {
-  const [degree, setDegree] = useState('');
-  const [year, setYear] = useState('');
+  const { editData } = getUserData();
+  const [degree, setDegree] = useState(editData.degree || '');
+  const [year, setYear] = useState(editData.studyYear || '');
 
   let pickerRef = useRef();
 
   const handleTextChange = (val, type) => {
     let text = val.substring(0, 25);
     setDegree(text);
-    setData({ ...data, ['degree']: text });
+    setData({ ...editData, ['degree']: text });
   };
 
   return (
@@ -32,14 +34,14 @@ export default function EditDegree({ data, setData }) {
             {degree.length} / {25}
           </Text>
         </View>
-
+        <Text style={styles.editLabel}>Study year</Text>
         <Picker
           ref={pickerRef}
           style={styles.selectBtn}
-          selectedValue={''}
+          selectedValue={year}
           onValueChange={(itemValue, itemIndex) => {
             setYear(itemValue);
-            setData({ ...data, ['studyYear']: itemValue });
+            setData({ ...editData, ['studyYear']: itemValue });
           }}
         >
           <Picker.Item

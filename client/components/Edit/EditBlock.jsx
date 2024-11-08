@@ -1,8 +1,10 @@
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
+import { getUserData } from '@/hooks/userContext';
 
 export default function EditBlock({ data, setData, type }) {
-  const [typeData, setTypeData] = useState('');
+  const { editData } = getUserData();
+  const [typeData, setTypeData] = useState(editData[type] || '');
 
   const handleTextChange = (val) => {
     let text = val.substring(0, 25);

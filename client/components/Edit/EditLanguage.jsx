@@ -3,14 +3,16 @@ import React, { useRef, useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 
 import languages from '../../data/languages.json';
+import { getUserData } from '@/hooks/userContext';
 export default function EditLanguage({ data, setData }) {
   let pickerRef = useRef();
-  const [selectedLanguage, setSelectedLanguage] = useState([]);
+  const { editData } = getUserData();
+  const [selectedLanguage, setSelectedLanguage] = useState(editData.languages);
 
-  const updateLanguage = (language, idx) => {
+  const updateLanguage = (language, langIdx, idx) => {
     console.log('Language', language, idx, selectedLanguage);
     let newLanguages = selectedLanguage;
-    newLanguages[idx] = language;
+    newLanguages[idx] = languages[langIdx]['label'];
     console.log('New', newLanguages);
     setSelectedLanguage((prev) => [...newLanguages]);
     setData({ ...data, languages: [...newLanguages] });
@@ -24,9 +26,9 @@ export default function EditLanguage({ data, setData }) {
           <Picker
             ref={pickerRef}
             style={styles.selectBtn}
-            selectedValue={data.languages[idx]}
+            selectedValue={selectedLanguage[idx]}
             onValueChange={(itemValue, itemIndex) => {
-              updateLanguage(itemValue, idx);
+              updateLanguage(itemValue, itemIndex, idx);
             }}
           >
             <Picker.Item
