@@ -1,9 +1,10 @@
 /*
 NOTES
-- LATER create button onPress needs to redirect user event detail page
-- LATER add permission for image picker
 - NOW on event creation, retrieve event ID, connect it to the user
-- NOW do router.push({pathname: 'event-details', params: {id: [event-id]}})
+- NOW date time picker
+- NOW camera perms
+- NOW geomap thingy
+- NOW navigation to event details
 */
 
 import {
@@ -181,7 +182,10 @@ const CreateTab = () => {
     axios
       .post(`${BASE_URL}/events/create`, event)
       .then(() => {
-        router.push("/event-details"); // change listed above
+        router.push({
+          pathname: "event-details",
+          params: { id: [event - id] },
+        });
       })
       .catch((e) => console.log(e));
   };
