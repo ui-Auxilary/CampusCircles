@@ -5,9 +5,7 @@ export default function Language({ code, language }) {
   return (
     <View>
       <Text style={styles.languageCode}>{code}</Text>
-      <View style={styles.languageBar}>
-        <View style={styles.languageProgress} />
-      </View>
+
       <Text style={styles.language}>{language}</Text>
     </View>
   );
