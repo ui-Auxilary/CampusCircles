@@ -1,9 +1,7 @@
 /*
 NOTES
-- NOW on event creation, retrieve event ID, connect it to the user
 - NOW date time picker
 - NOW geomap thingy
-- NOW navigation to event details
 */
 
 import {
@@ -19,6 +17,7 @@ import React, { useState, useEffect } from "react";
 import { router, useNavigation } from "expo-router";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 // imported assets
 import pic from "../../assets/images/Image.png";
@@ -39,6 +38,10 @@ const CreateTab = () => {
   const [image, setImage] = useState(null);
   const [mediaLibraryPermissions, requestMediaLibraryPermissions] =
     ImagePicker.useMediaLibraryPermissions();
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   const defaultEventData = {
     name: "",
@@ -135,6 +138,22 @@ const CreateTab = () => {
     }
   };
 
+  const handleDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setDate(selectedDate);
+      handleInputChange("date", selectedDate.toISOString().split("T")[0]); // Set date string
+    }
+  };
+
+  const handleTimeChange = (event, selectedTime) => {
+    setShowTimePicker(false);
+    if (selectedTime) {
+      setTime(selectedTime);
+      handleInputChange("time", selectedTime.toTimeString().slice(0, 5)); // Set time string
+    }
+  };
+
   const toggleTag = (tag) => {
     setEventType(tag);
   };
@@ -188,13 +207,42 @@ const CreateTab = () => {
   };
 
   const handleCreate = async () => {
+    // ensure that the form is valid
     if (!validateForm()) {
       return;
     }
 
     try {
+      // post event to prisma
       const response = await axios.post(`${BASE_URL}/events/create`, event);
+      // connect event ID to user
       const createdEventId = response.data?.data?.id;
+      await axios.put(`${BASE_URL}/users/${userId}/update`, {
+        eventsCreated: {
+          create: {
+            id: createdEventId,
+            name: event.name, // Replace with actual event data
+            location: event.location,
+            date: event.date,
+            time: event.time,
+            photo: event.photo,
+            description: event.description,
+            public: event.public,
+            society: event.society,
+            // Needs the other fields ie. tag, creator etc
+          },
+        },
+      });
+
+      /*
+      await axios.put(`${BASE_URL}/users/${userId}/update`, {
+        eventsCreated: {
+          connect: { id: createdEventId },
+        },
+      });
+      */
+
+      // navigate to the event's detail page
       router.push({
         pathname: "event-details",
         params: { id: createdEventId },
@@ -318,25 +366,42 @@ const CreateTab = () => {
       </View>
 
       <View style={styles.horiz}>
-        {/* Date */}
+        {/* Date Picker */}
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Date</Text>
-          <TextInput
-            style={[styles.field, { width: 180 }]}
-            placeholder="DD/MM/YYYY"
-            value={event.date}
-            onChangeText={(value) => handleInputChange("date", value)}
-          />
+          <Pressable
+            onPress={() => setShowDatePicker(true)}
+            style={styles.field}
+          >
+            <Text>{date.toISOString().split("T")[0]}</Text>
+          </Pressable>
+          {showDatePicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+            />
+          )}
         </View>
-        {/* Time */}
+
+        {/* Time Picker */}
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Time</Text>
-          <TextInput
-            style={[styles.field, { width: 180 }]}
-            placeholder="HH:MM"
-            value={event.time}
-            onChangeText={(value) => handleInputChange("time", value)}
-          />
+          <Pressable
+            onPress={() => setShowTimePicker(true)}
+            style={styles.field}
+          >
+            <Text>{time.toTimeString().slice(0, 5)}</Text>
+          </Pressable>
+          {showTimePicker && (
+            <DateTimePicker
+              value={time}
+              mode="time"
+              display="default"
+              onChange={handleTimeChange}
+            />
+          )}
         </View>
       </View>
 
