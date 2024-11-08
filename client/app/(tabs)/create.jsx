@@ -187,25 +187,21 @@ const CreateTab = () => {
     return true;
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!validateForm()) {
       return;
     }
 
-    console.log("POSTING", event);
-    let postData = event;
-    postData.date = new Date();
-    postData.time = new Date();
-
-    axios
-      .post(`${BASE_URL}/events/create`, event)
-      .then(() => {
-        router.push({
-          pathname: "event-details",
-          params: { id: [event - id] },
-        });
-      })
-      .catch((e) => console.log(e));
+    try {
+      const response = await axios.post(`${BASE_URL}/events/create`, event);
+      const createdEventId = response.data?.data?.id;
+      router.push({
+        pathname: "event-details",
+        params: { id: createdEventId },
+      });
+    } catch (error) {
+      console.error("Error creating event:", error);
+    }
   };
 
   const resetForm = () => {
