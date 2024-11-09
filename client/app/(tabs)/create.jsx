@@ -207,48 +207,35 @@ const CreateTab = () => {
   };
 
   const handleCreate = async () => {
-    // ensure that the form is valid
     if (!validateForm()) {
       return;
     }
 
+    let postData = {
+      ...event,
+      date: date.toISOString(),
+      time: time.toISOString(),
+    };
+
     try {
-      // post event to prisma
-      const response = await axios.post(`${BASE_URL}/events/create`, event);
-      // connect event ID to user
-      const createdEventId = response.data?.data?.id;
-      await axios.put(`${BASE_URL}/users/${userId}/update`, {
-        eventsCreated: {
-          create: {
-            id: createdEventId,
-            name: event.name, // Replace with actual event data
-            location: event.location,
-            date: event.date,
-            time: event.time,
-            photo: event.photo,
-            description: event.description,
-            public: event.public,
-            society: event.society,
-            // Needs the other fields ie. tag, creator etc
+      const response = await axios.post(`${BASE_URL}/events/create`, postData);
+      const createdEvent = response.data.data;
+
+      // THIS IS HOW I WILL BE POSTING CREATED EVENT ID TO USER DATA
+      if (createdEvent && createdEvent.id) {
+        await axios.put(`${BASE_URL}/users/${userId}/update`, {
+          eventsCreated: {
+            create: createdEvent,
           },
-        },
-      });
+        });
 
-      /*
-      await axios.put(`${BASE_URL}/users/${userId}/update`, {
-        eventsCreated: {
-          connect: { id: createdEventId },
-        },
-      });
-      */
-
-      // navigate to the event's detail page
-      router.push({
-        pathname: "event-details",
-        params: { id: createdEventId },
-      });
+        router.push({
+          pathname: "event-details",
+          params: { id: createdEvent.id },
+        });
+      }
     } catch (error) {
-      console.error("Error creating event:", error);
+      console.error(error);
     }
   };
 
