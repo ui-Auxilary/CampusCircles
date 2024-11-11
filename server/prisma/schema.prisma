@@ -43,7 +43,8 @@ model User {
 model Event {
   id              String          @id @default(auto()) @map("_id") @db.ObjectId
   name            String
-  location        String
+  lat             String
+  long            String
   date            DateTime
   time            DateTime
   photo           String
