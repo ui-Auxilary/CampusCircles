@@ -1,3 +1,11 @@
+/*
+to review
+marked additional imports and variables
+on form update function additions
+changes to resetForm
+design for location
+*/
+
 import {
   StyleSheet,
   View,
@@ -6,6 +14,9 @@ import {
   Pressable,
   TextInput,
   Alert,
+  TouchableOpacity,
+  FlatList,
+  Modal,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 
@@ -24,6 +35,9 @@ import checked from "../../assets/images/checked.png";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 
+// opencage API
+const OPENCAGE_API_KEY = "0b76d125882040e6b92dd7ddf1f3ab13";
+
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,11 +54,11 @@ const CreateTab = () => {
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   // Event Obj ////////////////////////////////////////
-
   const defaultEventData = {
     name: "",
     photo: "",
-    location: "",
+    lat: "",
+    long: "",
     date: new Date(),
     time: new Date(),
     description: "",
@@ -68,8 +82,13 @@ const CreateTab = () => {
       },
     },
   };
-
   const [event, setEvent] = useState(defaultEventData);
+
+  // Variables: OpenCage
+  const [locationQuery, setLocationQuery] = useState("");
+  const [locationResults, setLocationResults] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // FUNCTIONS: useEffect ////////////////////////////////////////////////////////////////////
 
@@ -136,6 +155,38 @@ const CreateTab = () => {
     }
   };
 
+  const handleLocationChange = async (query) => {
+    setLocationQuery(query);
+    if (query.length > 2) {
+      try {
+        const response = await axios.get(
+          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+            query
+          )}&key=${OPENCAGE_API_KEY}&countrycode=AU&limit=5`
+        );
+        setLocationResults(response.data.results);
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Geocoding Error:", error);
+      }
+    } else {
+      setLocationResults([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const selectLocation = (location) => {
+    setSelectedLocation(location.formatted);
+    setEvent((prevEvent) => ({
+      ...prevEvent,
+      location: location.formatted,
+      latitude: location.geometry.lat,
+      longitude: location.geometry.lng,
+    }));
+    setLocationResults([]);
+    setLocationQuery(location.formatted);
+  };
+
   const formatDate = (date) => {
     return date.toLocaleDateString("en-GB");
   };
@@ -169,7 +220,7 @@ const CreateTab = () => {
     setEvent({ ...event, society: !event.society });
   };
 
-  // FUNCTOINS: on form submission ////////////////////////////////////////////
+  // FUNCTIONS: on form submission ////////////////////////////////////////////
 
   const validateDate = (value) => {
     const datePattern = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
@@ -245,7 +296,41 @@ const CreateTab = () => {
   const resetForm = () => {
     setEvent({ ...defaultEventData });
     setImage(null);
+    setLocationQuery("");
+    setLocationResults([]);
+    setSelectedLocation(null);
   };
+
+  // COMPONENT: geolocation suggestions ///////////////////////////////////////
+
+  const LocationSuggestionsModal = ({
+    visible,
+    results,
+    onSelect,
+    onClose,
+  }) => (
+    <Modal visible={visible} transparent animationType="fade">
+      <View style={styles.overlay}>
+        <View style={styles.suggestionsContainer}>
+          <FlatList
+            data={results}
+            keyExtractor={(item) => item.place_id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => {
+                  onSelect(item);
+                  onClose();
+                }}
+                style={styles.locationItem}
+              >
+                <Text>{item.formatted}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </View>
+    </Modal>
+  );
 
   /////////////////////////////////////////////////////////////////////////////
   // DESIGN ///////////////////////////////////////////////////////////////////
@@ -347,10 +432,25 @@ const CreateTab = () => {
             <Text style={styles.label}>Location</Text>
             <TextInput
               style={[styles.field, { width: 200 }]}
-              placeholder="Enter event location"
-              value={event.location}
-              onChangeText={(value) => handleInputChange("location", value)}
+              placeholder="Search for location"
+              value={locationQuery}
+              onChangeText={handleLocationChange}
             />
+            {locationResults.length > 0 && (
+              <FlatList
+                data={locationResults}
+                keyExtractor={(item) => item.place_id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() => selectLocation(item)}
+                    style={styles.locationItem}
+                  >
+                    <Text>{item.formatted}</Text>
+                  </TouchableOpacity>
+                )}
+                style={styles.suggestionsContainer}
+              />
+            )}
           </View>
         </View>
       </View>
@@ -598,6 +698,25 @@ const styles = StyleSheet.create({
     width: 375,
     borderRadius: 10,
     padding: 10,
+  },
+  // geocoding shit
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  suggestionsContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 5,
+    width: "80%",
+    maxHeight: 200,
+    padding: 10,
+  },
+  locationItem: {
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
   // Privacy
   privacyContainer: {
