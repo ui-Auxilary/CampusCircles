@@ -17,7 +17,7 @@ import React, { useState, useEffect } from "react";
 import { router, useNavigation } from "expo-router";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 // imported assets
 import pic from "../../assets/images/Image.png";
@@ -38,10 +38,8 @@ const CreateTab = () => {
   const [image, setImage] = useState(null);
   const [mediaLibraryPermissions, requestMediaLibraryPermissions] =
     ImagePicker.useMediaLibraryPermissions();
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   const defaultEventData = {
     name: "",
@@ -138,20 +136,25 @@ const CreateTab = () => {
     }
   };
 
-  const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      setDate(selectedDate);
-      handleInputChange("date", selectedDate.toISOString().split("T")[0]); // Set date string
-    }
+  const formatDate = (date) => {
+    return date.toLocaleDateString("en-GB");
   };
 
-  const handleTimeChange = (event, selectedTime) => {
-    setShowTimePicker(false);
-    if (selectedTime) {
-      setTime(selectedTime);
-      handleInputChange("time", selectedTime.toTimeString().slice(0, 5)); // Set time string
-    }
+  const formatTime = (time) => {
+    return time.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const handleConfirmDate = (selectedDate) => {
+    setEvent((prev) => ({ ...prev, date: selectedDate }));
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirmTime = (selectedTime) => {
+    setEvent((prev) => ({ ...prev, time: selectedTime }));
+    setTimePickerVisibility(false);
   };
 
   const toggleTag = (tag) => {
@@ -353,42 +356,38 @@ const CreateTab = () => {
       </View>
 
       <View style={styles.horiz}>
-        {/* Date Picker */}
+        {/* Date Field */}
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Date</Text>
           <Pressable
-            onPress={() => setShowDatePicker(true)}
-            style={styles.field}
+            onPress={() => setDatePickerVisibility(true)}
+            style={styles.dateTimeField}
           >
-            <Text>{date.toISOString().split("T")[0]}</Text>
+            <Text style={styles.dateTimeText}>{formatDate(event.date)}</Text>
           </Pressable>
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="default"
-              onChange={handleDateChange}
-            />
-          )}
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirmDate}
+            onCancel={() => setDatePickerVisibility(false)}
+          />
         </View>
 
-        {/* Time Picker */}
+        {/* Time Field */}
         <View style={styles.detailContainer}>
           <Text style={styles.label}>Time</Text>
           <Pressable
-            onPress={() => setShowTimePicker(true)}
-            style={styles.field}
+            onPress={() => setTimePickerVisibility(true)}
+            style={styles.dateTimeField}
           >
-            <Text>{time.toTimeString().slice(0, 5)}</Text>
+            <Text style={styles.dateTimeText}>{formatTime(event.time)}</Text>
           </Pressable>
-          {showTimePicker && (
-            <DateTimePicker
-              value={time}
-              mode="time"
-              display="default"
-              onChange={handleTimeChange}
-            />
-          )}
+          <DateTimePickerModal
+            isVisible={isTimePickerVisible}
+            mode="time"
+            onConfirm={handleConfirmTime}
+            onCancel={() => setTimePickerVisibility(false)}
+          />
         </View>
       </View>
 
@@ -597,11 +596,24 @@ const styles = StyleSheet.create({
     color: "#454545",
     fontSize: 20,
   },
+  dateTimeLabel: {
+    color: "#454545",
+    fontSize: 15,
+  },
   field: {
     backgroundColor: "#FFF",
     borderRadius: 10,
     height: 45,
-    padding: 5,
+    padding: 7.5,
+    justifyContent: "center",
+  },
+  dateTimeField: {
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    height: 45,
+    width: 180,
+    padding: 7.5,
+    justifyContent: "center",
   },
   imageContainer: {
     backgroundColor: "#FFFFFF",
