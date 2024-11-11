@@ -1,9 +1,3 @@
-/*
-NOTES
-- NOW date time picker
-- NOW geomap thingy
-*/
-
 import {
   StyleSheet,
   View,
@@ -14,8 +8,12 @@ import {
   Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
+
+// backend
 import { router, useNavigation } from "expo-router";
 import axios from "axios";
+
+// imported APIs
 import * as ImagePicker from "expo-image-picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
@@ -31,7 +29,7 @@ import { getUserData } from "@/hooks/userContext";
 ///////////////////////////////////////////////////////////////////////////////
 
 const CreateTab = () => {
-  // VARAIBLES
+  // Variables //////////////////////////////////////////////////////////
   const { userId } = getUserData();
   const navigation = useNavigation();
   const [eventType, setEventType] = useState("Hang");
@@ -40,6 +38,8 @@ const CreateTab = () => {
     ImagePicker.useMediaLibraryPermissions();
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+
+  // Event Obj ////////////////////////////////////////
 
   const defaultEventData = {
     name: "",
@@ -71,7 +71,7 @@ const CreateTab = () => {
 
   const [event, setEvent] = useState(defaultEventData);
 
-  // FUNCTIONS: useEffect
+  // FUNCTIONS: useEffect ////////////////////////////////////////////////////////////////////
 
   const checkPermissions = async () => {
     if (!mediaLibraryPermissions?.granted) {
@@ -98,7 +98,7 @@ const CreateTab = () => {
     console.log("ID:", userId);
   }, [userId]);
 
-  // FUNCTIONS: on form update
+  // FUNCTIONS: on form update //////////////////////////////////////
 
   const handleInputChange = (field, value) => {
     setEvent((prevEvent) => ({ ...prevEvent, [field]: value }));
@@ -169,7 +169,7 @@ const CreateTab = () => {
     setEvent({ ...event, society: !event.society });
   };
 
-  // FUNCTOINS: on form submission
+  // FUNCTOINS: on form submission ////////////////////////////////////////////
 
   const validateDate = (value) => {
     const datePattern = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
@@ -546,48 +546,6 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 25,
   },
-  // Privacy Selector
-  privacyContainer: {
-    marginTop: 15,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  privacyButtonLeft: {
-    backgroundColor: "white",
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    paddingHorizontal: 65,
-    paddingVertical: 10,
-  },
-  privacyButtonRight: {
-    backgroundColor: "white",
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    paddingHorizontal: 65,
-    paddingVertical: 10,
-  },
-  privacyButtonLeftInverted: {
-    backgroundColor: "#3A72FF",
-    paddingHorizontal: 65,
-    paddingVertical: 10,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-  },
-  privacyButtonRightInverted: {
-    backgroundColor: "#3A72FF",
-    paddingHorizontal: 65,
-    paddingVertical: 10,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-  },
-  privacyText: {
-    color: "#454545",
-    fontSize: 20,
-  },
-  privacyTextInverted: {
-    color: "#FFF",
-    fontSize: 20,
-  },
   // Event Details
   detailContainer: {
     rowGap: 5,
@@ -640,6 +598,48 @@ const styles = StyleSheet.create({
     width: 375,
     borderRadius: 10,
     padding: 10,
+  },
+  // Privacy
+  privacyContainer: {
+    marginTop: 15,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  privacyButtonLeft: {
+    backgroundColor: "white",
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+    paddingHorizontal: 65,
+    paddingVertical: 10,
+  },
+  privacyButtonRight: {
+    backgroundColor: "white",
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    paddingHorizontal: 65,
+    paddingVertical: 10,
+  },
+  privacyButtonLeftInverted: {
+    backgroundColor: "#3A72FF",
+    paddingHorizontal: 65,
+    paddingVertical: 10,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+  privacyButtonRightInverted: {
+    backgroundColor: "#3A72FF",
+    paddingHorizontal: 65,
+    paddingVertical: 10,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  privacyText: {
+    color: "#454545",
+    fontSize: 20,
+  },
+  privacyTextInverted: {
+    color: "#FFF",
+    fontSize: 20,
   },
   // Society
   societyCreateContainer: {
