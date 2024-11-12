@@ -19,7 +19,7 @@ import axios from "axios";
 import S from "../styles/global";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const CreateProfile = () => {
+const EditProfile = () => {
   const pickerRef = useRef();
 
   const params = useLocalSearchParams();
@@ -42,6 +42,10 @@ const CreateProfile = () => {
     }
   };
 
+  useEffect(() => {
+    console.log("USER", params.data);
+    console.log("EDIT", editData);
+  }, [params.data]);
   const renderDegree = () => {
     let studyYear = editData.studyYear;
     let degree = editData.degree;
@@ -67,11 +71,7 @@ const CreateProfile = () => {
     }
   }, []);
 
-  useEffect(() => {
-    console.log("Data", editData);
-  }, [editData]);
-
-  const handleCreateProfile = () => {
+  const handleEditProfile = () => {
     let userData = editData;
     userData.interests =
       typeof userData === "string"
@@ -86,8 +86,9 @@ const CreateProfile = () => {
     axios
       .put(`${BASE_URL}/users/${userId}`, userData)
       .then(() => {
-        console.log("Successfully created user profile");
-
+        console.log("Successfully edited user profile");
+        // Navigate to wizard or homepage for now
+        router.push("/(tabs)/profile");
         // Reset data
         setEditData({
           name: "",
@@ -98,18 +99,14 @@ const CreateProfile = () => {
           interests: "",
           courses: "",
         });
-        // Navigate to wizard or homepage for now
-        router.push("/(tabs)");
       })
       .catch((e) => console.log(e));
-
-    router.push("/(tabs)");
   };
   return (
     <View style={styles.container}>
       <Logo style={styles.logo} width={50} height={50} />
       <View style={styles.profileHeader}>
-        <Text style={styles.headerTitle}>Create Profile</Text>
+        <Text style={styles.headerTitle}>Edit Profile</Text>
       </View>
       <View style={styles.profileImgContainer}>
         {params.picture ? (
@@ -128,6 +125,7 @@ const CreateProfile = () => {
           <Ionicons name={"camera"} size={30} color={"#FFFFFF"} />
         </TouchableOpacity>
       </View>
+
       <View style={styles.inputBlock}>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>About me</Text>
@@ -136,7 +134,7 @@ const CreateProfile = () => {
             onPress={() =>
               router.push({
                 pathname: "/edit",
-                params: { page: "create", type: "about" },
+                params: { page: "edit", type: "about" },
               })
             }
           >
@@ -163,7 +161,7 @@ const CreateProfile = () => {
             onPress={() =>
               router.push({
                 pathname: "/edit",
-                params: { page: "create", type: "language" },
+                params: { page: "edit", type: "language" },
               })
             }
           >
@@ -191,7 +189,7 @@ const CreateProfile = () => {
             onPress={() =>
               router.push({
                 pathname: "/edit",
-                params: { page: "create", type: "intro" },
+                params: { page: "edit", type: "intro" },
               })
             }
           >
@@ -207,7 +205,7 @@ const CreateProfile = () => {
             onPress={() =>
               router.push({
                 pathname: "/edit",
-                params: { page: "create", type: "mbti" },
+                params: { page: "edit", type: "mbti" },
               })
             }
           >
@@ -226,7 +224,7 @@ const CreateProfile = () => {
             onPress={() =>
               router.push({
                 pathname: "/edit",
-                params: { page: "create", type: "degree" },
+                params: { page: "edit", type: "degree" },
               })
             }
           >
@@ -243,7 +241,7 @@ const CreateProfile = () => {
             onPress={() =>
               router.push({
                 pathname: "/edit",
-                params: { page: "create", type: "interests" },
+                params: { page: "edit", type: "interests" },
               })
             }
           >
@@ -260,7 +258,7 @@ const CreateProfile = () => {
             onPress={() =>
               router.push({
                 pathname: "/edit",
-                params: { page: "create", type: "courses" },
+                params: { page: "edit", type: "courses" },
               })
             }
           >
@@ -272,17 +270,17 @@ const CreateProfile = () => {
         </View>
       </View>
       <TouchableOpacity
-        onPress={handleCreateProfile}
+        onPress={handleEditProfile}
         style={[S.btnMed, { marginTop: 30 }]}
       >
-        <Text style={S.txtLrg}>Create</Text>
+        <Text style={S.txtLrg}>Done</Text>
       </TouchableOpacity>
       <View style={styles.loginFooter}></View>
     </View>
   );
 };
 
-export default CreateProfile;
+export default EditProfile;
 
 const styles = StyleSheet.create({
   container: {
@@ -336,29 +334,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
   },
-
-  loginButton: {
-    paddingHorizontal: 10,
-    backgroundColor: "#76DA69",
-    height: 55,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  loginText: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontFamily: "Lexend_700Bold",
-  },
   loginFooter: {
     alignItems: "center",
     marginTop: 20,
-  },
-  registerText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    zIndex: 2,
   },
   logo: {
     position: "absolute",
@@ -389,16 +367,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  inputCount: {
-    position: "absolute",
-    right: 10,
-  },
-  editCount: {
-    color: "#AEAEB2",
-    fontSize: 12,
-    alignSelf: "center",
-    fontFamily: "Lexend_400Regular",
-  },
   flexRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -406,10 +374,6 @@ const styles = StyleSheet.create({
   },
   flexCol: {
     flexDirection: "column",
-  },
-  underline: {
-    borderBottomColor: "#D9D9D9",
-    borderBottomWidth: 2,
   },
   bioText: {
     width: "70%",

@@ -11,27 +11,27 @@ export default function TabLayout() {
     <View style={styles.container}>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: 'blue',
+          tabBarActiveTintColor: "blue",
           header: ({ route }) => {
-            let title = '';
+            let title = "";
             switch (route.name) {
-              case 'index':
-                title = 'Home';
+              case "index":
+                title = "Home";
                 break;
-              case 'events':
-                title = 'Events';
+              case "events":
+                title = "Events";
                 break;
-              case 'create':
-                title = 'Create';
+              case "create":
+                title = "Create";
                 break;
-              case 'friends':
-                title = 'Friends';
+              case "friends":
+                title = "Friends";
                 break;
-              case 'profile':
-                title = 'Profile';
+              case "profile":
+                title = "Profile";
                 break;
               default:
-                title = 'Campus Circles';
+                title = "Campus Circles";
             }
             return <Header title={title} />;
           },
@@ -41,7 +41,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name='index'
           options={{
-            title: 'Home',
+            title: "Home",
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='home-outline' color={color} />
             ),
@@ -63,7 +63,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name='events'
           options={{
-            title: 'Events',
+            title: "Events",
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='location-outline' color={color} />
             ),
@@ -85,7 +85,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name='create'
           options={{
-            title: 'Create',
+            title: "Create",
             tabBarIcon: ({ focused }) => (
               <View
                 style={[
@@ -114,7 +114,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name='friends'
           options={{
-            title: 'Friends',
+            title: "Friends",
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='people-outline' color={color} />
             ),
@@ -136,7 +136,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name='profile'
           options={{
-            title: 'Profile',
+            title: "Profile",
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='person-circle-outline' color={color} />
             ),
