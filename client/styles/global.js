@@ -21,6 +21,7 @@ export default StyleSheet.create({
     marginTop: 10,
     zIndex: 1,
     width: '70%',
+    alignSelf: 'center',
   },
   txtLrg: {
     color: '#FFFFFF',
