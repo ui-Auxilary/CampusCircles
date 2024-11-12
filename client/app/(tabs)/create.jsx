@@ -1,10 +1,4 @@
-/*
-to review
-marked additional imports and variables
-on form update function additions
-changes to resetForm
-design for location
-*/
+// fix code smells
 
 import {
   StyleSheet,
@@ -24,7 +18,7 @@ import React, { useState, useEffect } from "react";
 import { router, useNavigation } from "expo-router";
 import axios from "axios";
 
-// imported APIs
+// imported components
 import * as ImagePicker from "expo-image-picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
@@ -158,7 +152,9 @@ const CreateTab = () => {
   const handleLocationChange = async (query) => {
     setLocationQuery(query);
     if (query.length > 2) {
+      // as typing, once query longer than 2
       try {
+        // wait for geocode to return suggestion array for AU
         const response = await axios.get(
           `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
             query
@@ -170,16 +166,17 @@ const CreateTab = () => {
         console.error("Geocoding Error:", error);
       }
     } else {
+      // otherwise keep suggestions array hidden
       setLocationResults([]);
       setShowSuggestions(false);
     }
   };
 
   const selectLocation = (location) => {
+    // once suggestion selected,
     setSelectedLocation(location.formatted);
     setEvent((prevEvent) => ({
       ...prevEvent,
-      location: location.formatted,
       latitude: location.geometry.lat,
       longitude: location.geometry.lng,
     }));
@@ -708,8 +705,8 @@ const styles = StyleSheet.create({
   },
   suggestionsContainer: {
     backgroundColor: "#fff",
-    borderRadius: 5,
-    width: "80%",
+    borderRadius: 10,
+    width: 200,
     maxHeight: 200,
     padding: 10,
   },
