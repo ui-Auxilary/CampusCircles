@@ -334,29 +334,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
   },
-
-  loginButton: {
-    paddingHorizontal: 10,
-    backgroundColor: "#76DA69",
-    height: 55,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  loginText: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontFamily: "Lexend_700Bold",
-  },
   loginFooter: {
     alignItems: "center",
     marginTop: 20,
-  },
-  registerText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    zIndex: 2,
   },
   logo: {
     position: "absolute",
@@ -387,16 +367,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  inputCount: {
-    position: "absolute",
-    right: 10,
-  },
-  editCount: {
-    color: "#AEAEB2",
-    fontSize: 12,
-    alignSelf: "center",
-    fontFamily: "Lexend_400Regular",
-  },
   flexRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -404,10 +374,6 @@ const styles = StyleSheet.create({
   },
   flexCol: {
     flexDirection: "column",
-  },
-  underline: {
-    borderBottomColor: "#D9D9D9",
-    borderBottomWidth: 2,
   },
   bioText: {
     width: "70%",
