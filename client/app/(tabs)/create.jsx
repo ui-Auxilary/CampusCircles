@@ -1,5 +1,3 @@
-// fix code smells
-
 import {
   StyleSheet,
   View,
@@ -29,8 +27,238 @@ import checked from "../../assets/images/checked.png";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 
-// opencage API
-const OPENCAGE_API_KEY = "0b76d125882040e6b92dd7ddf1f3ab13";
+// UNSW Locations
+const UNSW_LOCATIONS = [
+  { name: "AGSM", lat: -33.91816351947832, lng: 151.23558345263652 },
+  {
+    name: "Ainsworth Building",
+    lat: -33.91851453103917,
+    lng: 151.23133733660842,
+  },
+  {
+    name: "Anita B. Lawrence Centre",
+    lat: -33.91771478748421,
+    lng: 151.22993773558224,
+  },
+  { name: "Bank", lat: -33.91741693751213, lng: 151.23366010298952 },
+  {
+    name: "Barker Apartments",
+    lat: -33.91938338786202,
+    lng: 151.22894467791113,
+  },
+  {
+    name: "Barker Street Parking Station",
+    lat: -33.919304745367505,
+    lng: 151.23118470859555,
+  },
+  { name: "Basser College", lat: -33.916533771804296, lng: 151.23173330859547 },
+  {
+    name: "Biological Sciences - North",
+    lat: -33.917113247208896,
+    lng: 151.23533310664283,
+  },
+  {
+    name: "Biological Sciences - South",
+    lat: -33.91749008702639,
+    lng: 151.2360874509244,
+  },
+  { name: "Blockhouse", lat: -33.91679957245693, lng: 151.22691986626663 },
+  {
+    name: "Botany Street Parking Station",
+    lat: -33.91814496632007,
+    lng: 151.23465422024003,
+  },
+  { name: "Building K17", lat: -33.918687986372426, lng: 151.23100012208883 },
+  { name: "Building L5", lat: -33.917950482078275, lng: 151.22613484417772 },
+  { name: "Chancellery", lat: -33.91665220187508, lng: 151.23452163367372 },
+  {
+    name: "Civil Engineering",
+    lat: -33.918038356559435,
+    lng: 151.23251199140503,
+  },
+  {
+    name: "Clancy Auditorium",
+    lat: -33.91571246881472,
+    lng: 151.23421581029595,
+  },
+  { name: "Colombo House", lat: -33.91543162507806, lng: 151.2316535478737 },
+  { name: "Dalton", lat: -33.916681924556414, lng: 151.22939774452036 },
+  {
+    name: "Electrical Engineering",
+    lat: -33.91693544802448,
+    lng: 151.23135084098033,
+  },
+  {
+    name: "Esme Timbery Creative Studio",
+    lat: -33.91544234041234,
+    lng: 151.22751571768825,
+  },
+  { name: "Fig Tree Hall", lat: -33.91499450053618, lng: 151.23174396426992 },
+  { name: "Fig Tree Theatre", lat: 0, lng: 0 }, ///////////
+  {
+    name: "Fitness and Aquatic Centre",
+    lat: -33.91496879500578,
+    lng: 151.22665221719004,
+  },
+  {
+    name: "Goldstein College",
+    lat: -33.914834071431954,
+    lng: 151.2322021404227,
+  },
+  { name: "Goldstein Hall", lat: -33.91593841726432, lng: 151.2315816404232 },
+  { name: "Goodsell", lat: -33.91685822456282, lng: 151.23265093303118 },
+  {
+    name: "Gordon and Jacqueline Samuels Building",
+    lat: -33.91784383633943,
+    lng: 151.2351217069306,
+  },
+  { name: "Hilmer Building", lat: -33.91626711251456, lng: 151.22848038700502 },
+  {
+    name: "House At Pooh Corner",
+    lat: -33.91837305083146,
+    lng: 151.22741129439962,
+  },
+  {
+    name: "International House",
+    lat: -33.91506906938383,
+    lng: 151.22736464837172,
+  },
+  {
+    name: "John Niland Scientia",
+    lat: -33.91712713729993,
+    lng: 151.23224640234773,
+  },
+  {
+    name: "June Griffith Building",
+    lat: -33.91692269440534,
+    lng: 151.2289577662659,
+  },
+  {
+    name: "Keith Burrows Theatre",
+    lat: -33.917999933253725,
+    lng: 151.2300628361579,
+  },
+  { name: "Law Building", lat: -33.91562203554193, lng: 151.227612075638 },
+  { name: "Library", lat: -33.917062940844794, lng: 151.23330447280085 },
+  {
+    name: "Lowy Cancer Research Centre",
+    lat: -33.91553579327924,
+    lng: 151.23541480234675,
+  },
+  { name: "Mathews", lat: -33.9170068162199, lng: 151.23413582166373 },
+  { name: "Mathews Arcade", lat: -33.916926938022215, lng: 151.23458763303108 },
+  { name: "Mathews Theatre", lat: -33.91698686638026, lng: 151.234129308595 },
+  { name: "Morven Brown", lat: -33.91585482348208, lng: 151.23244087166324 },
+  { name: "Moya Dodd Grandstand", lat: 0, lng: 0 }, ////// doesnt exist
+  { name: "New College", lat: -33.91816510885186, lng: 151.22673492230592 },
+  {
+    name: "New College Postgraduate Village",
+    lat: -33.917150141660095,
+    lng: 151.22568349643126,
+  },
+  { name: "Newton", lat: -33.91727165153532, lng: 151.22995396371516 },
+  { name: "NIDA", lat: -33.91568254371104, lng: 151.22516934999473 },
+  {
+    name: "NIDA Parade Theatre",
+    lat: -33.9160595733547,
+    lng: 151.2252295624611,
+  },
+  { name: "Old Main", lat: -33.91747557887084, lng: 151.23116958644985 },
+  { name: "Old Tote", lat: -33.91747557887084, lng: 151.23116958644985 },
+  {
+    name: "Patricia O'Shane Building",
+    lat: -33.91706475603473,
+    lng: 151.23248473278863,
+  }, // central lecture block // CLB
+  {
+    name: "Philip Baxter College",
+    lat: -33.91665148815054,
+    lng: 151.23168180088723,
+  }, // basser college
+  { name: "Physics Theatre", lat: -33.91766219321098, lng: 151.23012756371543 },
+  { name: "Quadrangle", lat: -33.91624698854793, lng: 151.23056801029622 },
+  { name: "Repository", lat: -33.916203428520085, lng: 151.23352506914696 },
+  {
+    name: "Rex Vowels Theatre",
+    lat: -33.91695415114445,
+    lng: 151.23136250234745,
+  },
+  { name: "Robert Webster", lat: -33.917586351959706, lng: 151.23061076272342 },
+  {
+    name: "Robert Webster Theatres",
+    lat: -33.917344034298196,
+    lng: 151.2306733351128,
+  },
+  { name: "Roundhouse", lat: -33.91561870757597, lng: 151.22665140234673 },
+  { name: "Rupert Myers", lat: -33.918464688373156, lng: 151.230352848374 },
+  {
+    name: "Sam Cracknell Pavilion",
+    lat: -33.916904273382485,
+    lng: 151.22691777961296,
+  },
+  {
+    name: "Science and Engineering",
+    lat: -33.91654528620154,
+    lng: 151.22767034788,
+  },
+  {
+    name: "Science Theatre",
+    lat: -33.916315928489816,
+    lng: 151.22944691029625,
+  },
+  {
+    name: "Shalom Apartments",
+    lat: -33.9191837796625,
+    lng: 151.22766669194556,
+  }, // shalom college
+  {
+    name: "Solar Industrial Research Facility (SIRF)",
+    lat: -33.917475042142264,
+    lng: 151.23401101768968,
+  },
+  { name: "Squarehouse", lat: -33.916292993199065, lng: 151.22635170276118 }, // unsw design futures lab
+  {
+    name: "Tyree Energy Technologies Building (TETB)",
+    lat: -33.91721148764159,
+    lng: 151.22665461540814,
+  }, // school of photovoltaic and renewable energy engineering
+  {
+    name: "University Terraces",
+    lat: -33.914827949872155,
+    lng: 151.22826467905494,
+  }, // university terraces apartment
+  {
+    name: "UNSW Business School",
+    lat: -33.9157852829548,
+    lng: 151.22939657166336,
+  },
+  { name: "UNSW Regiment", lat: -33.91717917186827, lng: 151.22469523151156 },
+  { name: "UNSW Regiment 2", lat: -33.91717917186827, lng: 151.22469523151156 },
+  { name: "UNSW Village", lat: -33.91520531144744, lng: 151.22904227905534 },
+  {
+    name: "Vallentine Annexe",
+    lat: -33.917323614190046,
+    lng: 151.23352052508258,
+  },
+  {
+    name: "Village Green Food and Beverage",
+    lat: -33.9176791002627,
+    lng: 151.2288597163693,
+  }, // home ground kiosk
+  {
+    name: "Village Green Pick up and Play",
+    lat: -33.9176791002627,
+    lng: 151.2288597163693,
+  }, // home ground kiosk
+  { name: "Wallace Wurth", lat: -33.91603334460775, lng: 151.23569104097953 },
+  {
+    name: "Warrane College",
+    lat: -33.918329623925366,
+    lng: 151.22648654098117,
+  },
+  { name: "White House", lat: -33.91557635487205, lng: 151.23065054837193 },
+  { name: "Willis Annexe", lat: -33.91796057112238, lng: 151.2314470870065 },
+];
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -44,10 +272,12 @@ const CreateTab = () => {
   const [image, setImage] = useState(null);
   const [mediaLibraryPermissions, requestMediaLibraryPermissions] =
     ImagePicker.useMediaLibraryPermissions();
+  const [locationQuery, setLocationQuery] = useState("");
+  const [locationResults, setLocationResults] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
-  // Event Obj ////////////////////////////////////////
   const defaultEventData = {
     name: "",
     photo: "",
@@ -76,13 +306,8 @@ const CreateTab = () => {
       },
     },
   };
-  const [event, setEvent] = useState(defaultEventData);
 
-  // Variables: OpenCage
-  const [locationQuery, setLocationQuery] = useState("");
-  const [locationResults, setLocationResults] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [event, setEvent] = useState(defaultEventData);
 
   // FUNCTIONS: useEffect ////////////////////////////////////////////////////////////////////
 
@@ -149,39 +374,28 @@ const CreateTab = () => {
     }
   };
 
-  const handleLocationChange = async (query) => {
+  const handleLocationChange = (query) => {
     setLocationQuery(query);
-    if (query.length > 2) {
-      // as typing, once query longer than 2
-      try {
-        // wait for geocode to return suggestion array for AU
-        const response = await axios.get(
-          `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
-            query
-          )}&key=${OPENCAGE_API_KEY}&countrycode=AU&limit=5`
-        );
-        setLocationResults(response.data.results);
-        setShowSuggestions(true);
-      } catch (error) {
-        console.error("Geocoding Error:", error);
-      }
+    if (query.length > 1) {
+      const filteredResults = UNSW_LOCATIONS.filter((location) =>
+        location.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setLocationResults(filteredResults);
+      setShowSuggestions(filteredResults.length > 0);
     } else {
-      // otherwise keep suggestions array hidden
       setLocationResults([]);
       setShowSuggestions(false);
     }
   };
 
   const selectLocation = (location) => {
-    // once suggestion selected,
-    setSelectedLocation(location.formatted);
+    setLocationQuery(location.name);
     setEvent((prevEvent) => ({
       ...prevEvent,
-      latitude: location.geometry.lat,
-      longitude: location.geometry.lng,
+      lat: location.lat,
+      lng: location.lng,
     }));
-    setLocationResults([]);
-    setLocationQuery(location.formatted);
+    setShowSuggestions(false);
   };
 
   const formatDate = (date) => {
@@ -295,39 +509,7 @@ const CreateTab = () => {
     setImage(null);
     setLocationQuery("");
     setLocationResults([]);
-    setSelectedLocation(null);
   };
-
-  // COMPONENT: geolocation suggestions ///////////////////////////////////////
-
-  const LocationSuggestionsModal = ({
-    visible,
-    results,
-    onSelect,
-    onClose,
-  }) => (
-    <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <View style={styles.suggestionsContainer}>
-          <FlatList
-            data={results}
-            keyExtractor={(item) => item.place_id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  onSelect(item);
-                  onClose();
-                }}
-                style={styles.locationItem}
-              >
-                <Text>{item.formatted}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      </View>
-    </Modal>
-  );
 
   /////////////////////////////////////////////////////////////////////////////
   // DESIGN ///////////////////////////////////////////////////////////////////
@@ -433,16 +615,16 @@ const CreateTab = () => {
               value={locationQuery}
               onChangeText={handleLocationChange}
             />
-            {locationResults.length > 0 && (
+            {showSuggestions && (
               <FlatList
                 data={locationResults}
-                keyExtractor={(item) => item.place_id}
+                keyExtractor={(item) => item.name}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() => selectLocation(item)}
                     style={styles.locationItem}
                   >
-                    <Text>{item.formatted}</Text>
+                    <Text>{item.name}</Text>
                   </TouchableOpacity>
                 )}
                 style={styles.suggestionsContainer}
@@ -696,19 +878,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
   },
-  // geocoding shit
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
   suggestionsContainer: {
     backgroundColor: "#fff",
     borderRadius: 10,
     width: 200,
-    maxHeight: 200,
-    padding: 10,
+    maxHeight: 150,
+    position: "absolute",
+    top: 70,
+    zIndex: 1000,
+    padding: 5,
   },
   locationItem: {
     paddingVertical: 10,
