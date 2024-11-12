@@ -74,7 +74,7 @@ export const loginUser = async (req, res) => {
     res.status(201).json({
       status: true,
       message: "User exists, logging them in",
-      data: user,
+      data: user.id,
     });
   } catch (e) {
     console.log("Invalid username or password", e);

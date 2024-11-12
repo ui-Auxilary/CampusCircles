@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   FlatList,
   Modal,
+  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 
@@ -28,270 +29,7 @@ import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 
 // UNSW Locations
-const UNSW_LOCATIONS = [
-  { name: "AGSM", lat: -33.91816351947832, lng: 151.23558345263652 },
-  {
-    name: "Ainsworth Building",
-    lat: -33.91851453103917,
-    lng: 151.23133733660842,
-  },
-  {
-    name: "Anita B. Lawrence Centre",
-    lat: -33.91771478748421,
-    lng: 151.22993773558224,
-  },
-  { name: "Bank", lat: -33.91741693751213, lng: 151.23366010298952 },
-  {
-    name: "Barker Apartments",
-    lat: -33.91938338786202,
-    lng: 151.22894467791113,
-  },
-  {
-    name: "Barker Street Parking Station",
-    lat: -33.919304745367505,
-    lng: 151.23118470859555,
-  },
-  { name: "Basser College", lat: -33.916533771804296, lng: 151.23173330859547 },
-  {
-    name: "Biological Sciences - North",
-    lat: -33.917113247208896,
-    lng: 151.23533310664283,
-  },
-  {
-    name: "Biological Sciences - South",
-    lat: -33.91749008702639,
-    lng: 151.2360874509244,
-  },
-  { name: "Blockhouse", lat: -33.91679957245693, lng: 151.22691986626663 },
-  {
-    name: "Botany Street Parking Station",
-    lat: -33.91814496632007,
-    lng: 151.23465422024003,
-  },
-  { name: "Building K17", lat: -33.918687986372426, lng: 151.23100012208883 },
-  { name: "Building L5", lat: -33.917950482078275, lng: 151.22613484417772 },
-  { name: "Chancellery", lat: -33.91665220187508, lng: 151.23452163367372 },
-  {
-    name: "Civil Engineering",
-    lat: -33.918038356559435,
-    lng: 151.23251199140503,
-  },
-  {
-    name: "Clancy Auditorium",
-    lat: -33.91571246881472,
-    lng: 151.23421581029595,
-  },
-  { name: "Colombo House", lat: -33.91543162507806, lng: 151.2316535478737 },
-  { name: "Dalton", lat: -33.916681924556414, lng: 151.22939774452036 },
-  {
-    name: "Electrical Engineering",
-    lat: -33.91693544802448,
-    lng: 151.23135084098033,
-  },
-  {
-    name: "Esme Timbery Creative Studio",
-    lat: -33.91544234041234,
-    lng: 151.22751571768825,
-  },
-  { name: "Fig Tree Hall", lat: -33.91499450053618, lng: 151.23174396426992 },
-  {
-    name: "Fitness and Aquatic Centre",
-    lat: -33.91496879500578,
-    lng: 151.22665221719004,
-  },
-  {
-    name: "Goldstein College",
-    lat: -33.914834071431954,
-    lng: 151.2322021404227,
-  },
-  { name: "Goldstein Hall", lat: -33.91593841726432, lng: 151.2315816404232 },
-  { name: "Goodsell", lat: -33.91685822456282, lng: 151.23265093303118 },
-  {
-    name: "Gordon and Jacqueline Samuels Building",
-    lat: -33.91784383633943,
-    lng: 151.2351217069306,
-  },
-  { name: "Hilmer Building", lat: -33.91626711251456, lng: 151.22848038700502 },
-  {
-    name: "House At Pooh Corner",
-    lat: -33.91837305083146,
-    lng: 151.22741129439962,
-  },
-  {
-    name: "International House",
-    lat: -33.91506906938383,
-    lng: 151.22736464837172,
-  },
-  {
-    name: "John Niland Scientia",
-    lat: -33.91712713729993,
-    lng: 151.23224640234773,
-  },
-  {
-    name: "June Griffith Building",
-    lat: -33.91692269440534,
-    lng: 151.2289577662659,
-  },
-  {
-    name: "Keith Burrows Theatre",
-    lat: -33.917999933253725,
-    lng: 151.2300628361579,
-  },
-  { name: "Law Building", lat: -33.91562203554193, lng: 151.227612075638 },
-  { name: "Library", lat: -33.917062940844794, lng: 151.23330447280085 },
-  {
-    name: "Lowy Cancer Research Centre",
-    lat: -33.91553579327924,
-    lng: 151.23541480234675,
-  },
-  { name: "Mathews", lat: -33.9170068162199, lng: 151.23413582166373 },
-  { name: "Mathews Arcade", lat: -33.916926938022215, lng: 151.23458763303108 },
-  { name: "Mathews Theatre", lat: -33.91698686638026, lng: 151.234129308595 },
-  { name: "Morven Brown", lat: -33.91585482348208, lng: 151.23244087166324 },
-  { name: "New College", lat: -33.91816510885186, lng: 151.22673492230592 },
-  {
-    name: "New College Postgraduate Village",
-    lat: -33.917150141660095,
-    lng: 151.22568349643126,
-  },
-  { name: "Newton", lat: -33.91727165153532, lng: 151.22995396371516 },
-  { name: "NIDA", lat: -33.91568254371104, lng: 151.22516934999473 },
-  {
-    name: "NIDA Parade Theatre",
-    lat: -33.9160595733547,
-    lng: 151.2252295624611,
-  },
-  { name: "Old Main", lat: -33.91747557887084, lng: 151.23116958644985 },
-  { name: "Old Tote", lat: -33.91747557887084, lng: 151.23116958644985 },
-  {
-    name: "Patricia O'Shane Building",
-    lat: -33.91706475603473,
-    lng: 151.23248473278863,
-  },
-  {
-    name: "Central Lecture Block",
-    lat: -33.91706475603473,
-    lng: 151.23248473278863,
-  },
-  {
-    name: "CLB",
-    lat: -33.91706475603473,
-    lng: 151.23248473278863,
-  },
-  {
-    name: "Philip Baxter College",
-    lat: -33.91665148815054,
-    lng: 151.23168180088723,
-  },
-  {
-    name: "Basser College",
-    lat: -33.91665148815054,
-    lng: 151.23168180088723,
-  },
-  { name: "Physics Theatre", lat: -33.91766219321098, lng: 151.23012756371543 },
-  { name: "Quadrangle", lat: -33.91624698854793, lng: 151.23056801029622 },
-  { name: "Repository", lat: -33.916203428520085, lng: 151.23352506914696 },
-  {
-    name: "Rex Vowels Theatre",
-    lat: -33.91695415114445,
-    lng: 151.23136250234745,
-  },
-  { name: "Robert Webster", lat: -33.917586351959706, lng: 151.23061076272342 },
-  {
-    name: "Robert Webster Theatres",
-    lat: -33.917344034298196,
-    lng: 151.2306733351128,
-  },
-  { name: "Roundhouse", lat: -33.91561870757597, lng: 151.22665140234673 },
-  { name: "Rupert Myers", lat: -33.918464688373156, lng: 151.230352848374 },
-  {
-    name: "Sam Cracknell Pavilion",
-    lat: -33.916904273382485,
-    lng: 151.22691777961296,
-  },
-  {
-    name: "Science and Engineering",
-    lat: -33.91654528620154,
-    lng: 151.22767034788,
-  },
-  {
-    name: "Science Theatre",
-    lat: -33.916315928489816,
-    lng: 151.22944691029625,
-  },
-  {
-    name: "Shalom Apartments",
-    lat: -33.9191837796625,
-    lng: 151.22766669194556,
-  },
-  {
-    name: "Shalom College",
-    lat: -33.9191837796625,
-    lng: 151.22766669194556,
-  },
-  {
-    name: "Solar Industrial Research Facility (SIRF)",
-    lat: -33.917475042142264,
-    lng: 151.23401101768968,
-  },
-  { name: "Squarehouse", lat: -33.916292993199065, lng: 151.22635170276118 },
-  {
-    name: "UNSW Design Futures Lab",
-    lat: -33.916292993199065,
-    lng: 151.22635170276118,
-  },
-  {
-    name: "Tyree Energy Technologies Building (TETB)",
-    lat: -33.91721148764159,
-    lng: 151.22665461540814,
-  },
-  {
-    name: "School of Photovoltaic and Renewable Energy Engineering",
-    lat: -33.91721148764159,
-    lng: 151.22665461540814,
-  },
-  {
-    name: "University Terraces",
-    lat: -33.914827949872155,
-    lng: 151.22826467905494,
-  },
-  {
-    name: "UNSW Business School",
-    lat: -33.9157852829548,
-    lng: 151.22939657166336,
-  },
-  { name: "UNSW Regiment", lat: -33.91717917186827, lng: 151.22469523151156 },
-  { name: "UNSW Regiment 2", lat: -33.91717917186827, lng: 151.22469523151156 },
-  { name: "UNSW Village", lat: -33.91520531144744, lng: 151.22904227905534 },
-  {
-    name: "Vallentine Annexe",
-    lat: -33.917323614190046,
-    lng: 151.23352052508258,
-  },
-  {
-    name: "Village Green Food and Beverage",
-    lat: -33.9176791002627,
-    lng: 151.2288597163693,
-  },
-  {
-    name: "Village Green Pick up and Play",
-    lat: -33.9176791002627,
-    lng: 151.2288597163693,
-  },
-  {
-    name: "Home Ground Kiosk",
-    lat: -33.9176791002627,
-    lng: 151.2288597163693,
-  },
-  { name: "Wallace Wurth", lat: -33.91603334460775, lng: 151.23569104097953 },
-  {
-    name: "Warrane College",
-    lat: -33.918329623925366,
-    lng: 151.22648654098117,
-  },
-  { name: "White House", lat: -33.91557635487205, lng: 151.23065054837193 },
-  { name: "Willis Annexe", lat: -33.91796057112238, lng: 151.2314470870065 },
-];
+import UNSW_LOCATIONS from "../../data/locations.json";
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -323,7 +61,7 @@ const CreateTab = () => {
     tag: {
       connectOrCreate: {
         where: {
-          id: "6722204d9e232f55d0a0903c",
+          name: eventType,
         },
         create: {
           name: eventType,
@@ -366,7 +104,7 @@ const CreateTab = () => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log("ID:", userId);
+    setEvent({ ...event, ["creator"]: { connect: { id: userId } } });
   }, [userId]);
 
   // FUNCTIONS: on form update //////////////////////////////////////
@@ -425,8 +163,9 @@ const CreateTab = () => {
     setLocationQuery(location.name);
     setEvent((prevEvent) => ({
       ...prevEvent,
-      lat: location.lat,
-      lng: location.lng,
+      lat: location.lat.toString(),
+      long: location.lng.toString(),
+      location: location.name,
     }));
     setShowSuggestions(false);
   };
@@ -467,13 +206,11 @@ const CreateTab = () => {
   // FUNCTIONS: on form submission ////////////////////////////////////////////
 
   const validateDate = (value) => {
-    const datePattern = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
-    return datePattern.test(value);
+    return !isNaN(Date.parse(value));
   };
 
   const validateTime = (value) => {
-    const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
-    return timePattern.test(value);
+    return !isNaN(value);
   };
 
   const validateForm = () => {
@@ -493,7 +230,7 @@ const CreateTab = () => {
       return false;
     }
 
-    if (!validateTime(event.time)) {
+    if (!validateTime(event.time.getTime())) {
       Alert.alert(
         "Invalid Time Format",
         "Please enter time in 24-hour HH:MM format."
@@ -511,21 +248,22 @@ const CreateTab = () => {
 
     let postData = {
       ...event,
-      date: date.toISOString(),
-      time: time.toISOString(),
+      date: event.date.toISOString(),
+      time: event.time.toISOString(),
     };
 
+    console.log("POSTING", postData);
     try {
       const response = await axios.post(`${BASE_URL}/events/create`, postData);
       const createdEvent = response.data.data;
 
       // THIS IS HOW I WILL BE POSTING CREATED EVENT ID TO USER DATA
       if (createdEvent && createdEvent.id) {
-        await axios.put(`${BASE_URL}/users/${userId}/update`, {
-          eventsCreated: {
-            create: createdEvent,
-          },
-        });
+        // await axios.put(`${BASE_URL}/users/${userId}`, {
+        //   eventsCreated: {
+        //     create: postData,
+        //   },
+        // });
 
         router.push({
           pathname: "event-details",
@@ -549,227 +287,229 @@ const CreateTab = () => {
   /////////////////////////////////////////////////////////////////////////////
 
   return (
-    <View style={getTag()}>
-      <View style={[styles.typeContainer, styles.shadow]}>
-        <Pressable
-          style={[
-            styles.typeButtonFirst,
-            eventType === "Hang" && styles.typeButtonFirstInverted,
-          ]}
-          onPress={() => toggleTag("Hang")}
-        >
-          <Text
+    <ScrollView style={getTag()}>
+      <View style={[styles.container]}>
+        <View style={[styles.typeContainer, styles.shadow]}>
+          <Pressable
             style={[
-              styles.typeText,
-              eventType === "Hang" && styles.typeTextInverted,
+              styles.typeButtonFirst,
+              eventType === "Hang" && styles.typeButtonFirstInverted,
             ]}
+            onPress={() => toggleTag("Hang")}
           >
-            Hang
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.typeButton,
-            eventType === "Study" && styles.typeButtonInverted,
-          ]}
-          onPress={() => toggleTag("Study")}
-        >
-          <Text
+            <Text
+              style={[
+                styles.typeText,
+                eventType === "Hang" && styles.typeTextInverted,
+              ]}
+            >
+              Hang
+            </Text>
+          </Pressable>
+          <Pressable
             style={[
-              styles.typeText,
-              eventType === "Study" && styles.typeTextInverted,
+              styles.typeButton,
+              eventType === "Study" && styles.typeButtonInverted,
             ]}
+            onPress={() => toggleTag("Study")}
           >
-            Study
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.typeButton,
-            eventType === "Eat" && styles.typeButtonInverted,
-          ]}
-          onPress={() => toggleTag("Eat")}
-        >
-          <Text
+            <Text
+              style={[
+                styles.typeText,
+                eventType === "Study" && styles.typeTextInverted,
+              ]}
+            >
+              Study
+            </Text>
+          </Pressable>
+          <Pressable
             style={[
-              styles.typeText,
-              eventType === "Eat" && styles.typeTextInverted,
+              styles.typeButton,
+              eventType === "Eat" && styles.typeButtonInverted,
             ]}
+            onPress={() => toggleTag("Eat")}
           >
-            Eat
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.typeButtonLast,
-            eventType === "Other" && styles.typeButtonLastInverted,
-          ]}
-          onPress={() => toggleTag("Other")}
-        >
-          <Text
+            <Text
+              style={[
+                styles.typeText,
+                eventType === "Eat" && styles.typeTextInverted,
+              ]}
+            >
+              Eat
+            </Text>
+          </Pressable>
+          <Pressable
             style={[
-              styles.typeText,
-              eventType === "Other" && styles.typeTextInverted,
+              styles.typeButtonLast,
+              eventType === "Other" && styles.typeButtonLastInverted,
             ]}
+            onPress={() => toggleTag("Other")}
           >
-            Other
-          </Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.horiz}>
-        {/* Image */}
-        <View style={styles.imageContainer}>
-          <Pressable onPress={handleImagePick} style={styles.imageContainer}>
-            {event.photo ? (
-              <Image style={styles.fullImage} source={{ uri: image }} />
-            ) : (
-              <Image style={styles.iconImage} source={pic} />
-            )}
+            <Text
+              style={[
+                styles.typeText,
+                eventType === "Other" && styles.typeTextInverted,
+              ]}
+            >
+              Other
+            </Text>
           </Pressable>
         </View>
-        {/* Event Name */}
-        <View style={styles.verti}>
-          <View style={styles.detailContainer}>
-            <Text style={styles.label}>Event Name</Text>
-            <TextInput
-              style={[styles.field, { width: 200 }]}
-              placeholder="Enter event name"
-              value={event.name}
-              onChangeText={(value) => handleInputChange("name", value)}
-            />
+
+        <View style={styles.horiz}>
+          {/* Image */}
+          <View style={styles.imageContainer}>
+            <Pressable onPress={handleImagePick} style={styles.imageContainer}>
+              {event.photo ? (
+                <Image style={styles.fullImage} source={{ uri: image }} />
+              ) : (
+                <Image style={styles.iconImage} source={pic} />
+              )}
+            </Pressable>
           </View>
-          {/* Location */}
-          <View style={styles.detailContainer}>
-            <Text style={styles.label}>Location</Text>
-            <TextInput
-              style={[styles.field, { width: 200 }]}
-              placeholder="Search for location"
-              value={locationQuery}
-              onChangeText={handleLocationChange}
-            />
-            {showSuggestions && (
-              <FlatList
-                data={locationResults}
-                keyExtractor={(item) => item.name}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    onPress={() => selectLocation(item)}
-                    style={styles.locationItem}
-                  >
-                    <Text>{item.name}</Text>
-                  </TouchableOpacity>
-                )}
-                style={styles.suggestionsContainer}
+          {/* Event Name */}
+          <View style={styles.verti}>
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>Event Name</Text>
+              <TextInput
+                style={[styles.field, { flex: 1 }]}
+                placeholder='Enter event name'
+                value={event.name}
+                onChangeText={(value) => handleInputChange("name", value)}
               />
-            )}
+            </View>
+            {/* Location */}
+            <View style={styles.detailContainer}>
+              <Text style={styles.label}>Location</Text>
+              <TextInput
+                style={[styles.field, { flex: 1 }]}
+                placeholder='Search for location'
+                value={locationQuery}
+                onChangeText={handleLocationChange}
+              />
+              {showSuggestions && (
+                <View style={styles.suggestionsContainer}>
+                  {locationResults.map((location, idx) => (
+                    <TouchableOpacity
+                      key={idx}
+                      onPress={() => selectLocation(location)}
+                      style={styles.locationItem}
+                    >
+                      <Text>{location.name}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.horiz}>
-        {/* Date Field */}
+        <View style={styles.horiz}>
+          {/* Date Field */}
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Date</Text>
+            <Pressable
+              onPress={() => setDatePickerVisibility(true)}
+              style={styles.dateTimeField}
+            >
+              <Text style={styles.dateTimeText}>{formatDate(event.date)}</Text>
+            </Pressable>
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode='date'
+              onConfirm={handleConfirmDate}
+              onCancel={() => setDatePickerVisibility(false)}
+            />
+          </View>
+
+          {/* Time Field */}
+          <View style={styles.detailContainer}>
+            <Text style={styles.label}>Time</Text>
+            <Pressable
+              onPress={() => setTimePickerVisibility(true)}
+              style={styles.dateTimeField}
+            >
+              <Text style={styles.dateTimeText}>{formatTime(event.time)}</Text>
+            </Pressable>
+            <DateTimePickerModal
+              isVisible={isTimePickerVisible}
+              mode='time'
+              onConfirm={handleConfirmTime}
+              onCancel={() => setTimePickerVisibility(false)}
+            />
+          </View>
+        </View>
+
+        {/* Description */}
         <View style={styles.detailContainer}>
-          <Text style={styles.label}>Date</Text>
-          <Pressable
-            onPress={() => setDatePickerVisibility(true)}
-            style={styles.dateTimeField}
-          >
-            <Text style={styles.dateTimeText}>{formatDate(event.date)}</Text>
-          </Pressable>
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            onConfirm={handleConfirmDate}
-            onCancel={() => setDatePickerVisibility(false)}
+          <Text style={styles.label}>Description</Text>
+          <TextInput
+            style={styles.descriptionContainer}
+            placeholder='Describe the event details'
+            value={event.description}
+            onChangeText={(value) => handleInputChange("description", value)}
+            multiline
+            textAlignVertical='top'
           />
         </View>
 
-        {/* Time Field */}
-        <View style={styles.detailContainer}>
-          <Text style={styles.label}>Time</Text>
+        {/* Privacy */}
+        <View style={[styles.privacyContainer, styles.shadow]}>
           <Pressable
-            onPress={() => setTimePickerVisibility(true)}
-            style={styles.dateTimeField}
+            style={[
+              styles.privacyButtonLeft,
+              event.public === true && styles.privacyButtonLeftInverted,
+            ]}
+            onPress={togglePrivacy}
           >
-            <Text style={styles.dateTimeText}>{formatTime(event.time)}</Text>
+            <Text
+              style={[
+                styles.privacyText,
+                event.public === true && styles.privacyTextInverted,
+              ]}
+            >
+              Public
+            </Text>
           </Pressable>
-          <DateTimePickerModal
-            isVisible={isTimePickerVisible}
-            mode="time"
-            onConfirm={handleConfirmTime}
-            onCancel={() => setTimePickerVisibility(false)}
-          />
+          <Pressable
+            style={[
+              styles.privacyButtonRight,
+              event.public === false && styles.privacyButtonRightInverted,
+            ]}
+            onPress={togglePrivacy}
+          >
+            <Text
+              style={[
+                styles.privacyText,
+                event.public === false && styles.privacyTextInverted,
+              ]}
+            >
+              Private
+            </Text>
+          </Pressable>
+        </View>
+
+        <View style={[styles.societyCreateContainer, styles.horiz]}>
+          {/* Society Check */}
+          <Pressable onPress={toggleSociety}>
+            <Image
+              source={event.society ? checked : unchecked}
+              style={styles.iconImage}
+            />
+          </Pressable>
+          <Text style={styles.label}>Society</Text>
+
+          {/* Create Button */}
+          <Pressable
+            onPress={handleCreate}
+            style={[styles.createButton, styles.shadow]}
+          >
+            <Text style={styles.createText}>Create</Text>
+          </Pressable>
         </View>
       </View>
-
-      {/* Description */}
-      <View style={styles.detailContainer}>
-        <Text style={styles.label}>Description</Text>
-        <TextInput
-          style={styles.descriptionContainer}
-          placeholder="Describe the event details"
-          value={event.description}
-          onChangeText={(value) => handleInputChange("description", value)}
-          multiline
-        />
-      </View>
-
-      {/* Privacy */}
-      <View style={[styles.privacyContainer, styles.shadow]}>
-        <Pressable
-          style={[
-            styles.privacyButtonLeft,
-            event.public === true && styles.privacyButtonLeftInverted,
-          ]}
-          onPress={togglePrivacy}
-        >
-          <Text
-            style={[
-              styles.privacyText,
-              event.public === true && styles.privacyTextInverted,
-            ]}
-          >
-            Public
-          </Text>
-        </Pressable>
-        <Pressable
-          style={[
-            styles.privacyButtonRight,
-            event.public === false && styles.privacyButtonRightInverted,
-          ]}
-          onPress={togglePrivacy}
-        >
-          <Text
-            style={[
-              styles.privacyText,
-              event.public === false && styles.privacyTextInverted,
-            ]}
-          >
-            Private
-          </Text>
-        </Pressable>
-      </View>
-
-      <View style={[styles.societyCreateContainer, styles.horiz]}>
-        {/* Society Check */}
-        <Pressable onPress={toggleSociety}>
-          <Image
-            source={event.society ? checked : unchecked}
-            style={styles.iconImage}
-          />
-        </Pressable>
-        <Text style={styles.label}>Society</Text>
-
-        {/* Create Button */}
-        <Pressable
-          onPress={handleCreate}
-          style={[styles.createButton, styles.shadow]}
-        >
-          <Text style={styles.createText}>Create</Text>
-        </Pressable>
-      </View>
-    </View>
+      <View style={styles.footerArea} />
+    </ScrollView>
   );
 };
 /////////////////////////////////////////////////////////////////////////////
@@ -781,29 +521,22 @@ const styles = StyleSheet.create({
   global: {
     flex: 1,
   },
-  containerHang: {
+  container: {
     flex: 1,
-    backgroundColor: "#E7948D",
-    alignItems: "center",
     rowGap: 5,
+    paddingHorizontal: 10,
+  },
+  containerHang: {
+    backgroundColor: "#E7948D",
   },
   containerStudy: {
-    flex: 1,
     backgroundColor: "#A0B7EF",
-    alignItems: "center",
-    rowGap: 5,
   },
   containerEat: {
-    flex: 1,
     backgroundColor: "#F0D074",
-    alignItems: "center",
-    rowGap: 5,
   },
   containerOther: {
-    flex: 1,
     backgroundColor: "#EEEEEE",
-    alignItems: "center",
-    rowGap: 5,
   },
   // Type Selector
   typeContainer: {
@@ -861,6 +594,7 @@ const styles = StyleSheet.create({
   // Event Details
   detailContainer: {
     rowGap: 5,
+    flex: 1,
   },
   label: {
     color: "#454545",
@@ -875,20 +609,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: 45,
     padding: 7.5,
-    justifyContent: "center",
+    flex: 1,
   },
   dateTimeField: {
     backgroundColor: "#FFF",
     borderRadius: 10,
     height: 45,
-    width: 180,
+    width: "100%",
     padding: 7.5,
     justifyContent: "center",
   },
   imageContainer: {
     backgroundColor: "#FFFFFF",
     height: 160,
-    width: 160,
+    flex: 1,
+    maxWidth: 160,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 25,
@@ -907,14 +642,14 @@ const styles = StyleSheet.create({
   descriptionContainer: {
     backgroundColor: "#FFFFFF",
     height: 160,
-    width: 375,
+    width: "100%",
     borderRadius: 10,
     padding: 10,
   },
   suggestionsContainer: {
     backgroundColor: "#fff",
     borderRadius: 10,
-    width: 200,
+    width: "100%",
     maxHeight: 150,
     position: "absolute",
     top: 70,
@@ -994,12 +729,16 @@ const styles = StyleSheet.create({
   verti: {
     rowGap: 5,
     flexDirection: "column",
+    flex: 1,
   },
   shadow: {
     shadowColor: "#000",
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+  },
+  footerArea: {
+    marginTop: 100,
   },
 });
 

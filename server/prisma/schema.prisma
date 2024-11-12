@@ -43,6 +43,7 @@ model User {
 model Event {
   id              String          @id @default(auto()) @map("_id") @db.ObjectId
   name            String
+  location        String
   lat             String
   long            String
   date            DateTime
@@ -84,7 +85,7 @@ model Invitation {
 
 model Tag {
   id              String          @id @default(auto()) @map("_id") @db.ObjectId
-  name            String
+  name            String          @unique
   events          Event[]         @relation("EventTag")
 
   createdAt       DateTime        @default(now())

@@ -39,22 +39,24 @@ const HomeTab = () => {
 
   const fetchUserNotifications = async (userId) => {
     try {
-      const notifs = await axios.get(
-        `${BASE_URL}/users/${userId}/notifications`
-      );
+      const notifs = await axios
+        .get(`${BASE_URL}/users/${userId}/notifications`)
+        .catch((e) => console.log(e));
       setNotifications(notifs.data.data);
     } catch (e) {
-      console.error("Error fetching notifications:", error);
+      console.log("Error fetching notifications:", e);
       Alert.alert("Error", "Could not fetch notifications");
     }
   };
 
   const fetchUserEvents = async (userId) => {
     try {
-      const events = await axios.get(`${BASE_URL}/users/${userId}/events`);
+      const events = await axios
+        .get(`${BASE_URL}/users/${userId}/events`)
+        .catch((e) => console.log(e));
       setEvents(events.data.data);
     } catch (e) {
-      console.error("Error fetching events:", error);
+      console.log("Error fetching events:", e);
       Alert.alert("Error", "Could not fetch events");
     }
   };
