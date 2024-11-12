@@ -94,7 +94,6 @@ const UNSW_LOCATIONS = [
     lng: 151.22751571768825,
   },
   { name: "Fig Tree Hall", lat: -33.91499450053618, lng: 151.23174396426992 },
-  { name: "Fig Tree Theatre", lat: 0, lng: 0 }, ///////////
   {
     name: "Fitness and Aquatic Centre",
     lat: -33.91496879500578,
@@ -149,7 +148,6 @@ const UNSW_LOCATIONS = [
   { name: "Mathews Arcade", lat: -33.916926938022215, lng: 151.23458763303108 },
   { name: "Mathews Theatre", lat: -33.91698686638026, lng: 151.234129308595 },
   { name: "Morven Brown", lat: -33.91585482348208, lng: 151.23244087166324 },
-  { name: "Moya Dodd Grandstand", lat: 0, lng: 0 }, ////// doesnt exist
   { name: "New College", lat: -33.91816510885186, lng: 151.22673492230592 },
   {
     name: "New College Postgraduate Village",
@@ -169,12 +167,27 @@ const UNSW_LOCATIONS = [
     name: "Patricia O'Shane Building",
     lat: -33.91706475603473,
     lng: 151.23248473278863,
-  }, // central lecture block // CLB
+  },
+  {
+    name: "Central Lecture Block",
+    lat: -33.91706475603473,
+    lng: 151.23248473278863,
+  },
+  {
+    name: "CLB",
+    lat: -33.91706475603473,
+    lng: 151.23248473278863,
+  },
   {
     name: "Philip Baxter College",
     lat: -33.91665148815054,
     lng: 151.23168180088723,
-  }, // basser college
+  },
+  {
+    name: "Basser College",
+    lat: -33.91665148815054,
+    lng: 151.23168180088723,
+  },
   { name: "Physics Theatre", lat: -33.91766219321098, lng: 151.23012756371543 },
   { name: "Quadrangle", lat: -33.91624698854793, lng: 151.23056801029622 },
   { name: "Repository", lat: -33.916203428520085, lng: 151.23352506914696 },
@@ -210,23 +223,38 @@ const UNSW_LOCATIONS = [
     name: "Shalom Apartments",
     lat: -33.9191837796625,
     lng: 151.22766669194556,
-  }, // shalom college
+  },
+  {
+    name: "Shalom College",
+    lat: -33.9191837796625,
+    lng: 151.22766669194556,
+  },
   {
     name: "Solar Industrial Research Facility (SIRF)",
     lat: -33.917475042142264,
     lng: 151.23401101768968,
   },
-  { name: "Squarehouse", lat: -33.916292993199065, lng: 151.22635170276118 }, // unsw design futures lab
+  { name: "Squarehouse", lat: -33.916292993199065, lng: 151.22635170276118 },
+  {
+    name: "UNSW Design Futures Lab",
+    lat: -33.916292993199065,
+    lng: 151.22635170276118,
+  },
   {
     name: "Tyree Energy Technologies Building (TETB)",
     lat: -33.91721148764159,
     lng: 151.22665461540814,
-  }, // school of photovoltaic and renewable energy engineering
+  },
+  {
+    name: "School of Photovoltaic and Renewable Energy Engineering",
+    lat: -33.91721148764159,
+    lng: 151.22665461540814,
+  },
   {
     name: "University Terraces",
     lat: -33.914827949872155,
     lng: 151.22826467905494,
-  }, // university terraces apartment
+  },
   {
     name: "UNSW Business School",
     lat: -33.9157852829548,
@@ -244,12 +272,17 @@ const UNSW_LOCATIONS = [
     name: "Village Green Food and Beverage",
     lat: -33.9176791002627,
     lng: 151.2288597163693,
-  }, // home ground kiosk
+  },
   {
     name: "Village Green Pick up and Play",
     lat: -33.9176791002627,
     lng: 151.2288597163693,
-  }, // home ground kiosk
+  },
+  {
+    name: "Home Ground Kiosk",
+    lat: -33.9176791002627,
+    lng: 151.2288597163693,
+  },
   { name: "Wallace Wurth", lat: -33.91603334460775, lng: 151.23569104097953 },
   {
     name: "Warrane College",
