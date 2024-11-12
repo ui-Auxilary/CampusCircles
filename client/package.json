@@ -41,6 +41,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
+    "react-native-action-sheet": "^2.2.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-quick-base64": "^2.1.2",
@@ -50,7 +51,10 @@
     "react-native-svg": "^15.8.0",
     "react-native-svg-transformer": "^1.5.0",
     "react-native-ui-lib": "^7.32.0",
-    "react-native-web": "~0.19.10"
+    "react-native-web": "~0.19.10",
+    "expo-auth-session": "~5.5.2",
+    "expo-crypto": "~13.0.2",
+    "react-native-maps": "1.14.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
