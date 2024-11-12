@@ -47,7 +47,12 @@ export default function TabLayout() {
             ),
             tabBarLabel: ({ focused }) => (
               <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
+                <Text
+                  style={[
+                    styles.tabBarLabelStyle,
+                    focused && styles.tabBarLabelFocused,
+                  ]}
+                >
                   Home
                 </Text>
                 {focused && <View style={styles.underline} />}
@@ -64,7 +69,12 @@ export default function TabLayout() {
             ),
             tabBarLabel: ({ focused }) => (
               <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
+                <Text
+                  style={[
+                    styles.tabBarLabelStyle,
+                    focused && styles.tabBarLabelFocused,
+                  ]}
+                >
                   Events
                 </Text>
                 {focused && <View style={styles.underline} />}
@@ -77,13 +87,23 @@ export default function TabLayout() {
           options={{
             title: 'Create',
             tabBarIcon: ({ focused }) => (
-              <View style={[styles.createButton, focused && styles.createButtonFocused]}>
-                <Ionicons size={32} name='add' color="#fff" />
+              <View
+                style={[
+                  styles.createButton,
+                  focused && styles.createButtonFocused,
+                ]}
+              >
+                <Ionicons size={32} name='add' color='#fff' />
               </View>
             ),
             tabBarLabel: ({ focused }) => (
               <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
+                <Text
+                  style={[
+                    styles.tabBarLabelStyle,
+                    focused && styles.tabBarLabelFocused,
+                  ]}
+                >
                   Create
                 </Text>
                 {focused && <View style={styles.underline} />}
@@ -100,7 +120,12 @@ export default function TabLayout() {
             ),
             tabBarLabel: ({ focused }) => (
               <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
+                <Text
+                  style={[
+                    styles.tabBarLabelStyle,
+                    focused && styles.tabBarLabelFocused,
+                  ]}
+                >
                   Friends
                 </Text>
                 {focused && <View style={styles.underline} />}
@@ -117,7 +142,12 @@ export default function TabLayout() {
             ),
             tabBarLabel: ({ focused }) => (
               <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
+                <Text
+                  style={[
+                    styles.tabBarLabelStyle,
+                    focused && styles.tabBarLabelFocused,
+                  ]}
+                >
                   Profile
                 </Text>
                 {focused && <View style={styles.underline} />}
@@ -146,6 +176,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     elevation: 10,
+    position: 'absolute',
   },
   tabBarLabelStyle: {
     fontSize: 12,
