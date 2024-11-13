@@ -352,15 +352,13 @@ const CreateTab = () => {
 
         <View style={styles.horiz}>
           {/* Image */}
-          <View style={styles.imageContainer}>
-            <Pressable onPress={handleImagePick} style={styles.imageContainer}>
-              {event.photo ? (
-                <Image style={styles.fullImage} source={{ uri: image }} />
-              ) : (
-                <Image style={styles.iconImage} source={pic} />
-              )}
-            </Pressable>
-          </View>
+          <Pressable onPress={handleImagePick} style={styles.imageContainer}>
+            {event.photo ? (
+              <Image style={styles.fullImage} source={{ uri: image }} />
+            ) : (
+              <Image style={styles.iconImage} source={pic} />
+            )}
+          </Pressable>
           {/* Event Name */}
           <View style={styles.verti}>
             <View style={styles.detailContainer}>
@@ -404,7 +402,7 @@ const CreateTab = () => {
             <Text style={styles.label}>Date</Text>
             <Pressable
               onPress={() => setDatePickerVisibility(true)}
-              style={styles.dateTimeField}
+              style={styles.field}
             >
               <Text style={styles.dateTimeText}>{formatDate(event.date)}</Text>
             </Pressable>
@@ -421,7 +419,7 @@ const CreateTab = () => {
             <Text style={styles.label}>Time</Text>
             <Pressable
               onPress={() => setTimePickerVisibility(true)}
-              style={styles.dateTimeField}
+              style={styles.field}
             >
               <Text style={styles.dateTimeText}>{formatTime(event.time)}</Text>
             </Pressable>
@@ -513,14 +511,11 @@ const CreateTab = () => {
 /////////////////////////////////////////////////////////////////////////////
 
 const styles = StyleSheet.create({
-  // Background
-  global: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    rowGap: 5,
-    paddingHorizontal: 10,
+    rowGap: 20,
+    padding: 20,
+    alignItems: "center",
   },
   containerHang: {
     backgroundColor: "#E7948D",
@@ -539,7 +534,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     borderRadius: 10,
-    marginVertical: 25,
   },
   typeButtonFirst: {
     backgroundColor: "white",
@@ -591,6 +585,7 @@ const styles = StyleSheet.create({
   detailContainer: {
     rowGap: 5,
     flex: 1,
+    width: "100%",
   },
   label: {
     color: "#454545",
@@ -604,14 +599,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 10,
     height: 45,
-    padding: 7.5,
-    flex: 1,
-  },
-  dateTimeField: {
-    backgroundColor: "#FFF",
-    borderRadius: 10,
-    height: 45,
-    width: "100%",
     padding: 7.5,
     justifyContent: "center",
   },
@@ -638,7 +625,6 @@ const styles = StyleSheet.create({
   descriptionContainer: {
     backgroundColor: "#FFFFFF",
     height: 160,
-    width: "100%",
     borderRadius: 10,
     padding: 10,
   },
@@ -659,34 +645,41 @@ const styles = StyleSheet.create({
   },
   // Privacy
   privacyContainer: {
-    marginTop: 15,
+    width: "100%",
     flexDirection: "row",
     justifyContent: "center",
   },
   privacyButtonLeft: {
+    alignItems: "center",
+    width: "50%",
     backgroundColor: "white",
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
-    paddingHorizontal: 65,
     paddingVertical: 10,
   },
   privacyButtonRight: {
+    alignItems: "center",
+
+    width: "50%",
     backgroundColor: "white",
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
-    paddingHorizontal: 65,
     paddingVertical: 10,
   },
   privacyButtonLeftInverted: {
+    alignItems: "center",
+
+    width: "50%",
     backgroundColor: "#3A72FF",
-    paddingHorizontal: 65,
     paddingVertical: 10,
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
   },
   privacyButtonRightInverted: {
+    alignItems: "center",
+
+    width: "50%",
     backgroundColor: "#3A72FF",
-    paddingHorizontal: 65,
     paddingVertical: 10,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
@@ -701,10 +694,9 @@ const styles = StyleSheet.create({
   },
   // Society
   societyCreateContainer: {
-    marginTop: 25,
-    flex: 1,
+    paddingHorizontal: 10,
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
   },
   // Create
   createButton: {
@@ -712,7 +704,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 27.5,
     paddingVertical: 12.5,
     borderRadius: 15,
-    // hardcoded
   },
   createText: {
     color: "#FFFFFF",
@@ -722,6 +713,7 @@ const styles = StyleSheet.create({
   // Other
   horiz: {
     columnGap: 15,
+    width: "100%",
     flexDirection: "row",
   },
   verti: {
