@@ -23,7 +23,6 @@ userRoute.get('/:id/friends', getUserFriends);
 userRoute.get('/:id/non-friends', getNonFriends);
 userRoute.post('/:id/add-friend', addFriend);
 userRoute.get("/:id/notifications", getUserNotifs);
-userRoute.get(":id/events", getUserEvents);
-} from "../controllers/user.js";
+userRoute.get("/:id/events", getUserEvents);
 
 export default userRoute;

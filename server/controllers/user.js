@@ -75,7 +75,7 @@ export const loginUser = async (req, res) => {
     res.status(201).json({
       status: true,
       message: "User exists, logging them in",
-      data: user,
+      data: user.id,
     });
   } catch (e) {
     console.log("Invalid username or password", e);
@@ -322,7 +322,7 @@ export const getUserNotifs = async (req, res) => {
       },
       // order notifs based on recency
       orderBy: {
-        createdAt: "desc",
+        id: "desc",
       },
     });
 
@@ -362,6 +362,7 @@ export const getUserEvents = async (req, res) => {
       },
     });
 
+    console.log("CREATED", eventsCreated, "ATTEND", eventsAttending);
     // extract only event object from eventsAttending
     res.json({
       status: true,

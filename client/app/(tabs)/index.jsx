@@ -1,3 +1,9 @@
+/*
+NOTES
+- have to complete accepting and rejecting notifications
+- have to test functionality with data
+*/
+
 import {
   View,
   Text,
@@ -6,6 +12,7 @@ import {
   Image,
   Pressable,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link, useLocalSearchParams, router } from "expo-router";
@@ -33,22 +40,29 @@ const HomeTab = () => {
 
   const fetchUserNotifications = async (userId) => {
     try {
-      const notifs = await axios.get(
-        `${BASE_URL}/users/${userId}/notifications`
-      );
+      const notifs = await axios
+        .get(`${BASE_URL}/users/${userId}/notifications`)
+        .catch((e) => console.log(e));
       setNotifications(notifs.data.data);
     } catch (e) {
-      console.error("Error fetching notifications:", error);
+      console.log("Error fetching notifications:", e);
       Alert.alert("Error", "Could not fetch notifications");
     }
   };
 
+  useEffect(() => {
+    console.log("EVENT DATA", events);
+  }, [events]);
   const fetchUserEvents = async (userId) => {
     try {
-      const events = await axios.get(`${BASE_URL}/users/${userId}/events`);
-      setEvents(events.data.data);
+      const events = await axios
+        .get(`${BASE_URL}/users/${userId}/events`)
+        .then(({ data }) => {
+          setEvents(data.data);
+        })
+        .catch((e) => console.log(e));
     } catch (e) {
-      console.error("Error fetching events:", error);
+      console.log("Error fetching events:", e);
       Alert.alert("Error", "Could not fetch events");
     }
   };
@@ -101,13 +115,25 @@ const HomeTab = () => {
           style={styles.eventsList}
         >
           {[...events.created, ...events.attending].map((event) => (
-            <View key={event.id} style={styles.eventItem}>
+            <TouchableOpacity
+              key={event.id}
+              style={styles.eventItem}
+              onPress={() => {
+                router.push({
+                  pathname: "event-details",
+                  params: { id: event.id },
+                });
+              }}
+            >
               <Image
-                source={{ uri: event.photo || sampleEventImage }}
+                source={{
+                  uri:
+                    event.photo || "https://www.openday.unsw.edu.au/share.jpg",
+                }}
                 style={styles.eventImage}
               />
               <Text style={styles.eventName}>{event.name}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
@@ -129,13 +155,11 @@ const styles = StyleSheet.create({
   },
   notifications: {
     flex: 3,
-    marginVertical: 10,
-    rowGap: 15,
+    gap: 15,
   },
   events: {
     flex: 4,
-    marginVertical: 10,
-    rowGap: 15,
+    gap: 15,
   },
   text: {
     paddingLeft: 7.5,
@@ -149,7 +173,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#454545",
-    marginBottom: 5,
   },
   notificationsList: {
     backgroundColor: "#FFFFFF",
@@ -171,6 +194,16 @@ const styles = StyleSheet.create({
   eventName: {
     fontWeight: "bold",
     color: "#333333",
+    flex: 1,
+    color: "#FFFFFF",
+    backgroundColor: "#421f1f86",
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
+    height: 50,
+    padding: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   notificationActions: {
     flexDirection: "row",
@@ -183,14 +216,16 @@ const styles = StyleSheet.create({
   },
   eventsList: {
     flexDirection: "row",
+    gap: 15,
   },
   eventItem: {
+    position: "relative",
+    maxHeight: 180,
     marginRight: 15,
-    alignItems: "center",
   },
   eventImage: {
-    width: 120,
-    height: 80,
+    minWidth: 270,
+    height: "100%",
     borderRadius: 10,
     marginBottom: 5,
   },
