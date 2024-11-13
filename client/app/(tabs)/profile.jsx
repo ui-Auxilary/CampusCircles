@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getUserData } from '@/hooks/userContext';
@@ -6,7 +6,9 @@ import { BASE_URL } from '@/constants/api';
 import axios from 'axios';
 import TagRow from '@/components/TagRow/TagRow';
 import LanguageRow from '@/components/LanguageRow/LanguageRow';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
+import {router} from 'expo-router'
 const ProfileTab = () => {
   const { userId } = getUserData();
   const [userData, setUserData] = useState({});
@@ -26,6 +28,12 @@ const ProfileTab = () => {
   }, [userData]);
   return (
     <ScrollView style={styles.profileContainer}>
+      <View style={styles.editProfile}>
+        <TouchableOpacity onPress={() => router.push({pathname: 'edit-profile', params: { data: JSON.stringify(userData) }})} style={styles.editWrapper}>
+          <Text style={styles.editText}>Edit profile</Text>
+          <Ionicons name={"pencil"} size={20} color={"#3A72FF"} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.userContainer}>
         <View style={styles.userDetailsWrapper}>
           <Image
@@ -33,7 +41,7 @@ const ProfileTab = () => {
             source={{
               uri: userData.photo
                 ? userData.photo
-                : 'https://www.gravatar.com/avatar/?d=identicon',
+                : "https://www.gravatar.com/avatar/?d=identicon",
             }}
           />
           <View style={styles.userDetails}>
@@ -44,8 +52,8 @@ const ProfileTab = () => {
               </Text>
             </View>
             <Text style={styles.yearOfStudy}>3rd year | Computer science</Text>
+            <LanguageRow languages={userData.languages} />
           </View>
-          <LanguageRow languages={[]} />
         </View>
         <View style={styles.metricsContainer}>
           <View>
@@ -66,7 +74,7 @@ const ProfileTab = () => {
       </View>
       <View style={styles.profileSection}>
         <LinearGradient
-          colors={['#FFFFFF', '#D5A6FF']}
+          colors={["#FFFFFF", "#D5A6FF"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.mbtiBlock}
@@ -275,5 +283,18 @@ const styles = StyleSheet.create({
   },
   overscroll: {
     height: 50,
+  },
+  editText: {
+    fontFamily: 'Lexend_700Bold',
+    fontSize: 16,
+    color: '#3A72FF',
+  },
+  editProfile: {
+    alignSelf: 'flex-end',
+  },
+  editWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
   },
 });

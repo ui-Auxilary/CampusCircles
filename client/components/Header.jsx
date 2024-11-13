@@ -4,7 +4,7 @@ import Logo from '../assets/logo2.svg';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 const Header = ({ title, showAddFriendButton }) => {
   const navigation = useNavigation();
@@ -29,31 +29,31 @@ const Header = ({ title, showAddFriendButton }) => {
 const styles = StyleSheet.create({
   safeArea: {
     width: width,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderBottomWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: "#e0e0e0",
     paddingBottom: 10,
-    position: 'relative',
+    position: "relative",
     top: 0,
     paddingVertical: 10,
   },
   headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 20,
     paddingVertical: 20,
   },
   logo: {
-    position: 'absolute',
+    position: "absolute",
     left: 20,
     top: 75,
   },
   headerText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    fontFamily: 'Lexend_400Regular',
+    fontWeight: "bold",
+    color: "#333",
+    fontFamily: "Lexend_400Regular",
   },
   addFriendButton: {
     position: 'absolute',

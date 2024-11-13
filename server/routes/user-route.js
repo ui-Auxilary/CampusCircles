@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router } from "express";
 import {
   createUser,
   getUsers,
@@ -7,6 +7,8 @@ import {
   updateUser,
   getUserFriends,
   getNonFriends,
+  getUserNotifs,
+  getUserEvents,
   addFriend,
 } from '../controllers/user.js';
 
@@ -20,6 +22,8 @@ userRoute.post('/login', loginUser);
 userRoute.get('/:id/friends', getUserFriends);
 userRoute.get('/:id/non-friends', getNonFriends);
 userRoute.post('/:id/add-friend', addFriend);
-addFriend
+userRoute.get("/:id/notifications", getUserNotifs);
+userRoute.get(":id/events", getUserEvents);
+} from "../controllers/user.js";
 
 export default userRoute;

@@ -130,4 +130,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#2563eb',
   },
 });
-
