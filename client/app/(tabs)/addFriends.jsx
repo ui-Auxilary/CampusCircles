@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,34 +12,50 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
-import { useFocusEffect } from "@react-navigation/native";
 
-const FriendsList = () => {
+const UserList = () => {
   const { userId } = getUserData();
   const [search, setSearch] = useState("");
-  const [friends, setFriends] = useState([]);
+  const [nonFriends, setNonFriends] = useState([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchFriends = async () => {
-        try {
-          const url = `${BASE_URL}/users/${userId}/friends`;
-          console.log("Fetching friends from:", url);
-          const response = await axios.get(url);
-          setFriends(response.data.data);
-        } catch (error) {
-          console.error("Error fetching friends:", error);
-        }
-      };
-
-      if (userId) {
-        fetchFriends();
+  useEffect(() => {
+    const fetchNonFriends = async () => {
+      try {
+        const url = `${BASE_URL}/users/${userId}/non-friends`;
+        console.log("Fetching non-friends from:", url);
+        const response = await axios.get(url);
+        setNonFriends(response.data.data);
+      } catch (error) {
+        console.error("Error fetching non-friend users:", error);
       }
-    }, [userId])
-  );
+    };
 
-  const filteredFriends = friends.filter((friend) =>
-    friend.name.toLowerCase().includes(search.toLowerCase())
+    if (userId) {
+      fetchNonFriends();
+    }
+  }, [userId]);
+
+  const handleAddFriend = async (friendId) => {
+    try {
+      const url = `${BASE_URL}/users/${userId}/add-friend`;
+      const response = await axios.post(url, { friendId });
+
+      if (response.data.status) {
+        // Remove the added friend from the nonFriends list
+        setNonFriends((prevNonFriends) =>
+          prevNonFriends.filter((user) => user.id !== friendId)
+        );
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error("Failed to add friend:", error);
+      alert("An error occurred. Please try again later.");
+    }
+  };
+
+  const filteredUsers = nonFriends.filter((user) =>
+    user.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -60,13 +76,13 @@ const FriendsList = () => {
         />
       </View>
       <ScrollView>
-        {filteredFriends.map((friend) => (
-          <TouchableOpacity key={friend.id} style={styles.friendCard}>
+        {filteredUsers.map((user) => (
+          <View key={user.id} style={styles.friendCard}>
             <View style={styles.imageContainer}>
               <Image
                 source={{
-                  // uri: friend.photo
-                  //     ? friend.photo
+                  // uri: user.photo
+                  //     ? user.photo
                   //     : 'https://www.gravatar.com/avatar/?d=identicon',
                   uri: "https://www.gravatar.com/avatar/?d=identicon",
                 }}
@@ -74,13 +90,20 @@ const FriendsList = () => {
               />
             </View>
             <View style={styles.details}>
-              <Text style={styles.name}>{friend.name}</Text>
+              <Text style={styles.name}>{user.name}</Text>
               <View style={styles.separator} />
-              <Text style={styles.info}>{`${
-                friend.studyYear || "Unknown Year"
-              } | ${friend.degree || "Unknown Degree"}`}</Text>
+              <Text style={styles.info}>
+                {user.studyYear || "Unknown Year"} |{" "}
+                {user.degree || "Unknown Degree"}
+              </Text>
             </View>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => handleAddFriend(user.id)}
+            >
+              <Ionicons name="person-add" size={24} color="#3b82f6" />
+            </TouchableOpacity>
+          </View>
         ))}
       </ScrollView>
     </View>
@@ -145,6 +168,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
   },
+  addButton: {
+    paddingLeft: 5,
+  },
 });
 
-export default FriendsList;
+export default UserList;
