@@ -12,6 +12,7 @@ import {
   Image,
   Pressable,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Link, useLocalSearchParams, router } from "expo-router";
@@ -114,7 +115,16 @@ const HomeTab = () => {
           style={styles.eventsList}
         >
           {[...events.created, ...events.attending].map((event) => (
-            <View key={event.id} style={styles.eventItem}>
+            <TouchableOpacity
+              key={event.id}
+              style={styles.eventItem}
+              onPress={() => {
+                router.push({
+                  pathname: "event-details",
+                  params: { id: event.id },
+                });
+              }}
+            >
               <Image
                 source={{
                   uri:
@@ -123,7 +133,7 @@ const HomeTab = () => {
                 style={styles.eventImage}
               />
               <Text style={styles.eventName}>{event.name}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
