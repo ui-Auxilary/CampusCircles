@@ -10,103 +10,63 @@ export default function TabLayout() {
   return (
     <View style={styles.container}>
       <Tabs
-        screenOptions={{
-          tabBarActiveTintColor: "blue",
-          header: ({ route }) => {
-            let title = "";
+        screenOptions={({ route }) => ({
+          tabBarActiveTintColor: 'blue',
+          header: () => {
+            let title = '';
+            let showAddFriendButton = false;
+
             switch (route.name) {
-              case "index":
-                title = "Home";
+              case 'index':
+                title = 'Home';
                 break;
-              case "events":
-                title = "Events";
+              case 'events':
+                title = 'Events';
                 break;
-              case "create":
-                title = "Create";
+              case 'create':
+                title = 'Create';
                 break;
-              case "friends":
-                title = "Friends";
+              case 'friends':
+                title = 'Friends';
+                showAddFriendButton = true;
                 break;
-              case "profile":
-                title = "Profile";
+              case 'profile':
+                title = 'Profile';
                 break;
               default:
-                title = "Campus Circles";
+                title = 'Campus Circles';
             }
-            return <Header title={title} />;
+
+            return <Header title={title} showAddFriendButton={showAddFriendButton} />;
           },
           tabBarStyle: styles.tabBarStyle,
-        }}
+        })}
       >
         <Tabs.Screen
           name='index'
           options={{
-            title: "Home",
+            title: 'Home',
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='home-outline' color={color} />
-            ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text
-                  style={[
-                    styles.tabBarLabelStyle,
-                    focused && styles.tabBarLabelFocused,
-                  ]}
-                >
-                  Home
-                </Text>
-                {focused && <View style={styles.underline} />}
-              </View>
             ),
           }}
         />
         <Tabs.Screen
           name='events'
           options={{
-            title: "Events",
+            title: 'Events',
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='location-outline' color={color} />
-            ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text
-                  style={[
-                    styles.tabBarLabelStyle,
-                    focused && styles.tabBarLabelFocused,
-                  ]}
-                >
-                  Events
-                </Text>
-                {focused && <View style={styles.underline} />}
-              </View>
             ),
           }}
         />
         <Tabs.Screen
           name='create'
           options={{
-            title: "Create",
+            title: 'Create',
             tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.createButton,
-                  focused && styles.createButtonFocused,
-                ]}
-              >
-                <Ionicons size={32} name='add' color='#fff' />
-              </View>
-            ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text
-                  style={[
-                    styles.tabBarLabelStyle,
-                    focused && styles.tabBarLabelFocused,
-                  ]}
-                >
-                  Create
-                </Text>
-                {focused && <View style={styles.underline} />}
+              <View style={[styles.createButton, focused && styles.createButtonFocused]}>
+                <Ionicons size={32} name='add' color="#fff" />
               </View>
             ),
           }}
@@ -114,44 +74,18 @@ export default function TabLayout() {
         <Tabs.Screen
           name='friends'
           options={{
-            title: "Friends",
+            title: 'Friends',
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='people-outline' color={color} />
-            ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text
-                  style={[
-                    styles.tabBarLabelStyle,
-                    focused && styles.tabBarLabelFocused,
-                  ]}
-                >
-                  Friends
-                </Text>
-                {focused && <View style={styles.underline} />}
-              </View>
             ),
           }}
         />
         <Tabs.Screen
           name='profile'
           options={{
-            title: "Profile",
+            title: 'Profile',
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='person-circle-outline' color={color} />
-            ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text
-                  style={[
-                    styles.tabBarLabelStyle,
-                    focused && styles.tabBarLabelFocused,
-                  ]}
-                >
-                  Profile
-                </Text>
-                {focused && <View style={styles.underline} />}
-              </View>
             ),
           }}
         />
@@ -176,26 +110,12 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     elevation: 10,
-    position: 'absolute',
   },
-  tabBarLabelStyle: {
-    fontSize: 12,
-    color: 'gray',
-  },
-  tabBarLabelFocused: {
-    color: 'blue',
-  },
-  labelContainer: {
-    alignItems: 'center',
-    position: 'relative',
-  },
-  underline: {
-    position: 'absolute',
-    bottom: -10,
-    height: 4,
-    width: 35,
-    backgroundColor: 'blue',
-    borderRadius: 2,
+  addFriendButton: {
+    marginRight: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 20,
+    padding: 8,
   },
   createButton: {
     width: 60,
