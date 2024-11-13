@@ -22,9 +22,12 @@
     "@react-native-community/blur": "^4.4.1",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
+    "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.7",
-    "expo": "~51.0.28",
+    "expo": "^51.0.38",
+    "expo-auth-session": "~5.5.2",
     "expo-constants": "~16.0.2",
+    "expo-crypto": "~13.0.2",
     "expo-font": "~12.0.10",
     "expo-linear-gradient": "~13.0.2",
     "expo-linking": "~6.3.1",
@@ -44,9 +47,7 @@
     "react-native-svg": "^15.8.0",
     "react-native-svg-transformer": "^1.5.0",
     "react-native-ui-lib": "^7.32.0",
-    "react-native-web": "~0.19.10",
-    "expo-auth-session": "~5.5.2",
-    "expo-crypto": "~13.0.2"
+    "react-native-web": "~0.19.10"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

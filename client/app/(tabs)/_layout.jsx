@@ -10,10 +10,12 @@ export default function TabLayout() {
   return (
     <View style={styles.container}>
       <Tabs
-        screenOptions={{
+        screenOptions={({ route }) => ({
           tabBarActiveTintColor: 'blue',
-          header: ({ route }) => {
+          header: () => {
             let title = '';
+            let showAddFriendButton = false;
+
             switch (route.name) {
               case 'index':
                 title = 'Home';
@@ -26,6 +28,7 @@ export default function TabLayout() {
                 break;
               case 'friends':
                 title = 'Friends';
+                showAddFriendButton = true;
                 break;
               case 'profile':
                 title = 'Profile';
@@ -33,10 +36,11 @@ export default function TabLayout() {
               default:
                 title = 'Campus Circles';
             }
-            return <Header title={title} />;
+
+            return <Header title={title} showAddFriendButton={showAddFriendButton} />;
           },
           tabBarStyle: styles.tabBarStyle,
-        }}
+        })}
       >
         <Tabs.Screen
           name='index'
@@ -44,14 +48,6 @@ export default function TabLayout() {
             title: 'Home',
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='home-outline' color={color} />
-            ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
-                  Home
-                </Text>
-                {focused && <View style={styles.underline} />}
-              </View>
             ),
           }}
         />
@@ -61,14 +57,6 @@ export default function TabLayout() {
             title: 'Events',
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='location-outline' color={color} />
-            ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
-                  Events
-                </Text>
-                {focused && <View style={styles.underline} />}
-              </View>
             ),
           }}
         />
@@ -81,14 +69,6 @@ export default function TabLayout() {
                 <Ionicons size={32} name='add' color="#fff" />
               </View>
             ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
-                  Create
-                </Text>
-                {focused && <View style={styles.underline} />}
-              </View>
-            ),
           }}
         />
         <Tabs.Screen
@@ -98,14 +78,6 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='people-outline' color={color} />
             ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
-                  Friends
-                </Text>
-                {focused && <View style={styles.underline} />}
-              </View>
-            ),
           }}
         />
         <Tabs.Screen
@@ -114,14 +86,6 @@ export default function TabLayout() {
             title: 'Profile',
             tabBarIcon: ({ color }) => (
               <Ionicons size={28} name='person-circle-outline' color={color} />
-            ),
-            tabBarLabel: ({ focused }) => (
-              <View style={styles.labelContainer}>
-                <Text style={[styles.tabBarLabelStyle, focused && styles.tabBarLabelFocused]}>
-                  Profile
-                </Text>
-                {focused && <View style={styles.underline} />}
-              </View>
             ),
           }}
         />
@@ -147,24 +111,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     elevation: 10,
   },
-  tabBarLabelStyle: {
-    fontSize: 12,
-    color: 'gray',
-  },
-  tabBarLabelFocused: {
-    color: 'blue',
-  },
-  labelContainer: {
-    alignItems: 'center',
-    position: 'relative',
-  },
-  underline: {
-    position: 'absolute',
-    bottom: -10,
-    height: 4,
-    width: 35,
-    backgroundColor: 'blue',
-    borderRadius: 2,
+  addFriendButton: {
+    marginRight: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 20,
+    padding: 8,
   },
   createButton: {
     width: 60,
@@ -179,3 +130,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#2563eb',
   },
 });
+

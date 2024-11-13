@@ -5,6 +5,9 @@ import {
   getUser,
   loginUser,
   updateUser,
+  getUserFriends,
+  getNonFriends,
+  addFriend,
 } from '../controllers/user.js';
 
 const userRoute = Router();
@@ -14,5 +17,9 @@ userRoute.get('/:id', getUser);
 userRoute.post('', createUser);
 userRoute.put('/:id', updateUser);
 userRoute.post('/login', loginUser);
+userRoute.get('/:id/friends', getUserFriends);
+userRoute.get('/:id/non-friends', getNonFriends);
+userRoute.post('/:id/add-friend', addFriend);
+addFriend
 
 export default userRoute;
