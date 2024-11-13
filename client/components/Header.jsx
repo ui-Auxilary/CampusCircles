@@ -1,8 +1,15 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
-import Logo from '../assets/logo2.svg';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
+import Logo from "../assets/logo2.svg";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
@@ -15,8 +22,9 @@ const Header = ({ title, showAddFriendButton }) => {
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{title}</Text>
         {showAddFriendButton && (
-          <TouchableOpacity style={styles.addFriendButton}
-          // onPress={() => navigation.navigate('AddFriend')}
+          <TouchableOpacity
+            style={styles.addFriendButton}
+            onPress={() => navigation.navigate("addFriends")}
           >
             <Ionicons name="person-add-outline" size={28} color="#3A72FF" />
           </TouchableOpacity>
@@ -56,7 +64,7 @@ const styles = StyleSheet.create({
     fontFamily: "Lexend_400Regular",
   },
   addFriendButton: {
-    position: 'absolute',
+    position: "absolute",
     right: 20,
     top: 10,
     borderRadius: 20,

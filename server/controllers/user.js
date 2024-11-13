@@ -154,30 +154,38 @@ export const getUserFriends = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { friendIds: true }
+      select: { friendIds: true },
     });
 
     if (!user) {
-      return res.status(404).json({ status: false, message: 'User not found' });
+      return res.status(404).json({ status: false, message: "User not found" });
     }
 
     const friends = await prisma.user.findMany({
       where: {
-        id: { in: user.friendIds }
+        id: { in: user.friendIds },
       },
       select: {
         id: true,
         name: true,
         photo: true,
         degree: true,
-        studyYear: true
-      }
+        studyYear: true,
+      },
     });
 
-    res.status(200).json({ status: true, message: 'Friends fetched successfully', data: friends });
+    res
+      .status(200)
+      .json({
+        status: true,
+        message: "Friends fetched successfully",
+        data: friends,
+      });
   } catch (error) {
-    console.error('Failed to fetch friends:', error);
-    res.status(500).json({ status: false, message: 'Server error', error: error.message });
+    console.error("Failed to fetch friends:", error);
+    res
+      .status(500)
+      .json({ status: false, message: "Server error", error: error.message });
   }
 };
 
@@ -187,18 +195,18 @@ export const getNonFriends = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { friendIds: true }
+      select: { friendIds: true },
     });
 
     if (!user) {
-      return res.status(404).json({ status: false, message: 'User not found' });
+      return res.status(404).json({ status: false, message: "User not found" });
     }
 
     const nonFriends = await prisma.user.findMany({
       where: {
         id: {
-          notIn: [userId, ...user.friendIds]
-        }
+          notIn: [userId, ...user.friendIds],
+        },
       },
       select: {
         id: true,
@@ -206,13 +214,21 @@ export const getNonFriends = async (req, res) => {
         photo: true,
         degree: true,
         studyYear: true,
-      }
+      },
     });
 
-    res.status(200).json({ status: true, message: 'Non-friend users fetched successfully', data: nonFriends });
+    res
+      .status(200)
+      .json({
+        status: true,
+        message: "Non-friend users fetched successfully",
+        data: nonFriends,
+      });
   } catch (error) {
-    console.error('Failed to fetch non-friends:', error);
-    res.status(500).json({ status: false, message: 'Server error', error: error.message });
+    console.error("Failed to fetch non-friends:", error);
+    res
+      .status(500)
+      .json({ status: false, message: "Server error", error: error.message });
   }
 };
 
@@ -220,7 +236,7 @@ export const addFriend = async (req, res) => {
   const userId = req.params.id;
   const { friendId } = req.body;
 
-  console.log('Add friend request received:', { userId, friendId });
+  console.log("Add friend request received:", { userId, friendId });
 
   try {
     const user = await prisma.user.findUnique({
@@ -234,18 +250,24 @@ export const addFriend = async (req, res) => {
     });
 
     if (!user || !friend) {
-      console.error('User or friend not found:', userId, friendId);
-      return res.status(404).json({ status: false, message: 'User or friend not found' });
+      console.error("User or friend not found:", userId, friendId);
+      return res
+        .status(404)
+        .json({ status: false, message: "User or friend not found" });
     }
 
     if (user.friendIds.includes(friendId)) {
-      console.error('User is already a friend:', friendId);
-      return res.status(400).json({ status: false, message: 'User is already a friend' });
+      console.error("User is already a friend:", friendId);
+      return res
+        .status(400)
+        .json({ status: false, message: "User is already a friend" });
     }
 
     if (friend.friendIds.includes(userId)) {
-      console.error('Friend is already connected:', userId);
-      return res.status(400).json({ status: false, message: 'Friend is already connected' });
+      console.error("Friend is already connected:", userId);
+      return res
+        .status(400)
+        .json({ status: false, message: "Friend is already connected" });
     }
 
     // Update the user to add the new friend
@@ -270,14 +292,17 @@ export const addFriend = async (req, res) => {
 
     res.status(200).json({
       status: true,
-      message: 'Friend added successfully for both users',
+      message: "Friend added successfully for both users",
     });
   } catch (error) {
-    console.error('Failed to add friend:', error);
+    console.error("Failed to add friend:", error);
     res.status(500).json({
       status: false,
-      message: 'Server error',
+      message: "Server error",
       error: error.message,
+    });
+  }
+};
 
 // Ethan: function used on index (homepage)
 export const getUserNotifs = async (req, res) => {

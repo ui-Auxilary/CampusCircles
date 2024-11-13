@@ -1,104 +1,119 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Tabs } from 'expo-router';
-import Header from '../../components/Header';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Tabs } from "expo-router";
+import Header from "../../components/Header";
+import { View, StyleSheet, Text, Dimensions } from "react-native";
+import { router } from "expo-router"; // Ensure router is imported
 
-const { height } = Dimensions.get('window');
+const { height } = Dimensions.get("window");
 
 export default function TabLayout() {
   return (
     <View style={styles.container}>
       <Tabs
         screenOptions={({ route }) => ({
-          tabBarActiveTintColor: 'blue',
+          tabBarActiveTintColor: "blue",
           header: () => {
-            let title = '';
+            let title = "";
             let showAddFriendButton = false;
 
             switch (route.name) {
-              case 'index':
-                title = 'Home';
+              case "index":
+                title = "Home";
                 break;
-              case 'events':
-                title = 'Events';
+              case "events":
+                title = "Events";
                 break;
-              case 'create':
-                title = 'Create';
+              case "create":
+                title = "Create";
                 break;
-              case 'friends':
-                title = 'Friends';
+              case "friends":
+                title = "Friends";
                 showAddFriendButton = true;
                 break;
-              case 'profile':
-                title = 'Profile';
+              case "profile":
+                title = "Profile";
                 break;
               default:
-                title = 'Campus Circles';
+                title = "Campus Circles";
             }
 
-            return <Header title={title} showAddFriendButton={showAddFriendButton} />;
+            return (
+              <Header
+                title={title}
+                showAddFriendButton={showAddFriendButton}
+                onAddFriend={() => {
+                  console.log(
+                    "Navigating to addFriends screen using router.push"
+                  );
+                  router.push("/addFriends");
+                }}
+              />
+            );
           },
           tabBarStyle: styles.tabBarStyle,
         })}
       >
         <Tabs.Screen
-          name='index'
+          name="index"
           options={{
-            title: 'Home',
+            title: "Home",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name='home-outline' color={color} />
+              <Ionicons size={28} name="home-outline" color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name='events'
+          name="events"
           options={{
-            title: 'Events',
+            title: "Events",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name='location-outline' color={color} />
+              <Ionicons size={28} name="location-outline" color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name='create'
+          name="create"
           options={{
-            title: 'Create',
+            title: "Create",
             tabBarIcon: ({ focused }) => (
-              <View style={[styles.createButton, focused && styles.createButtonFocused]}>
-                <Ionicons size={32} name='add' color="#fff" />
+              <View
+                style={[
+                  styles.createButton,
+                  focused && styles.createButtonFocused,
+                ]}
+              >
+                <Ionicons size={32} name="add" color="#fff" />
               </View>
             ),
           }}
         />
         <Tabs.Screen
-          name='friends'
+          name="friends"
           options={{
-            title: 'Friends',
+            title: "Friends",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name='people-outline' color={color} />
+              <Ionicons size={28} name="people-outline" color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name='profile'
+          name="profile"
           options={{
-            title: 'Profile',
+            title: "Profile",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name='person-circle-outline' color={color} />
+              <Ionicons size={28} name="person-circle-outline" color={color} />
             ),
           }}
         />
+        {/* Remove the extra "header" screen definition */}
+        <Tabs.Screen name="addFriends" options={{ href: null }} />
       </Tabs>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
   container: {
     flex: 1,
   },
@@ -106,27 +121,21 @@ const styles = StyleSheet.create({
     height: 80,
     paddingBottom: 25,
     paddingTop: 8,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     elevation: 10,
-  },
-  addFriendButton: {
-    marginRight: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 20,
-    padding: 8,
   },
   createButton: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#3b82f6',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#3b82f6",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 35,
   },
   createButtonFocused: {
-    backgroundColor: '#2563eb',
+    backgroundColor: "#2563eb",
   },
 });
