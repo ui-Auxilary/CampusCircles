@@ -491,13 +491,15 @@ const CreateTab = () => {
 
         <View style={[styles.societyCreateContainer, styles.horiz]}>
           {/* Society Check */}
-          <Pressable onPress={toggleSociety}>
-            <Image
-              source={event.society ? checked : unchecked}
-              style={styles.iconImage}
-            />
-          </Pressable>
-          <Text style={styles.label}>Society</Text>
+          <View style={{ flexDirection: "row", gap: 10, alignSelf: "center" }}>
+            <Pressable onPress={toggleSociety}>
+              <Image
+                source={event.society ? checked : unchecked}
+                style={styles.iconImage}
+              />
+            </Pressable>
+            <Text style={styles.label}>Society</Text>
+          </View>
 
           {/* Create Button */}
           <Pressable
@@ -705,8 +707,10 @@ const styles = StyleSheet.create({
   },
   // Society
   societyCreateContainer: {
-    width: "80%",
     marginTop: 25,
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   // Create
   createButton: {
@@ -714,7 +718,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 27.5,
     paddingVertical: 12.5,
     borderRadius: 15,
-    marginLeft: 100, // hardcoded
+    // hardcoded
   },
   createText: {
     color: "#FFFFFF",

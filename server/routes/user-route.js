@@ -16,6 +16,6 @@ userRoute.post("", createUser);
 userRoute.put("/:id", updateUser);
 userRoute.post("/login", loginUser);
 userRoute.get("/:id/notifications", getUserNotifs);
-userRoute.get(":id/events", getUserEvents);
+userRoute.get("/:id/events", getUserEvents);
 
 export default userRoute;

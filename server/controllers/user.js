@@ -165,7 +165,7 @@ export const getUserNotifs = async (req, res) => {
       },
       // order notifs based on recency
       orderBy: {
-        createdAt: "desc",
+        id: "desc",
       },
     });
 
@@ -205,6 +205,7 @@ export const getUserEvents = async (req, res) => {
       },
     });
 
+    console.log("CREATED", eventsCreated, "ATTEND", eventsAttending);
     // extract only event object from eventsAttending
     res.json({
       status: true,

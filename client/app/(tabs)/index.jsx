@@ -49,12 +49,17 @@ const HomeTab = () => {
     }
   };
 
+  useEffect(() => {
+    console.log("EVENT DATA", events);
+  }, [events]);
   const fetchUserEvents = async (userId) => {
     try {
       const events = await axios
         .get(`${BASE_URL}/users/${userId}/events`)
+        .then(({ data }) => {
+          setEvents(data.data);
+        })
         .catch((e) => console.log(e));
-      setEvents(events.data.data);
     } catch (e) {
       console.log("Error fetching events:", e);
       Alert.alert("Error", "Could not fetch events");
@@ -111,7 +116,10 @@ const HomeTab = () => {
           {[...events.created, ...events.attending].map((event) => (
             <View key={event.id} style={styles.eventItem}>
               <Image
-                source={{ uri: event.photo || sampleEventImage }}
+                source={{
+                  uri:
+                    event.photo || "https://www.openday.unsw.edu.au/share.jpg",
+                }}
                 style={styles.eventImage}
               />
               <Text style={styles.eventName}>{event.name}</Text>
