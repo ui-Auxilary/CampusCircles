@@ -1,5 +1,12 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams } from "expo-router";
 
@@ -11,24 +18,87 @@ import {
   Lexend_700Bold,
   useFonts,
 } from "@expo-google-fonts/lexend";
+import { BASE_URL } from "@/constants/api";
+import axios from "axios";
+import { Link } from "@react-navigation/native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const EventDetails = () => {
-  const { title, time, location, description, latitude, longitude, image, attendees } =
-    useLocalSearchParams();
+  const {
+    title,
+    date,
+    name,
+    time,
+    location,
+    description,
+    lat,
+    long,
+    photo,
+    attendees,
+    creatorId,
+    id,
+  } = useLocalSearchParams();
+
+  const [eventData, setEventData] = useState({
+    title,
+    date,
+    name,
+    time,
+    location,
+    description,
+    lat,
+    long,
+    photo,
+    attendees,
+    creatorId,
+  });
+
+  useEffect(() => {
+    console.log("Got id fetching event", id);
+
+    axios
+      .get(`${BASE_URL}/events/get/${id}`)
+      .then(({ data }) => {
+        console.log("EVENT DATA", data);
+        setEventData(data.data);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, [id]);
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={image} style={styles.eventImage} />
+      <TouchableOpacity style={styles.linkContainer}>
+        <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
+        <Link to='/(tabs)' style={styles.backLink}>
+          Go home
+        </Link>
+      </TouchableOpacity>
+      <Image
+        source={{
+          uri: eventData.photo
+            ? eventData.photo
+            : "https://www.openday.unsw.edu.au/share.jpg",
+        }}
+        style={styles.eventImage}
+      />
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.description}>{description}</Text>
+        <Text style={styles.title}>{eventData.title}</Text>
+        <Text style={styles.description}>{eventData.description}</Text>
         <View style={styles.detailsContainer}>
-          <Image source={require("../assets/images/date.png")} style={styles.icon} />
-          <Text style={styles.detailsText}>{time}</Text>
+          <Image
+            source={require("../assets/images/date.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.detailsText}>{eventData.time}</Text>
         </View>
         <View style={styles.detailsContainer}>
-          <Image source={require("../assets/images/location.png")} style={styles.icon} />
-          <Text style={styles.detailsText}>{location}</Text>
+          <Image
+            source={require("../assets/images/location.png")}
+            style={styles.icon}
+          />
+          <Text style={styles.detailsText}>{eventData.location}</Text>
         </View>
       </View>
 
@@ -40,15 +110,17 @@ const EventDetails = () => {
           // longitude: longitude,
           latitude: -33.91719,
           longitude: 151.233033,
+
           latitudeDelta: 0.00922,
           longitudeDelta: 0.00421,
-        }}>
+        }}
+      >
         <Marker
           // change this too
           // coordinate={{ latitude: latitude, longitude: longitude }}
           coordinate={{ latitude: -33.91719, longitude: 151.233033 }}
-          title={title}
-          description={location}
+          title={eventData.title}
+          description={eventData.location}
         />
       </MapView>
     </ScrollView>
@@ -104,5 +176,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 8,
     marginTop: 10,
+  },
+  linkContainer: {
+    position: "absolute",
+    top: 15,
+    left: 15,
+    zIndex: 2,
+    flexDirection: "row",
+    gap: 5,
+    alignItems: "center",
+    backgroundColor: "#33151571",
+    padding: 5,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  backLink: {
+    color: "#FFFFFF",
+    fontFamily: "Lexend_500Medium",
   },
 });

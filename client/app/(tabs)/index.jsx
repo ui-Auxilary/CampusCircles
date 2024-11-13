@@ -145,13 +145,11 @@ const styles = StyleSheet.create({
   },
   notifications: {
     flex: 3,
-    marginVertical: 10,
-    rowGap: 15,
+    gap: 15,
   },
   events: {
     flex: 4,
-    marginVertical: 10,
-    rowGap: 15,
+    gap: 15,
   },
   text: {
     paddingLeft: 7.5,
@@ -165,7 +163,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#454545",
-    marginBottom: 5,
   },
   notificationsList: {
     backgroundColor: "#FFFFFF",
@@ -187,6 +184,16 @@ const styles = StyleSheet.create({
   eventName: {
     fontWeight: "bold",
     color: "#333333",
+    flex: 1,
+    color: "#FFFFFF",
+    backgroundColor: "#421f1f86",
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
+    height: 50,
+    padding: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   notificationActions: {
     flexDirection: "row",
@@ -199,14 +206,16 @@ const styles = StyleSheet.create({
   },
   eventsList: {
     flexDirection: "row",
+    gap: 15,
   },
   eventItem: {
+    position: "relative",
+    maxHeight: 180,
     marginRight: 15,
-    alignItems: "center",
   },
   eventImage: {
-    width: 120,
-    height: 80,
+    minWidth: 270,
+    height: "100%",
     borderRadius: 10,
     marginBottom: 5,
   },

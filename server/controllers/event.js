@@ -5,7 +5,6 @@ export const createEvent = async (req, res) => {
   try {
     const eventData = {
       ...req.body,
-      creatorId: req.user.id,
     };
 
     const event = await prisma.event.create({
@@ -24,6 +23,20 @@ export const createEvent = async (req, res) => {
       message: "Server error",
     });
   }
+};
+
+export const getEvent = async (req, res) => {
+  const event = await prisma.event.findFirst({
+    where: {
+      id: req.params.id,
+    },
+  });
+
+  res.json({
+    status: true,
+    message: "Events fetched successfully",
+    data: event,
+  });
 };
 
 export const getEvents = async (req, res) => {
