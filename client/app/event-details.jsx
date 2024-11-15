@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams } from "expo-router";
 
@@ -71,33 +64,30 @@ const EventDetails = () => {
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.linkContainer}>
         <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
-        <Link to='/(tabs)' style={styles.backLink}>
+        <Link to="/(tabs)" style={styles.backLink}>
           Go home
         </Link>
       </TouchableOpacity>
       <Image
         source={{
-          uri: eventData.photo
-            ? eventData.photo
-            : "https://www.openday.unsw.edu.au/share.jpg",
+          uri: eventData.photo ? eventData.photo : "https://www.openday.unsw.edu.au/share.jpg",
         }}
         style={styles.eventImage}
       />
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>{eventData.title}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{eventData.title}</Text>
+          <TouchableOpacity style={styles.editEventButton}>
+            <Text style={styles.editEventText}>Edit Event</Text>
+          </TouchableOpacity>
+        </View>
         <Text style={styles.description}>{eventData.description}</Text>
         <View style={styles.detailsContainer}>
-          <Image
-            source={require("../assets/images/date.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/images/date.png")} style={styles.icon} />
           <Text style={styles.detailsText}>{eventData.time}</Text>
         </View>
         <View style={styles.detailsContainer}>
-          <Image
-            source={require("../assets/images/location.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/images/location.png")} style={styles.icon} />
           <Text style={styles.detailsText}>{eventData.location}</Text>
         </View>
       </View>
@@ -113,8 +103,7 @@ const EventDetails = () => {
 
           latitudeDelta: 0.00922,
           longitudeDelta: 0.00421,
-        }}
-      >
+        }}>
         <Marker
           // change this too
           // coordinate={{ latitude: latitude, longitude: longitude }}
@@ -142,6 +131,13 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 20,
   },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+
   title: {
     fontSize: 26,
     fontWeight: "bold",
@@ -149,6 +145,17 @@ const styles = StyleSheet.create({
     color: "#2a2a2a",
     marginBottom: 10,
   },
+  editEventButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+
+  editEventText: {
+    color: "#4345ee",
+    fontSize: 16,
+    fontFamily: "Lexend_500Medium",
+  },
+
   description: {
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
