@@ -8,16 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { useLocalSearchParams } from "expo-router";
-
-import {
-  Lexend_300Regular,
-  Lexend_400Regular,
-  Lexend_500Medium,
-  Lexend_600SemiBold,
-  Lexend_700Bold,
-  useFonts,
-} from "@expo-google-fonts/lexend";
+import { useLocalSearchParams, router } from "expo-router";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import { Link } from "@react-navigation/native";
@@ -69,11 +60,12 @@ const EventDetails = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity style={styles.linkContainer}>
+      <TouchableOpacity
+        style={styles.linkContainer}
+        onPress={() => router.back()}
+      >
         <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
-        <Link to='/(tabs)' style={styles.backLink}>
-          Go home
-        </Link>
+        <Text style={styles.backLink}>Go home</Text>
       </TouchableOpacity>
       <Image
         source={{

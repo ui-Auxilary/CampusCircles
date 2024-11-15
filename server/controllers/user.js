@@ -174,13 +174,11 @@ export const getUserFriends = async (req, res) => {
       },
     });
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Friends fetched successfully",
-        data: friends,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Friends fetched successfully",
+      data: friends,
+    });
   } catch (error) {
     console.error("Failed to fetch friends:", error);
     res
@@ -217,13 +215,11 @@ export const getNonFriends = async (req, res) => {
       },
     });
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Non-friend users fetched successfully",
-        data: nonFriends,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Non-friend users fetched successfully",
+      data: nonFriends,
+    });
   } catch (error) {
     console.error("Failed to fetch non-friends:", error);
     res
