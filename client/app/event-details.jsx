@@ -64,7 +64,16 @@ const EventDetails = () => {
         style={styles.eventImage}
       />
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>{eventData.title}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{eventData.title}</Text>
+
+          <TouchableOpacity
+            onPress={() => router.push({ pathname: "/edit-event", params: { id } })}
+            style={styles.editEventButton}>
+            <Text style={styles.editEventText}>Edit Event</Text>
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.description}>{eventData.description}</Text>
         <View style={styles.detailsContainer}>
           <Image source={require("../assets/images/date.png")} style={styles.icon} />
@@ -115,12 +124,30 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 20,
   },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+
   title: {
     fontSize: 26,
     fontWeight: "bold",
     fontFamily: "Lexend_700Bold",
     color: "#2a2a2a",
     marginBottom: 10,
+  },
+  editEventButton: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    top: -10,
+    right: -5,
+  },
+  editEventText: {
+    color: "#4345ee",
+    fontSize: 16,
+    fontFamily: "Lexend_500Medium",
   },
   description: {
     fontSize: 16,
