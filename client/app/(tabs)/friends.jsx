@@ -46,15 +46,15 @@ const FriendsList = () => {
     <View style={styles.container}>
       <View style={styles.searchContainer}>
         <Ionicons
-          name="search"
+          name='search'
           size={20}
-          color="#888"
+          color='#888'
           style={styles.searchIcon}
         />
         <TextInput
           style={styles.searchBar}
-          placeholder="Search by name..."
-          placeholderTextColor="#888"
+          placeholder='Search by name...'
+          placeholderTextColor='#888'
           value={search}
           onChangeText={(text) => setSearch(text)}
         />
