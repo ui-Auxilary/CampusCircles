@@ -150,6 +150,8 @@ const styles = StyleSheet.create({
   editEventButton: {
     paddingVertical: 5,
     paddingHorizontal: 10,
+    top: -10,
+    right: -5,
   },
 
   editEventText: {
