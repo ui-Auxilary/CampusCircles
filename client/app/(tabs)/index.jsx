@@ -1,8 +1,4 @@
-/*
-NOTES
-- have to complete accepting and rejecting notifications
-- have to test functionality with data
-*/
+// have to complete accepting and rejecting notifications
 
 import {
   View,

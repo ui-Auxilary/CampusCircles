@@ -1,3 +1,5 @@
+// issue with locaiton search dropdown
+
 import {
   StyleSheet,
   View,
@@ -365,7 +367,7 @@ const CreateTab = () => {
               <Text style={styles.label}>Event Name</Text>
               <TextInput
                 style={[styles.field, { flex: 1 }]}
-                placeholder='Enter event name'
+                placeholder="Enter event name"
                 value={event.name}
                 onChangeText={(value) => handleInputChange("name", value)}
               />
@@ -375,7 +377,7 @@ const CreateTab = () => {
               <Text style={styles.label}>Location</Text>
               <TextInput
                 style={[styles.field, { flex: 1 }]}
-                placeholder='Search for location'
+                placeholder="Search for location"
                 value={locationQuery}
                 onChangeText={handleLocationChange}
               />
@@ -408,7 +410,7 @@ const CreateTab = () => {
             </Pressable>
             <DateTimePickerModal
               isVisible={isDatePickerVisible}
-              mode='date'
+              mode="date"
               onConfirm={handleConfirmDate}
               onCancel={() => setDatePickerVisibility(false)}
             />
@@ -425,7 +427,7 @@ const CreateTab = () => {
             </Pressable>
             <DateTimePickerModal
               isVisible={isTimePickerVisible}
-              mode='time'
+              mode="time"
               onConfirm={handleConfirmTime}
               onCancel={() => setTimePickerVisibility(false)}
             />
@@ -437,11 +439,11 @@ const CreateTab = () => {
           <Text style={styles.label}>Description</Text>
           <TextInput
             style={styles.descriptionContainer}
-            placeholder='Describe the event details'
+            placeholder="Describe the event details"
             value={event.description}
             onChangeText={(value) => handleInputChange("description", value)}
             multiline
-            textAlignVertical='top'
+            textAlignVertical="top"
           />
         </View>
 
