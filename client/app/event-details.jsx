@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams, router } from "expo-router";
 import { BASE_URL } from "@/constants/api";
@@ -60,18 +53,13 @@ const EventDetails = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity
-        style={styles.linkContainer}
-        onPress={() => router.back()}
-      >
+      <TouchableOpacity style={styles.linkContainer} onPress={() => router.back()}>
         <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
         <Text style={styles.backLink}>Go home</Text>
       </TouchableOpacity>
       <Image
         source={{
-          uri: eventData.photo
-            ? eventData.photo
-            : "https://www.openday.unsw.edu.au/share.jpg",
+          uri: eventData.photo ? eventData.photo : "https://www.openday.unsw.edu.au/share.jpg",
         }}
         style={styles.eventImage}
       />
@@ -79,17 +67,11 @@ const EventDetails = () => {
         <Text style={styles.title}>{eventData.title}</Text>
         <Text style={styles.description}>{eventData.description}</Text>
         <View style={styles.detailsContainer}>
-          <Image
-            source={require("../assets/images/date.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/images/date.png")} style={styles.icon} />
           <Text style={styles.detailsText}>{eventData.time}</Text>
         </View>
         <View style={styles.detailsContainer}>
-          <Image
-            source={require("../assets/images/location.png")}
-            style={styles.icon}
-          />
+          <Image source={require("../assets/images/location.png")} style={styles.icon} />
           <Text style={styles.detailsText}>{eventData.location}</Text>
         </View>
       </View>
@@ -105,8 +87,7 @@ const EventDetails = () => {
 
           latitudeDelta: 0.00922,
           longitudeDelta: 0.00421,
-        }}
-      >
+        }}>
         <Marker
           // change this too
           // coordinate={{ latitude: latitude, longitude: longitude }}
@@ -171,7 +152,7 @@ const styles = StyleSheet.create({
   },
   linkContainer: {
     position: "absolute",
-    top: 15,
+    top: 50,
     left: 15,
     zIndex: 2,
     flexDirection: "row",
