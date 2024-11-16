@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -24,12 +24,14 @@ import {
   Lexend_700Bold,
   useFonts,
 } from "@expo-google-fonts/lexend";
+import { BASE_URL } from "@/constants/api";
+import axios from "axios";
 
 const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
 const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 
 // placeholder data
-const events = [
+const events2 = [
   {
     id: "1",
     name: "Lunch @ the Quad",
@@ -107,16 +109,43 @@ const events = [
 export default function EventTab() {
   const actionSheetRef = useRef(null);
   const [searchText, setSearchText] = useState("");
+  const [events, setEvents] = useState([]);
 
   const [selectedTime, setSelectedTime] = useState("Anytime");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [TimePickerVisibility, setTimePickerVisibility] = useState(false);
+
+  const [icon, setIcon] = useState(require("../../assets/images/food.png"));
 
   const collapseActionSheet = () => {
     if (actionSheetRef.current) {
       actionSheetRef.current.setModalVisible(false);
     }
   };
+
+  const getIcon = (category) => {
+    switch (category) {
+      case "Hang":
+        return require("../../assets/images/hang.png");
+      case "Study":
+        return require("../../assets/images/study.png");
+      case "Eat":
+        return require("../../assets/images/food.png");
+      default:
+        return require("../../assets/images/other.png");
+    }
+  };
+
+  useEffect(() => {
+    // Fetch events once
+    console.log("Fetching events today");
+    axios
+      .get(`${BASE_URL}/events/get/today`)
+      .then(({ data }) => {
+        setEvents(data.data);
+      })
+      .catch((e) => console.log(e));
+  }, []);
 
   const openTimePicker = () => setTimePickerVisibility(true);
   const closeTimePicker = () => setTimePickerVisibility(false);
@@ -140,7 +169,12 @@ export default function EventTab() {
       onPress={collapseActionSheet}>
       <TouchableOpacity style={styles.eventItem}>
         <View style={styles.eventContent}>
-          <Image source={item.icon} style={styles.eventIcon} />
+          <Image
+            source={
+              item.category ? getIcon(item.category) : require("../../assets/images/hang.png")
+            }
+            style={styles.eventIcon}
+          />
           <View>
             <Text style={styles.eventTitle}>{item.name}</Text>
             <Text style={styles.eventDetails}>{item.time}</Text>

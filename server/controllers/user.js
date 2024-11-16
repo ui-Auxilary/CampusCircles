@@ -6,6 +6,7 @@ export const createUser = async (req, res) => {
   let userData = req.body;
 
   let defaultUser = {
+    name: "",
     photo: "",
     gender: "",
     age: 0,

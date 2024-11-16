@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams, router } from "expo-router";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import { Link } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
 
 const EventDetails = () => {
   const {
@@ -40,15 +49,17 @@ const EventDetails = () => {
   useEffect(() => {
     console.log("Got id fetching event", id);
 
-    axios
-      .get(`${BASE_URL}/events/get/${id}`)
-      .then(({ data }) => {
-        console.log("EVENT DATA", data);
-        setEventData(data.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    if (id) {
+      axios
+        .get(`${BASE_URL}/events/get/${id}`)
+        .then(({ data }) => {
+          console.log("EVENT DATA", data);
+          setEventData(data.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
   }, [id]);
 
   const [joined, setJoined] = useState(false);
@@ -59,35 +70,54 @@ const EventDetails = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <TouchableOpacity style={styles.linkContainer} onPress={() => router.back()}>
+      <ParallaxScrollView
+        headerImage={
+          <Image
+            source={{
+              uri: eventData.photo
+                ? eventData.photo
+                : "https://www.openday.unsw.edu.au/share.jpg",
+            }}
+            style={styles.eventImage}
+          />
+        }
+        headerBackgroundColor={""}
+      >
+        <TouchableOpacity
+          style={styles.linkContainer}
+          onPress={() => router.back()}
+        >
           <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
           <Text style={styles.backLink}>Go Back</Text>
         </TouchableOpacity>
-        <Image
-          source={{
-            uri: eventData.photo ? eventData.photo : "https://www.openday.unsw.edu.au/share.jpg",
-          }}
-          style={styles.eventImage}
-        />
+
         <View style={styles.contentContainer}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{eventData.name}</Text>
 
             <TouchableOpacity
-              onPress={() => router.push({ pathname: "/edit-event", params: { id } })}
-              style={styles.editEventButton}>
+              onPress={() =>
+                router.push({ pathname: "/edit-event", params: { id } })
+              }
+              style={styles.editEventButton}
+            >
               <Text style={styles.editEventText}>Edit Event</Text>
             </TouchableOpacity>
           </View>
 
           <Text style={styles.description}>{eventData.description}</Text>
           <View style={styles.detailsContainer}>
-            <Image source={require("../assets/images/date.png")} style={styles.icon} />
+            <Image
+              source={require("../assets/images/date.png")}
+              style={styles.icon}
+            />
             <Text style={styles.detailsText}>{eventData.time}</Text>
           </View>
           <View style={styles.detailsContainer}>
-            <Image source={require("../assets/images/location.png")} style={styles.icon} />
+            <Image
+              source={require("../assets/images/location.png")}
+              style={styles.icon}
+            />
             <Text style={styles.detailsText}>{eventData.location}</Text>
           </View>
         </View>
@@ -99,7 +129,10 @@ const EventDetails = () => {
             {/* invite friend icon */}
 
             <TouchableOpacity
-              onPress={() => router.push({ pathname: "/event-invite", params: { id } })}>
+              onPress={() =>
+                router.push({ pathname: "/event-invite", params: { id } })
+              }
+            >
               <Image
                 source={require("../assets/images/invite-friend.png")}
                 style={styles.attendeeImage}
@@ -128,7 +161,8 @@ const EventDetails = () => {
 
             latitudeDelta: 0.00922,
             longitudeDelta: 0.00421,
-          }}>
+          }}
+        >
           <Marker
             // change this too
             // coordinate={{ latitude: latitude, longitude: longitude }}
@@ -137,12 +171,12 @@ const EventDetails = () => {
             description={eventData.location}
           />
         </MapView>
-      </ScrollView>
-
+      </ParallaxScrollView>
       {/* switch between join and leave button */}
       <TouchableOpacity
         style={joined ? styles.leaveButton : styles.joinButton}
-        onPress={setJoinLeave}>
+        onPress={setJoinLeave}
+      >
         <Text style={joined ? styles.leaveButtonText : styles.joinButtonText}>
           {joined ? "Leave Event" : "Join now!"}
         </Text>
@@ -164,10 +198,12 @@ const styles = StyleSheet.create({
   eventImage: {
     width: "100%",
     height: 230,
+    position: "sticky",
     resizeMode: "cover",
   },
   contentContainer: {
     padding: 20,
+    paddingVertical: 40,
   },
   titleContainer: {
     flexDirection: "row",
@@ -224,7 +260,7 @@ const styles = StyleSheet.create({
   },
   linkContainer: {
     position: "absolute",
-    top: 50,
+    top: 20,
     left: 15,
     zIndex: 2,
     flexDirection: "row",

@@ -48,3 +48,22 @@ export const getEvents = async (req, res) => {
     data: events,
   });
 };
+
+export const getEventsToday = async (req, res) => {
+  let dateToday = new Date();
+  dateToday.setHours(0, 0, 0, 0);
+
+  const events = await prisma.event.findMany({
+    where: {
+      date: {
+        gte: dateToday.toISOString(),
+      },
+    },
+  });
+
+  res.json({
+    status: true,
+    message: "Events fetched successfully",
+    data: events,
+  });
+};
