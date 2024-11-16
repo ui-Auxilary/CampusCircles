@@ -4,11 +4,17 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
+import { useNavigation } from "@react-navigation/native";
 
 const UserList = () => {
   const { userId } = getUserData();
   const [search, setSearch] = useState("");
   const [nonFriends, setNonFriends] = useState([]);
+  const navigation = useNavigation();
+
+  const handleNavigateToProfile = (friendId) => {
+    navigation.navigate("otherProfile", { userId: friendId, key: friendId });
+  };
 
   useEffect(() => {
     const fetchNonFriends = async () => {
@@ -52,6 +58,12 @@ const UserList = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.navigate("friends")} style={styles.backButtonContainer}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+          <Text style={styles.backButton}> Back</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.searchContainer}>
         <View style={styles.searchBarContainer}>
           <Ionicons
@@ -68,14 +80,21 @@ const UserList = () => {
             onChangeText={(text) => setSearch(text)}
           />
         </View>
-        <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="funnel-outline" size={20} color="#fff" />
-          <Text style={styles.filterText}>Filter</Text>
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => navigation.navigate("friendFilter")}
+          >
+            <Ionicons name="funnel-outline" size={20} color="#fff" />
+            <Text style={styles.filterText}>Filter</Text>
         </TouchableOpacity>
       </View>
       <ScrollView>
         {filteredUsers.map((user) => (
-          <View key={user.id} style={styles.friendCard}>
+          <TouchableOpacity
+            key={user.id}
+            style={styles.friendCard}
+            onPress={() => handleNavigateToProfile(user.id)}
+          >
             <View style={styles.imageContainer}>
               <Image
                 source={{
@@ -88,16 +107,17 @@ const UserList = () => {
               <Text style={styles.name}>{user.name}</Text>
               <View style={styles.separator} />
               <Text style={styles.info}>
-                {user.studyYear || "Unknown Year"} | {user.degree || "Unknown Degree"}
+                {user.studyYear || "Unknown Year"} |{" "}
+                {user.degree || "Unknown Degree"}
               </Text>
             </View>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={() => handleAddFriend(user.id)}
+              onPress={(e) => handleAddFriend(user.id, e)}
             >
               <Ionicons name="person-add" size={24} color="#3b82f6" />
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
@@ -108,6 +128,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+  },
+  header: {
+    marginLeft: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  backButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  backButton: {
+    fontSize: 16,
+    color: '#000'
   },
   searchContainer: {
     flexDirection: "row",

@@ -35,7 +35,10 @@ export default function TabLayout() {
                 title = "Profile";
                 break;
               case "addFriends":
-                  title = "Add Friends";
+                  title = "Add Friend";
+                  break;
+              case "friendFilter":
+                  title = "Add Friend";
                   break;
               case "otherProfile":
                   title = "Profile";
@@ -115,6 +118,7 @@ export default function TabLayout() {
         {/* Remove the extra "header" screen definition */}
         <Tabs.Screen name="addFriends" options={{ href: null }} />
         <Tabs.Screen name="otherProfile" options={{ href: null }} />
+        <Tabs.Screen name="friendFilter" options={{ href: null }} />
       </Tabs>
     </View>
   );
