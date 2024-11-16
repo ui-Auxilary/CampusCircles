@@ -102,15 +102,17 @@ const EventInvite = () => {
   useEffect(() => {
     console.log("Got id fetching event", id);
 
-    axios
-      .get(`${BASE_URL}/events/get/${id}`)
-      .then(({ data }) => {
-        console.log("EVENT DATA", data);
-        setEventData(data.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    if (id) {
+      axios
+        .get(`${BASE_URL}/events/get/${id}`)
+        .then(({ data }) => {
+          console.log("EVENT DATA", data);
+          setEventData(data.data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
   }, [id]);
 
   const { userId } = getUserData();
