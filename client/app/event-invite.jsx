@@ -114,37 +114,29 @@ const EventInvite = () => {
   }, [id]);
 
   const { userId } = getUserData();
-  //   const [search, setSearch] = useState("");
-  //   const [friends, setFriends] = useState([]);
-
-  //   useFocusEffect(
-  //     useCallback(() => {
-  //       const fetchFriends = async () => {
-  //         try {
-  //           const url = `${BASE_URL}/users/${userId}/friends`;
-  //           console.log("Fetching friends from:", url);
-  //           const response = await axios.get(url);
-  //           setFriends(response.data.data);
-  //         } catch (error) {
-  //           console.error("Error fetching friends:", error);
-  //         }
-  //       };
-
-  //       if (userId) {
-  //         fetchFriends();
-  //       }
-  //     }, [userId])
-  //   );
-
-  //   const filteredFriends = friends.filter((friend) =>
-  //     friend.name.toLowerCase().includes(search.toLowerCase())
-  //   );
-
-  // the above is the data fetching and filtering logic
-  // the below is on the placeholder data
   const [search, setSearch] = useState("");
+  const [friends, setFriends] = useState([]);
 
-  const filteredFriends = placeholder.filter((friend) =>
+  useFocusEffect(
+    useCallback(() => {
+      const fetchFriends = async () => {
+        try {
+          const url = `${BASE_URL}/users/${userId}/friends`;
+          console.log("Fetching friends from:", url);
+          const response = await axios.get(url);
+          setFriends(response.data.data);
+        } catch (error) {
+          console.error("Error fetching friends:", error);
+        }
+      };
+
+      if (userId) {
+        fetchFriends();
+      }
+    }, [userId])
+  );
+
+  const filteredFriends = friends.filter((friend) =>
     friend.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -182,72 +174,45 @@ const EventInvite = () => {
           onChangeText={setSearch}
         />
       </View>
-
-      {/* friends list */}
-      <FlatList
-        data={filteredFriends}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.friendList}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.friendCard}>
-            <Image source={{ uri: item.photo }} style={styles.image} />
-
+      <ScrollView>
+        {filteredFriends.map((friend) => (
+          <TouchableOpacity key={friend.id} style={styles.friendCard}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={{
+                  uri: friend.photo || "https://www.gravatar.com/avatar/?d=identicon",
+                }}
+                style={styles.image}
+              />
+            </View>
             <View style={styles.details}>
-              <Text style={styles.name}>{item.name}</Text>
+              <Text style={styles.name}>{friend.name}</Text>
               <View style={styles.separator} />
-              <Text style={styles.info}>{`${item.studyYear || "Unknown Year"} | ${
-                item.degree || "Unknown Degree"
+              <Text style={styles.info}>{`${friend.studyYear || "Unknown Year"} | ${
+                friend.degree || "Unknown Degree"
               }`}</Text>
             </View>
-
-            {/* show icon depending on if a user is attending and if has been invited
-             */}
-            {item.attending ? (
+            {/* show icon depending on if a user is attending and if has been invited */}
+            {friend.attending ? (
               // if already attending
               <Image
                 source={require("../assets/images/attending.png")}
                 style={styles.attendingIcon}
               />
-            ) : invitedFriends[item.id] ? (
+            ) : invitedFriends[friend.id] ? (
               // if invited by user
-              <TouchableOpacity onPress={() => toggleInvite(item.id)} style={styles.addButton}>
+              <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
                 <Ionicons name="remove-circle-outline" size={30} color="#FF3B30" />
               </TouchableOpacity>
             ) : (
               // if neither
-              <TouchableOpacity onPress={() => toggleInvite(item.id)} style={styles.addButton}>
+              <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
                 <Ionicons name="add-circle-outline" size={30} color="#116DFF" />
               </TouchableOpacity>
             )}
           </TouchableOpacity>
-        )}
-        ListEmptyComponent={<Text style={styles.noFriends}>No friends to invite</Text>}
-      />
-      {/* 
-      {filteredFriends.map((friend) => (
-        <TouchableOpacity key={friend.id} style={styles.friendCard}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={{
-                // uri: friend.photo
-                //     ? friend.photo
-                //     : 'https://www.gravatar.com/avatar/?d=identicon',
-                uri: "https://www.gravatar.com/avatar/?d=identicon",
-              }}
-              style={styles.image}
-            />
-          </View>
-          <View style={styles.details}>
-            <Text style={styles.name}>{friend.name}</Text>
-            <View style={styles.separator} />
-            <Text style={styles.info}>{`${friend.studyYear || "Unknown Year"} | ${
-              friend.degree || "Unknown Degree"
-            }`}</Text>
-          </View>
-        </TouchableOpacity>
-      ))} */}
-
-      <ScrollView contentContainerStyle={styles.scrollContainer}></ScrollView>
+        ))}
+      </ScrollView>
     </View>
   );
 };
@@ -317,11 +282,12 @@ const styles = StyleSheet.create({
   },
   friendCard: {
     flexDirection: "row",
-    paddingVertical: 15,
+    alignItems: "center",
+    paddingVertical: 20,
     paddingHorizontal: 10,
     backgroundColor: "#fff",
-    alignItems: "center",
     marginVertical: 10,
+    marginHorizontal: 20,
     borderRadius: 10,
     justifyContent: "space-between",
     shadowOpacity: 0.15,
