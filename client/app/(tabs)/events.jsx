@@ -26,7 +26,7 @@ import {
 } from "@expo-google-fonts/lexend";
 
 const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
-const timeOptions = ["All", "Morning", "Midday", "Afternoon", "Night"];
+const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 
 // placeholder data
 const events = [
@@ -108,9 +108,9 @@ export default function EventTab() {
   const actionSheetRef = useRef(null);
   const [searchText, setSearchText] = useState("");
 
-  const [selectedTime, setSelectedTime] = useState("All");
+  const [selectedTime, setSelectedTime] = useState("Anytime");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [timePicker, setTimePicker] = useState(false);
+  const [TimePickerVisibility, setTimePickerVisibility] = useState(false);
 
   const collapseActionSheet = () => {
     if (actionSheetRef.current) {
@@ -118,8 +118,8 @@ export default function EventTab() {
     }
   };
 
-  const openTimePicker = () => setTimePicker(true);
-  const closeTimePicker = () => setTimePicker(false);
+  const openTimePicker = () => setTimePickerVisibility(true);
+  const closeTimePicker = () => setTimePickerVisibility(false);
 
   const renderEventItem = ({ item }) => (
     <Link
@@ -188,12 +188,9 @@ export default function EventTab() {
       <ScrollView horizontal={true} style={styles.filterContainer}>
         {/* Time filter */}
         <TouchableOpacity
-          style={[styles.quickFilterButtons, selectedTime === "All" ? styles.selectedFilter : null]}
+          style={[styles.quickFilterButtons, styles.selectedFilter]}
           onPress={openTimePicker}>
-          <Text
-            style={[styles.filterText, selectedTime === "All" ? styles.selectedFilterText : null]}>
-            Time Picker
-          </Text>
+          <Text style={[styles.filterText, styles.selectedFilterText]}>{selectedTime}</Text>
         </TouchableOpacity>
 
         {/* category filters */}
@@ -214,6 +211,36 @@ export default function EventTab() {
             </Text>
           </TouchableOpacity>
         ))}
+
+        {/* time options */}
+        <Modal
+          transparent={true}
+          visible={TimePickerVisibility}
+          animationType="slide"
+          onRequestClose={closeTimePicker}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Select Time Period</Text>
+              {timeOptions.map((option) => (
+                <TouchableOpacity
+                  key={option}
+                  style={[styles.modalOption, option === selectedTime && styles.selectedFilter]}
+                  onPress={() => {
+                    setSelectedTime(option);
+                    closeTimePicker();
+                  }}>
+                  <Text
+                    style={[
+                      styles.modalOptionText,
+                      option === selectedTime && styles.selectedFilterText,
+                    ]}>
+                    {option}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
 
       {/* placeholder button to open the action sheet */}
@@ -368,5 +395,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
     color: "white",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 20,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: "Lexend_700Bold",
+    marginBottom: 13,
+  },
+  modalOption: {
+    width: "100%",
+    alignItems: "center",
+    borderRadius: 10,
+    marginVertical: 5,
+    paddingVertical: 8,
+  },
+  modalOptionText: {
+    fontSize: 14,
+    fontFamily: "Lexend_400Regular",
   },
 });
