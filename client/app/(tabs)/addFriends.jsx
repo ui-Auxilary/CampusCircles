@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
+import { useNavigation } from "@react-navigation/native";
 
 const UserList = () => {
   const { userId } = getUserData();
   const [search, setSearch] = useState("");
   const [nonFriends, setNonFriends] = useState([]);
+  const navigation = useNavigation();
+
+  const handleNavigateToProfile = (friendId) => {
+    navigation.navigate("otherProfile", { userId: friendId, key: friendId });
+  };
 
   useEffect(() => {
     const fetchNonFriends = async () => {
@@ -77,13 +75,14 @@ const UserList = () => {
       </View>
       <ScrollView>
         {filteredUsers.map((user) => (
-          <View key={user.id} style={styles.friendCard}>
+          <TouchableOpacity
+            key={user.id}
+            style={styles.friendCard}
+            onPress={() => handleNavigateToProfile(user.id)}
+          >
             <View style={styles.imageContainer}>
               <Image
                 source={{
-                  // uri: user.photo
-                  //     ? user.photo
-                  //     : 'https://www.gravatar.com/avatar/?d=identicon',
                   uri: "https://www.gravatar.com/avatar/?d=identicon",
                 }}
                 style={styles.image}
@@ -99,11 +98,11 @@ const UserList = () => {
             </View>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={() => handleAddFriend(user.id)}
+              onPress={(e) => handleAddFriend(user.id, e)}
             >
               <Ionicons name="person-add" size={24} color="#3b82f6" />
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>

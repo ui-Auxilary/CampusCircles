@@ -3,7 +3,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import Header from "../../components/Header";
 import { View, StyleSheet, Text, Dimensions } from "react-native";
-import { router } from "expo-router"; // Ensure router is imported
+import { router } from "expo-router";
 
 const { height } = Dimensions.get("window");
 
@@ -34,6 +34,12 @@ export default function TabLayout() {
               case "profile":
                 title = "Profile";
                 break;
+              case "addFriends":
+                  title = "Add Friends";
+                  break;
+              case "otherProfile":
+                  title = "Profile";
+                  break;
               default:
                 title = "Campus Circles";
             }
@@ -108,6 +114,7 @@ export default function TabLayout() {
         />
         {/* Remove the extra "header" screen definition */}
         <Tabs.Screen name="addFriends" options={{ href: null }} />
+        <Tabs.Screen name="otherProfile" options={{ href: null }} />
       </Tabs>
     </View>
   );

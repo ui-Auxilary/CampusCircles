@@ -55,9 +55,10 @@ const styles = StyleSheet.create({
   logo: {
     position: "absolute",
     left: 20,
-    top: 75,
+    top: 60,
   },
   headerText: {
+    top: -5,
     fontSize: 24,
     fontWeight: "bold",
     color: "#333",

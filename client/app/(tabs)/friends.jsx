@@ -1,23 +1,16 @@
 import React, { useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 const FriendsList = () => {
   const { userId } = getUserData();
   const [search, setSearch] = useState("");
   const [friends, setFriends] = useState([]);
+  const navigation = useNavigation();
 
   useFocusEffect(
     useCallback(() => {
@@ -37,6 +30,10 @@ const FriendsList = () => {
       }
     }, [userId])
   );
+
+  const handleNavigateToProfile = (friendId) => {
+    navigation.navigate("otherProfile", { userId: friendId, key: friendId });
+  };
 
   const filteredFriends = friends.filter((friend) =>
     friend.name.toLowerCase().includes(search.toLowerCase())
@@ -61,14 +58,17 @@ const FriendsList = () => {
       </View>
       <ScrollView>
         {filteredFriends.map((friend) => (
-          <TouchableOpacity key={friend.id} style={styles.friendCard}>
+          <TouchableOpacity
+            key={friend.id}
+            style={styles.friendCard}
+            onPress={() => handleNavigateToProfile(friend.id)}
+          >
             <View style={styles.imageContainer}>
               <Image
                 source={{
-                  // uri: friend.photo
-                  //     ? friend.photo
-                  //     : 'https://www.gravatar.com/avatar/?d=identicon',
-                  uri: "https://www.gravatar.com/avatar/?d=identicon",
+                  uri: friend.photo
+                    ? friend.photo
+                    : "https://www.gravatar.com/avatar/?d=identicon",
                 }}
                 style={styles.image}
               />
