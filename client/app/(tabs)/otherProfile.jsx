@@ -106,7 +106,7 @@ const OtherProfile = () => {
             <Text style={styles.metricSpan}>Friends</Text>
           </View>
           <View>
-            <Text style={styles.metricText}>{userData.events ? userData.events.length : 0}</Text>
+            <Text style={styles.metricText}>{userData.eventsAttend ? userData.eventsAttend.length : 0}</Text>
             <Text style={styles.metricSpan}>Events</Text>
           </View>
         </View>
