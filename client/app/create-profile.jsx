@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Image,
   StyleSheet,
   Text,
@@ -12,7 +13,6 @@ import Right from "../assets/chev-right.svg";
 import Logo from "../assets/logo2.svg";
 
 import * as ImagePicker from "expo-image-picker";
-
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 import axios from "axios";
@@ -20,16 +20,21 @@ import S from "../styles/global";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const CreateProfile = () => {
-  const pickerRef = useRef();
+  const [mediaLibraryPermissions, requestMediaLibraryPermissions] =
+    ImagePicker.useMediaLibraryPermissions();
 
   const params = useLocalSearchParams();
   const { userId, setUserId, editData, setEditData } = getUserData();
-  const [age, setAge] = useState(editData.age);
-  const [name, setName] = useState(editData.name);
+  const [age, setAge] = useState(editDatn a.name);
 
   const pickImage = async () => {
+    if (!mediaLibraryPermissions?.granted) {
+      const hasPermissions = await checkPermissions();
+      if (!hasPermissions) return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images", "videos"],
       quality: 1,
       base64: true,
     });
@@ -39,6 +44,19 @@ const CreateProfile = () => {
         ...editData,
         photo: result.assets ? result.assets[0].uri : "",
       });
+    }
+  };
+
+  const checkPermissions = async () => {
+    if (!mediaLibraryPermissions?.granted) {
+      const libraryStatus = await requestMediaLibraryPermissions();
+
+      if (!libraryStatus.granted) {
+        Alert.alert(
+          "Permissions Required",
+          "Please grant camera and media library permissions in settings to use this feature."
+        );
+      }
     }
   };
 

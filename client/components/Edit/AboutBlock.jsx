@@ -1,14 +1,25 @@
 import { Picker } from "@react-native-picker/picker";
 import React, { useRef, useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 import pronouns from "../../data/pronouns.json";
+import ActionSheet from "react-native-actions-sheet";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function AboutBlock({ data, setData }) {
   const pickerRef = useRef();
+  const actionSheetRef = useRef(null);
+
   const [name, setName] = useState(data.name || "");
   const [age, setAge] = useState(data.age || 0);
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState(data.gender || "");
   return (
     <View style={styles.inputBlock}>
       <View style={styles.inputRow}>
@@ -42,7 +53,7 @@ export default function AboutBlock({ data, setData }) {
               });
             }}
             value={age}
-            style={[styles.inputField, { width: 55 }]}
+            style={[styles.inputField, { width: "55" }]}
             keyboardType='numeric'
             placeholder='0'
           />
@@ -52,20 +63,21 @@ export default function AboutBlock({ data, setData }) {
         </View>
       </View>
       <View style={styles.editContainer}>
-        <Text style={styles.inputLabel}>Pronoun</Text>
-        <View style={styles.editBlock}>
+        {Platform.OS === "android" ? (
           <Picker
             ref={pickerRef}
             style={styles.selectBtn}
             selectedValue={gender}
             onValueChange={(itemValue, itemIndex) => {
-              setGender(itemValue);
-              setData({ ...data, ["gender"]: itemValue });
+              if (itemValue !== "null") {
+                setGender(itemValue);
+                setData({ ...data, gender: itemValue });
+              }
             }}
           >
             <Picker.Item
               key=''
-              label='Select pronoun'
+              label={"Select pronoun"}
               value={null}
               enabled={false}
             />
@@ -73,7 +85,64 @@ export default function AboutBlock({ data, setData }) {
               <Picker.Item key={idx} label={label} value={value} />
             ))}
           </Picker>
-        </View>
+        ) : (
+          <View>
+            <ActionSheet ref={actionSheetRef}>
+              <TouchableOpacity style={styles.OkWrapper}>
+                <Text
+                  onPress={() => actionSheetRef.current?.hide()}
+                  style={styles.OkText}
+                >
+                  Done
+                </Text>
+              </TouchableOpacity>
+              <Picker
+                ref={pickerRef}
+                style={styles.selectBtn}
+                selectedValue={data.gender || gender}
+                onValueChange={(itemValue, itemIndex) => {
+                  if (itemValue !== "null") {
+                    setGender(itemValue);
+                    setData({ ...data, gender: itemValue });
+                  } else {
+                    setGender("");
+                    setData({ ...data, gender: "" });
+                  }
+                }}
+              >
+                <Picker.Item
+                  key=''
+                  label={"Select pronoun"}
+                  value={null}
+                  enabled={false}
+                />
+                {pronouns.map(({ label, value }, idx) => (
+                  <Picker.Item key={idx} label={label} value={value} />
+                ))}
+              </Picker>
+            </ActionSheet>
+            <View style={styles.editContainer}>
+              <Text style={styles.inputLabel}>Pronoun</Text>
+              <TouchableOpacity
+                onPress={() => actionSheetRef.current?.show()}
+                style={[styles.flexRow, { height: "100%" }]}
+              >
+                <TextInput
+                  style={[styles.selectBtn]}
+                  editable={false}
+                  placeholder='Select pronoun'
+                  textAlign='right'
+                  value={gender === "" ? "Select pronoun" : gender}
+                />
+                <Ionicons
+                  name='chevron-down-outline'
+                  size={24}
+                  color={"#C3B6B6"}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -100,13 +169,13 @@ const styles = StyleSheet.create({
   },
   inputBlock: {
     marginTop: 5,
+    marginVertical: 20,
   },
   paramText: {
     color: "#C3B6B6",
     fontFamily: "Lexend_400Regular",
   },
   inputRow: {
-    width: "100%",
     backgroundColor: "#FFFFFF",
     flexDirection: "row",
     paddingHorizontal: 20,
@@ -116,11 +185,12 @@ const styles = StyleSheet.create({
     borderBottomColor: "#EEEEEE",
     borderBottomWidth: 2,
     minHeight: 50,
+    flex: 1,
   },
   inputField: {
     color: "#C3B6B6",
     paddingHorizontal: 15,
-    width: "70%",
+    width: "100%",
     zIndex: 2,
     textAlign: "right",
     width: "auto",
@@ -130,54 +200,6 @@ const styles = StyleSheet.create({
     color: "#000000",
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
-  },
-
-  loginButton: {
-    paddingHorizontal: 10,
-    backgroundColor: "#76DA69",
-    height: 55,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  loginText: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontFamily: "Lexend_700Bold",
-  },
-  loginFooter: {
-    alignItems: "center",
-    marginTop: 20,
-  },
-  registerText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    zIndex: 2,
-  },
-  logo: {
-    position: "absolute",
-    top: 35,
-    left: 15,
-    zIndex: 2,
-  },
-  createContainer: {
-    flex: 1,
-    flexDirection: "column",
-    height: "100%",
-    width: "100%",
-  },
-  profileImgContainer: {
-    height: 140,
-    backgroundColor: "#EEEEEE",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 5,
-  },
-  profileImg: {
-    width: 120,
-    height: 120,
-    borderRadius: 100,
   },
   flexRow: {
     flexDirection: "row",
@@ -206,38 +228,38 @@ const styles = StyleSheet.create({
     borderBottomColor: "#D9D9D9",
     borderBottomWidth: 2,
   },
-  bioText: {
-    width: "70%",
-    color: "#AEAEB2",
-    fontSize: 12,
-    fontFamily: "Lexend_400Regular",
-  },
-  cameraIcon: {
-    position: "absolute",
-    backgroundColor: "#81626763",
-    width: 120,
-    height: 120,
-    borderRadius: 100,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   selectBtn: {
     backgroundColor: "#FFFFFF",
-    marginTop: 5,
-  },
-  editBlock: {
-    width: 160,
   },
   editContainer: {
     width: "100%",
     backgroundColor: "#FFFFFF",
     flexDirection: "row",
-    paddingLeft: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 10,
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomColor: "#EEEEEE",
     borderBottomWidth: 2,
+    gap: 20,
     height: 60,
+  },
+  editBlock: {
+    width: "100%",
+    height: "100%",
+    paddingRight: 30,
+    backgroundColor: "#000",
+  },
+  selectInput: {
+    backgroundColor: "#000",
+  },
+  OkText: {
+    color: "#3A72FF",
+    fontFamily: "Lexend_500Medium",
+    fontSize: 20,
+  },
+  OkWrapper: {
+    padding: 20,
+    alignSelf: "flex-end",
+    marginRight: 20,
   },
 });
