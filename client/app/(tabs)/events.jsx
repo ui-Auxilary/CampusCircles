@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -24,12 +24,21 @@ import {
   Lexend_700Bold,
   useFonts,
 } from "@expo-google-fonts/lexend";
+import { BASE_URL } from "@/constants/api";
+import axios from "axios";
 
-const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
+const categories = [
+  "All Categories",
+  "Hang",
+  "Study",
+  "Eat",
+  "Society",
+  "Other",
+];
 const timeOptions = ["All", "Morning", "Midday", "Afternoon", "Night"];
 
 // placeholder data
-const events = [
+const events2 = [
   {
     id: "1",
     name: "Lunch @ the Quad",
@@ -107,10 +116,13 @@ const events = [
 export default function EventTab() {
   const actionSheetRef = useRef(null);
   const [searchText, setSearchText] = useState("");
+  const [events, setEvents] = useState([]);
 
   const [selectedTime, setSelectedTime] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [timePicker, setTimePicker] = useState(false);
+
+  const [icon, setIcon] = useState(require("../../assets/images/food.png"));
 
   const collapseActionSheet = () => {
     if (actionSheetRef.current) {
@@ -118,8 +130,32 @@ export default function EventTab() {
     }
   };
 
+  const getIcon = (category) => {
+    switch (category) {
+      case "Hang":
+        return require("../../assets/images/hang.png");
+      case "Study":
+        return require("../../assets/images/study.png");
+      case "Eat":
+        return require("../../assets/images/food.png");
+      default:
+        return require("../../assets/images/other.png");
+    }
+  };
+
+  useEffect(() => {
+    // Fetch events once
+    console.log("Fetching events today");
+    axios
+      .get(`${BASE_URL}/events/get/today`)
+      .then(({ data }) => {
+        setEvents(data.data);
+      })
+      .catch((e) => console.log(e));
+  }, []);
+
   const openTimePicker = () => setTimePicker(true);
-  const closeTimePicker = () => setTimePicker(false);
+  const closeTimePicker = () => sretTimePicker(false);
 
   const renderEventItem = ({ item }) => (
     <Link
@@ -137,10 +173,18 @@ export default function EventTab() {
         },
       }}
       asChild
-      onPress={collapseActionSheet}>
+      onPress={collapseActionSheet}
+    >
       <TouchableOpacity style={styles.eventItem}>
         <View style={styles.eventContent}>
-          <Image source={item.icon} style={styles.eventIcon} />
+          <Image
+            source={
+              item.category
+                ? getIcon(item.category)
+                : require("../../assets/images/hang.png")
+            }
+            style={styles.eventIcon}
+          />
           <View>
             <Text style={styles.eventTitle}>{item.name}</Text>
             <Text style={styles.eventDetails}>{item.time}</Text>
@@ -161,7 +205,8 @@ export default function EventTab() {
             latitudeDelta: 0.0088,
             longitudeDelta: 0.0091,
           }}
-          style={styles.map}>
+          style={styles.map}
+        >
           <Marker
             key={1}
             coordinate={{ latitude: -33.91719, longitude: 151.233033 }}
@@ -175,12 +220,12 @@ export default function EventTab() {
       <View style={styles.searchbarContainer}>
         <TextInput
           style={styles.searchbar}
-          placeholder="Search events"
+          placeholder='Search events'
           value={searchText}
           onChangeText={(text) => setSearchText(text)}
         />
         <TouchableOpacity style={styles.filterIcon}>
-          <Ionicons name="filter-circle-outline" size={30} color="#4285F4" />
+          <Ionicons name='filter-circle-outline' size={30} color='#4285F4' />
         </TouchableOpacity>
       </View>
 
@@ -188,10 +233,18 @@ export default function EventTab() {
       <ScrollView horizontal={true} style={styles.filterContainer}>
         {/* Time filter */}
         <TouchableOpacity
-          style={[styles.quickFilterButtons, selectedTime === "All" ? styles.selectedFilter : null]}
-          onPress={openTimePicker}>
+          style={[
+            styles.quickFilterButtons,
+            selectedTime === "All" ? styles.selectedFilter : null,
+          ]}
+          onPress={openTimePicker}
+        >
           <Text
-            style={[styles.filterText, selectedTime === "All" ? styles.selectedFilterText : null]}>
+            style={[
+              styles.filterText,
+              selectedTime === "All" ? styles.selectedFilterText : null,
+            ]}
+          >
             Time Picker
           </Text>
         </TouchableOpacity>
@@ -204,12 +257,16 @@ export default function EventTab() {
               styles.quickFilterButtons,
               selectedCategory === category ? styles.selectedFilter : null,
             ]}
-            onPress={() => setSelectedCategory(category)}>
+            onPress={() => setSelectedCategory(category)}
+          >
             <Text
               style={[
                 styles.filterText,
-                selectedCategory === category ? styles.selectedFilterText : null,
-              ]}>
+                selectedCategory === category
+                  ? styles.selectedFilterText
+                  : null,
+              ]}
+            >
               {category}
             </Text>
           </TouchableOpacity>
@@ -223,7 +280,8 @@ export default function EventTab() {
           if (actionSheetRef.current) {
             actionSheetRef.current.setModalVisible(true);
           }
-        }}>
+        }}
+      >
         <Text style={styles.openSheetButtonText}>Show Events</Text>
       </TouchableOpacity>
 

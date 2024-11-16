@@ -54,6 +54,7 @@ const CreateTab = () => {
     photo: "",
     lat: "",
     long: "",
+    category: "",
     date: new Date(),
     time: new Date(),
     description: "",
@@ -250,6 +251,7 @@ const CreateTab = () => {
       ...event,
       date: event.date.toISOString(),
       time: event.time.toISOString(),
+      category: eventType,
     };
 
     console.log("POSTING", postData);
