@@ -52,7 +52,6 @@ const EditEvent = () => {
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   // fetch event details
-
   const {
     title,
     date,
@@ -66,6 +65,7 @@ const EditEvent = () => {
     attendees,
     creatorId,
     id,
+    society,
   } = useLocalSearchParams();
 
   const [eventData, setEventData] = useState({
@@ -80,6 +80,7 @@ const EditEvent = () => {
     photo,
     attendees,
     creatorId,
+    society,
   });
 
   useEffect(() => {
@@ -479,7 +480,7 @@ const EditEvent = () => {
 
           {/* Create Button */}
           <Pressable onPress={handleCreate} style={[styles.createButton, styles.shadow]}>
-            <Text style={styles.createText}>Create</Text>
+            <Text style={styles.createText}>Save</Text>
           </Pressable>
         </View>
       </View>

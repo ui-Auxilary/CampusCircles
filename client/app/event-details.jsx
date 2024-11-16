@@ -9,7 +9,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 const EventDetails = () => {
   const {
-    title,
+    // title,
     date,
     name,
     time,
@@ -24,7 +24,7 @@ const EventDetails = () => {
   } = useLocalSearchParams();
 
   const [eventData, setEventData] = useState({
-    title,
+    // title,
     date,
     name,
     time,
@@ -51,61 +51,103 @@ const EventDetails = () => {
       });
   }, [id]);
 
+  const [joined, setJoined] = useState(false);
+
+  const setJoinLeave = () => {
+    setJoined(!joined);
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <TouchableOpacity style={styles.linkContainer} onPress={() => router.back()}>
-        <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
-        <Text style={styles.backLink}>Go home</Text>
-      </TouchableOpacity>
-      <Image
-        source={{
-          uri: eventData.photo ? eventData.photo : "https://www.openday.unsw.edu.au/share.jpg",
-        }}
-        style={styles.eventImage}
-      />
-      <View style={styles.contentContainer}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>{eventData.title}</Text>
-
-          <TouchableOpacity
-            onPress={() => router.push({ pathname: "/edit-event", params: { id } })}
-            style={styles.editEventButton}>
-            <Text style={styles.editEventText}>Edit Event</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Text style={styles.description}>{eventData.description}</Text>
-        <View style={styles.detailsContainer}>
-          <Image source={require("../assets/images/date.png")} style={styles.icon} />
-          <Text style={styles.detailsText}>{eventData.time}</Text>
-        </View>
-        <View style={styles.detailsContainer}>
-          <Image source={require("../assets/images/location.png")} style={styles.icon} />
-          <Text style={styles.detailsText}>{eventData.location}</Text>
-        </View>
-      </View>
-
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          // change this
-          // latitude: latitude,
-          // longitude: longitude,
-          latitude: -33.91719,
-          longitude: 151.233033,
-
-          latitudeDelta: 0.00922,
-          longitudeDelta: 0.00421,
-        }}>
-        <Marker
-          // change this too
-          // coordinate={{ latitude: latitude, longitude: longitude }}
-          coordinate={{ latitude: -33.91719, longitude: 151.233033 }}
-          title={eventData.title}
-          description={eventData.location}
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <TouchableOpacity style={styles.linkContainer} onPress={() => router.back()}>
+          <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
+          <Text style={styles.backLink}>Go Back</Text>
+        </TouchableOpacity>
+        <Image
+          source={{
+            uri: eventData.photo ? eventData.photo : "https://www.openday.unsw.edu.au/share.jpg",
+          }}
+          style={styles.eventImage}
         />
-      </MapView>
-    </ScrollView>
+        <View style={styles.contentContainer}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{eventData.name}</Text>
+
+            <TouchableOpacity
+              onPress={() => router.push({ pathname: "/edit-event", params: { id } })}
+              style={styles.editEventButton}>
+              <Text style={styles.editEventText}>Edit Event</Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={styles.description}>{eventData.description}</Text>
+          <View style={styles.detailsContainer}>
+            <Image source={require("../assets/images/date.png")} style={styles.icon} />
+            <Text style={styles.detailsText}>{eventData.time}</Text>
+          </View>
+          <View style={styles.detailsContainer}>
+            <Image source={require("../assets/images/location.png")} style={styles.icon} />
+            <Text style={styles.detailsText}>{eventData.location}</Text>
+          </View>
+        </View>
+
+        {/* attendees */}
+        <View style={styles.attendeesContainer}>
+          <Text style={styles.attendeesTitle}>Attendees</Text>
+          <View style={styles.attendeesList}>
+            {/* invite friend icon */}
+
+            <TouchableOpacity
+              onPress={() => router.push({ pathname: "/event-invite", params: { id } })}>
+              <Image
+                source={require("../assets/images/invite-friend.png")}
+                style={styles.attendeeImage}
+              />
+            </TouchableOpacity>
+
+            {eventData.attendees?.map((attendee, index) => (
+              <Image
+                key={index}
+                // not sure if it's .user.photo
+                source={{ uri: attendee.user.photo }}
+                style={styles.attendeeImage}
+              />
+            ))}
+          </View>
+        </View>
+
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            // change this
+            // latitude: latitude,
+            // longitude: longitude,
+            latitude: -33.91719,
+            longitude: 151.233033,
+
+            latitudeDelta: 0.00922,
+            longitudeDelta: 0.00421,
+          }}>
+          <Marker
+            // change this too
+            // coordinate={{ latitude: latitude, longitude: longitude }}
+            coordinate={{ latitude: -33.91719, longitude: 151.233033 }}
+            name={eventData.name}
+            description={eventData.location}
+          />
+        </MapView>
+      </ScrollView>
+
+      {/* switch between join and leave button */}
+      <TouchableOpacity
+        style={joined ? styles.leaveButton : styles.joinButton}
+        onPress={setJoinLeave}>
+        <Text style={joined ? styles.leaveButtonText : styles.joinButtonText}>
+          {joined ? "Leave Event" : "Join now!"}
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -115,6 +157,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+  },
+  scrollContainer: {
+    paddingBottom: 37,
   },
   eventImage: {
     width: "100%",
@@ -130,7 +175,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 10,
   },
-
   title: {
     fontSize: 26,
     fontWeight: "bold",
@@ -158,7 +202,8 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
+    paddingVertical: 5,
+    marginBottom: 8,
   },
   detailsText: {
     fontSize: 18,
@@ -193,5 +238,54 @@ const styles = StyleSheet.create({
   backLink: {
     color: "#FFFFFF",
     fontFamily: "Lexend_500Medium",
+  },
+  joinButton: {
+    backgroundColor: "#5A57E0",
+    padding: 15,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    width: "70%",
+    alignSelf: "center",
+    bottom: 37,
+  },
+  joinButtonText: {
+    color: "#FFFFFF",
+    fontSize: 19,
+    fontFamily: "Lexend_700Bold",
+  },
+  leaveButton: {
+    backgroundColor: "#BF5E5E",
+    padding: 15,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    width: "70%",
+    alignSelf: "center",
+    bottom: 37,
+  },
+  leaveButtonText: {
+    color: "#FFFFFF",
+    fontSize: 19,
+    fontFamily: "Lexend_700Bold",
+  },
+  attendeesContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+  },
+  attendeesTitle: {
+    fontSize: 20,
+    marginBottom: 12,
+    fontFamily: "Lexend_700Bold",
+    color: "#2a2a2a",
+  },
+  attendeeImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 20,
+    marginRight: 10,
+    marginBottom: 10,
   },
 });

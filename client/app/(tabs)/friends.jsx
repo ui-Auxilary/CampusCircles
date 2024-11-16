@@ -45,12 +45,7 @@ const FriendsList = () => {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Ionicons
-          name="search"
-          size={20}
-          color="#888"
-          style={styles.searchIcon}
-        />
+        <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
         <TextInput
           style={styles.searchBar}
           placeholder="Search by name..."
@@ -76,9 +71,9 @@ const FriendsList = () => {
             <View style={styles.details}>
               <Text style={styles.name}>{friend.name}</Text>
               <View style={styles.separator} />
-              <Text style={styles.info}>{`${
-                friend.studyYear || "Unknown Year"
-              } | ${friend.degree || "Unknown Degree"}`}</Text>
+              <Text style={styles.info}>{`${friend.studyYear || "Unknown Year"} | ${
+                friend.degree || "Unknown Degree"
+              }`}</Text>
             </View>
           </TouchableOpacity>
         ))}
