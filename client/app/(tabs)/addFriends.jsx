@@ -4,17 +4,11 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
-import { useNavigation } from "@react-navigation/native";
 
 const UserList = () => {
   const { userId } = getUserData();
   const [search, setSearch] = useState("");
   const [nonFriends, setNonFriends] = useState([]);
-  const navigation = useNavigation();
-
-  const handleNavigateToProfile = (friendId) => {
-    navigation.navigate("otherProfile", { userId: friendId, key: friendId });
-  };
 
   useEffect(() => {
     const fetchNonFriends = async () => {
@@ -59,27 +53,29 @@ const UserList = () => {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Ionicons
-          name="search"
-          size={20}
-          color="#888"
-          style={styles.searchIcon}
-        />
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search by name..."
-          placeholderTextColor="#888"
-          value={search}
-          onChangeText={(text) => setSearch(text)}
-        />
+        <View style={styles.searchBarContainer}>
+          <Ionicons
+            name="search"
+            size={20}
+            color="#888"
+            style={styles.searchIcon}
+          />
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search users by name..."
+            placeholderTextColor="#888"
+            value={search}
+            onChangeText={(text) => setSearch(text)}
+          />
+        </View>
+        <TouchableOpacity style={styles.filterButton}>
+          <Ionicons name="funnel-outline" size={20} color="#fff" />
+          <Text style={styles.filterText}>Filter</Text>
+        </TouchableOpacity>
       </View>
       <ScrollView>
         {filteredUsers.map((user) => (
-          <TouchableOpacity
-            key={user.id}
-            style={styles.friendCard}
-            onPress={() => handleNavigateToProfile(user.id)}
-          >
+          <View key={user.id} style={styles.friendCard}>
             <View style={styles.imageContainer}>
               <Image
                 source={{
@@ -92,17 +88,16 @@ const UserList = () => {
               <Text style={styles.name}>{user.name}</Text>
               <View style={styles.separator} />
               <Text style={styles.info}>
-                {user.studyYear || "Unknown Year"} |{" "}
-                {user.degree || "Unknown Degree"}
+                {user.studyYear || "Unknown Year"} | {user.degree || "Unknown Degree"}
               </Text>
             </View>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={(e) => handleAddFriend(user.id, e)}
+              onPress={() => handleAddFriend(user.id)}
             >
               <Ionicons name="person-add" size={24} color="#3b82f6" />
             </TouchableOpacity>
-          </TouchableOpacity>
+          </View>
         ))}
       </ScrollView>
     </View>
@@ -117,19 +112,39 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 10,
+  },
+  searchBarContainer: {
+    flex: 4,
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#fff",
     borderRadius: 10,
-    marginBottom: 10,
     paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginRight: 10,
   },
   searchIcon: {
     marginRight: 10,
   },
   searchBar: {
     flex: 1,
-    paddingVertical: 20,
+    paddingVertical: 8,
     fontSize: 16,
     color: "#000",
+  },
+  filterButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#3b82f6",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+  },
+  filterText: {
+    color: "#fff",
+    fontSize: 12,
+    marginTop: 2,
   },
   friendCard: {
     flexDirection: "row",

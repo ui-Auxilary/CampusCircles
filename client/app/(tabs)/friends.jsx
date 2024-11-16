@@ -50,7 +50,7 @@ const FriendsList = () => {
         />
         <TextInput
           style={styles.searchBar}
-          placeholder='Search by name...'
+          placeholder='Search friends by name or username...'
           placeholderTextColor='#888'
           value={search}
           onChangeText={(text) => setSearch(text)}
