@@ -1,4 +1,6 @@
-// issue with locaiton search dropdown
+// changed search result suggestions to scrollview
+// fixed layering issue with search suggestions
+// changed borderRadius and border visibility for location field to dynamic
 
 import {
   StyleSheet,
@@ -352,7 +354,7 @@ const CreateTab = () => {
           </Pressable>
         </View>
 
-        <View style={styles.horiz}>
+        <View style={[styles.horiz, { zIndex: 3, position: "relative" }]}>
           {/* Image */}
           <Pressable onPress={handleImagePick} style={styles.imageContainer}>
             {event.photo ? (
@@ -362,7 +364,7 @@ const CreateTab = () => {
             )}
           </Pressable>
           {/* Event Name */}
-          <View style={styles.verti}>
+          <View style={[styles.verti, { zIndex: 4, position: "relative" }]}>
             <View style={styles.detailContainer}>
               <Text style={styles.label}>Event Name</Text>
               <TextInput
@@ -373,16 +375,30 @@ const CreateTab = () => {
               />
             </View>
             {/* Location */}
-            <View style={styles.detailContainer}>
+            <View
+              style={[
+                styles.detailContainer,
+                { zIndex: 5, position: "relative" },
+              ]}
+            >
               <Text style={styles.label}>Location</Text>
               <TextInput
-                style={[styles.field, { flex: 1 }]}
+                style={[
+                  styles.field,
+                  {
+                    flex: 1,
+                    borderBottomLeftRadius: showSuggestions ? 0 : 10,
+                    borderBottomRightRadius: showSuggestions ? 0 : 10,
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#ccc",
+                  },
+                ]}
                 placeholder="Search for location"
                 value={locationQuery}
                 onChangeText={handleLocationChange}
               />
               {showSuggestions && (
-                <View style={styles.suggestionsContainer}>
+                <ScrollView style={styles.suggestionsContainer}>
                   {locationResults.map((location, idx) => (
                     <TouchableOpacity
                       key={idx}
@@ -392,7 +408,7 @@ const CreateTab = () => {
                       <Text>{location.name}</Text>
                     </TouchableOpacity>
                   ))}
-                </View>
+                </ScrollView>
               )}
             </View>
           </View>
@@ -632,13 +648,14 @@ const styles = StyleSheet.create({
   },
   suggestionsContainer: {
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
     width: "100%",
-    maxHeight: 150,
     position: "absolute",
-    top: 70,
-    zIndex: 1000,
+    top: 78,
+    zIndex: 10,
     padding: 5,
+    maxHeight: 150,
   },
   locationItem: {
     paddingVertical: 10,
@@ -661,7 +678,6 @@ const styles = StyleSheet.create({
   },
   privacyButtonRight: {
     alignItems: "center",
-
     width: "50%",
     backgroundColor: "white",
     borderTopRightRadius: 10,
@@ -670,7 +686,6 @@ const styles = StyleSheet.create({
   },
   privacyButtonLeftInverted: {
     alignItems: "center",
-
     width: "50%",
     backgroundColor: "#3A72FF",
     paddingVertical: 10,
@@ -679,7 +694,6 @@ const styles = StyleSheet.create({
   },
   privacyButtonRightInverted: {
     alignItems: "center",
-
     width: "50%",
     backgroundColor: "#3A72FF",
     paddingVertical: 10,
