@@ -12,14 +12,18 @@ import {
 import pronouns from "../../data/pronouns.json";
 import ActionSheet from "react-native-actions-sheet";
 import { Ionicons } from "@expo/vector-icons";
+import { getUserData } from "@/hooks/userContext";
 
-export default function AboutBlock({ data, setData }) {
+export default function AboutBlock() {
   const pickerRef = useRef();
   const actionSheetRef = useRef(null);
 
-  const [name, setName] = useState(data.name || "");
-  const [age, setAge] = useState(data.age || 0);
-  const [gender, setGender] = useState(data.gender || "");
+  const { editData, setEditData } = getUserData();
+
+  const [name, setName] = useState(editData.name || "");
+  const [age, setAge] = useState(editData.age || "");
+  const [gender, setGender] = useState(editData.gender || "");
+
   return (
     <View style={styles.inputBlock}>
       <View style={styles.inputRow}>
@@ -29,14 +33,14 @@ export default function AboutBlock({ data, setData }) {
             onChangeText={(val) => {
               let text = val.substring(0, 25);
               setName(text);
-              setData({ ...data, name: text });
+              setEditData({ ...editData, name: text });
             }}
             value={name}
             style={[styles.inputField, { width: 195 }]}
             placeholder='Enter name'
           />
           <Text style={styles.editCount}>
-            {data.name.length || 0} / {25}
+            {editData.name.length || 0} / {25}
           </Text>
         </View>
       </View>
@@ -46,19 +50,27 @@ export default function AboutBlock({ data, setData }) {
           <TextInput
             onChangeText={(val) => {
               let text = val.substring(0, 3);
-              setAge(text);
-              setData({
-                ...data,
-                ["age"]: parseInt(text),
-              });
+              if (text) {
+                setAge(text);
+                setEditData({
+                  ...editData,
+                  ["age"]: isNaN(text) ? "0" : parseInt(text),
+                });
+              } else {
+                setAge("");
+                setEditData({
+                  ...editData,
+                  ["age"]: "",
+                });
+              }
             }}
-            value={age}
+            value={editData.age.toString() || age}
             style={[styles.inputField, { width: "55" }]}
             keyboardType='numeric'
             placeholder='0'
           />
           <Text style={styles.editCount}>
-            {data.age.toString().length || 0} / {3}
+            {editData.age.toString().length || 0} / {3}
           </Text>
         </View>
       </View>
@@ -71,7 +83,7 @@ export default function AboutBlock({ data, setData }) {
             onValueChange={(itemValue, itemIndex) => {
               if (itemValue !== "null") {
                 setGender(itemValue);
-                setData({ ...data, gender: itemValue });
+                setEditData({ ...editData, gender: itemValue });
               }
             }}
           >
@@ -99,14 +111,14 @@ export default function AboutBlock({ data, setData }) {
               <Picker
                 ref={pickerRef}
                 style={styles.selectBtn}
-                selectedValue={data.gender || gender}
+                selectedValue={editData.gender || gender}
                 onValueChange={(itemValue, itemIndex) => {
                   if (itemValue !== "null") {
                     setGender(itemValue);
-                    setData({ ...data, gender: itemValue });
+                    setEditData({ ...editData, gender: itemValue });
                   } else {
                     setGender("");
-                    setData({ ...data, gender: "" });
+                    setEditData({ ...editData, gender: "" });
                   }
                 }}
               >
@@ -132,7 +144,7 @@ export default function AboutBlock({ data, setData }) {
                   editable={false}
                   placeholder='Select pronoun'
                   textAlign='right'
-                  value={gender === "" ? "Select pronoun" : gender}
+                  value={gender}
                 />
                 <Ionicons
                   name='chevron-down-outline'

@@ -25,7 +25,7 @@ const CreateProfile = () => {
 
   const params = useLocalSearchParams();
   const { userId, setUserId, editData, setEditData } = getUserData();
-  const [age, setAge] = useState(editDatn a.name);
+  const [age, setAge] = useState(editData.age);
 
   const pickImage = async () => {
     if (!mediaLibraryPermissions?.granted) {

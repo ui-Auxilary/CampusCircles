@@ -13,19 +13,19 @@ import languages from "../../data/languages.json";
 import { getUserData } from "@/hooks/userContext";
 import ActionSheet from "react-native-actions-sheet";
 import { Ionicons } from "@expo/vector-icons";
-export default function EditLanguage({ data, setData }) {
+export default function EditLanguage() {
   const actionSheetRef = useRef([]);
   let pickerRef = useRef();
-  const { editData } = getUserData();
+  const { editData, setEditData } = getUserData();
   const [selectedLanguage, setSelectedLanguage] = useState(editData.languages);
 
   const updateLanguage = (language, langIdx, idx) => {
     console.log("Language", language, idx, selectedLanguage);
     let newLanguages = selectedLanguage;
-    newLanguages[idx] = languages[langIdx]["label"];
+    newLanguages[idx] = languages[langIdx - 1]["label"];
     console.log("New", newLanguages);
     setSelectedLanguage((prev) => [...newLanguages]);
-    setData({ ...data, languages: [...newLanguages] });
+    setEditData({ ...editData, languages: [...newLanguages] });
   };
 
   return (
@@ -33,26 +33,6 @@ export default function EditLanguage({ data, setData }) {
       {Array.from(Array(3)).map((language, idx) => (
         <View key={idx} style={styles.editBlock}>
           <Text style={styles.editLabel}>Language #{idx + 1}</Text>
-          {/* <Picker
-            ref={pickerRef}
-            style={styles.selectBtn}
-            selectedValue={selectedLanguage[idx]}
-            onValueChange={(itemValue, itemIndex) => {
-              updateLanguage(itemValue, itemIndex, idx);
-            }}
-          >
-            <Picker.Item
-              key=''
-              label={
-                idx == 0 ? "Select a language" : "Select a language (optional)"
-              }
-              value={null}
-              enabled={false}
-            />
-            {languages.map(({ label, value }, idx) => (
-              <Picker.Item key={idx} label={label} value={value} />
-            ))}
-          </Picker> */}
           <TouchableOpacity
             onPress={() =>
               actionSheetRef.current[idx]?.show({ payload: { idx } })

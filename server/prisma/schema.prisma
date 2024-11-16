@@ -25,8 +25,8 @@ model User {
   studyYear       String
   bio             String
   languages       String[]
-  interests       String[]
-  courses         String[]
+  interests       String
+  courses         String
 
   eventsCreated   Event[]         @relation("EventsCreated")
   eventsAttend    EventAttendee[] @relation("EventAttendees")

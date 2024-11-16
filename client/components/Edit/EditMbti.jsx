@@ -8,13 +8,14 @@ import {
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { Picker, PickerIOS } from "@react-native-picker/picker";
-import RNPickerSelect from "react-native-picker-select";
 
 import mbti from "../../data/mbti.json";
 import ActionSheet from "react-native-actions-sheet";
+import { getUserData } from "@/hooks/userContext";
 
-export default function EditMbti({ data, setData }) {
-  const [chooseMbti, setMbti] = useState(data.mbti || "");
+export default function EditMbti() {
+  const { editData, setEditData } = getUserData();
+  const [chooseMbti, setMbti] = useState(editData.mbti || "");
 
   let pickerRef = useRef();
   const actionSheetRef = useRef(null);
@@ -28,7 +29,7 @@ export default function EditMbti({ data, setData }) {
           selectedValue={chooseMbti}
           onValueChange={(itemValue, itemIndex) => {
             setMbti(itemValue);
-            setData({ ...data, mbti: itemValue });
+            setEditData({ ...editData, mbti: itemValue });
           }}
         >
           <Picker.Item
@@ -58,7 +59,7 @@ export default function EditMbti({ data, setData }) {
               selectedValue={chooseMbti}
               onValueChange={(itemValue, itemIndex) => {
                 setMbti(itemValue);
-                setData({ ...data, mbti: itemValue });
+                setEditData({ ...editData, mbti: itemValue });
               }}
             >
               <Picker.Item
