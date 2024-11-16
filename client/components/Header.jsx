@@ -26,7 +26,7 @@ const Header = ({ title, showAddFriendButton }) => {
             style={styles.addFriendButton}
             onPress={() => navigation.navigate("addFriends")}
           >
-            <Ionicons name="person-add-outline" size={28} color="#3A72FF" />
+            <Ionicons name='person-add-outline' size={28} color='#3A72FF' />
           </TouchableOpacity>
         )}
       </View>
