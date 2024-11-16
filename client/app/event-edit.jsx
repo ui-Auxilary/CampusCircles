@@ -40,6 +40,8 @@ import UNSW_LOCATIONS from "../data/locations.json";
 const EditEvent = () => {
   // Variables //////////////////////////////////////////////////////////
   const { userId } = getUserData();
+  const { id } = useLocalSearchParams();
+
   const navigation = useNavigation();
   const [eventType, setEventType] = useState("Hang");
   const [image, setImage] = useState(null);
@@ -51,57 +53,12 @@ const EditEvent = () => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
-  // fetch event details
-  const {
-    title,
-    date,
-    name,
-    time,
-    location,
-    description,
-    lat,
-    long,
-    photo,
-    attendees,
-    creatorId,
-    id,
-    society,
-  } = useLocalSearchParams();
-
-  const [eventData, setEventData] = useState({
-    title,
-    date,
-    name,
-    time,
-    location,
-    description,
-    lat,
-    long,
-    photo,
-    attendees,
-    creatorId,
-    society,
-  });
-
-  useEffect(() => {
-    console.log("Got id fetching event", id);
-
-    axios
-      .get(`${BASE_URL}/events/get/${id}`)
-      .then(({ data }) => {
-        console.log("EVENT DATA", data);
-        setEventData(data.data);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }, [id]);
-
   const defaultEventData = {
     name: "",
     photo: "",
     lat: "",
     long: "",
+    category: "",
     date: new Date(),
     time: new Date(),
     description: "",
@@ -127,6 +84,48 @@ const EditEvent = () => {
   };
 
   const [event, setEvent] = useState(defaultEventData);
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchEvent = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/events/get/${id}`);
+        const fetchedEvent = response.data.data;
+
+        setEvent({
+          name: fetchedEvent.name || "",
+          photo: fetchedEvent.photo || "",
+          lat: fetchedEvent.lat || "",
+          long: fetchedEvent.long || "",
+          category: fetchedEvent.category || "",
+          date: fetchedEvent.date ? new Date(fetchedEvent.date) : new Date(),
+          time: fetchedEvent.time ? new Date(fetchedEvent.time) : new Date(),
+          description: fetchedEvent.description || "",
+          public: fetchedEvent.public !== undefined ? fetchedEvent.public : true,
+          tag: fetchedEvent.tag || {
+            connectOrCreate: {
+              where: { name: "" },
+              create: { name: "" },
+            },
+          },
+          eventAttendees: fetchedEvent.eventAttendees || {},
+          society: fetchedEvent.society || false,
+          invitations: fetchedEvent.invitations || {},
+          creator: {
+            connect: {
+              id: fetchedEvent.creator?.id || "",
+            },
+          },
+        });
+
+        setImage(fetchedEvent.photo || null);
+        setLocationQuery(fetchedEvent.location || "");
+      } catch (error) {
+        console.log(e);
+      }
+    };
+    fetchEvent();
+  }, [id]);
 
   // FUNCTIONS: useEffect ////////////////////////////////////////////////////////////////////
 
@@ -195,6 +194,7 @@ const EditEvent = () => {
 
   const handleLocationChange = (query) => {
     setLocationQuery(query);
+
     if (query.length > 1) {
       const filteredResults = UNSW_LOCATIONS.filter((location) =>
         location.name.toLowerCase().includes(query.toLowerCase())
@@ -283,33 +283,50 @@ const EditEvent = () => {
     return true;
   };
 
-  const handleCreate = async () => {
-    if (!validateForm()) {
-      return;
-    }
+  const handleUpdate = async () => {
+    if (!validateForm()) return;
 
-    let postData = {
+    const updatedData = {
       ...event,
       date: event.date.toISOString(),
       time: event.time.toISOString(),
     };
 
-    console.log("POSTING", postData);
-    await axios
-      .post(`${BASE_URL}/events/create`, postData)
-      .then(({ data }) => {
-        let createdEvent = data.data;
-        if (createdEvent && createdEvent.id) {
-          router.push({
-            pathname: "event-details",
-            params: { id: createdEvent.id },
-          });
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    try {
+      await axios.put(`${BASE_URL}/events/update/${id}`, updatedData);
+      router.push({ pathname: "event-details", params: { id } });
+    } catch (e) {
+      console.log(e);
+    }
   };
+
+  // const handleCreate = async () => {
+  //   if (!validateForm()) {
+  //     return;
+  //   }
+
+  //   let postData = {
+  //     ...event,
+  //     date: event.date.toISOString(),
+  //     time: event.time.toISOString(),
+  //   };
+
+  //   console.log("POSTING", postData);
+  //   await axios
+  //     .post(`${BASE_URL}/events/create`, postData)
+  //     .then(({ data }) => {
+  //       let createdEvent = data.data;
+  //       if (createdEvent && createdEvent.id) {
+  //         router.push({
+  //           pathname: "event-details",
+  //           params: { id: createdEvent.id },
+  //         });
+  //       }
+  //     })
+  //     .catch((e) => {
+  //       console.log(e);
+  //     });
+  // };
 
   const resetForm = () => {
     setEvent({ ...defaultEventData });
@@ -478,8 +495,8 @@ const EditEvent = () => {
             <Text style={styles.label}>Society</Text>
           </View>
 
-          {/* Create Button */}
-          <Pressable onPress={handleCreate} style={[styles.createButton, styles.shadow]}>
+          {/* Save Button */}
+          <Pressable onPress={handleUpdate} style={[styles.saveButton, styles.shadow]}>
             <Text style={styles.createText}>Save</Text>
           </Pressable>
         </View>
@@ -681,7 +698,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   // Create
-  createButton: {
+  saveButton: {
     backgroundColor: "#76DA69",
     paddingHorizontal: 27.5,
     paddingVertical: 12.5,
