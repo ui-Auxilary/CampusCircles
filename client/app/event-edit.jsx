@@ -87,16 +87,18 @@ const EditEvent = () => {
 
   useEffect(() => {
     if (!id) return;
+  
     const fetchEvent = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/events/get/${id}`);
         const fetchedEvent = response.data.data;
-
+  
         setEvent({
           name: fetchedEvent.name || "",
           photo: fetchedEvent.photo || "",
           lat: fetchedEvent.lat || "",
           long: fetchedEvent.long || "",
+          location: fetchedEvent.location || "",
           category: fetchedEvent.category || "",
           date: fetchedEvent.date ? new Date(fetchedEvent.date) : new Date(),
           time: fetchedEvent.time ? new Date(fetchedEvent.time) : new Date(),
@@ -117,16 +119,17 @@ const EditEvent = () => {
             },
           },
         });
-
+  
         setImage(fetchedEvent.photo || null);
         setLocationQuery(fetchedEvent.location || "");
       } catch (error) {
-        console.log(e);
+        console.error("Error fetching event data:", error);
       }
     };
+  
     fetchEvent();
   }, [id]);
-
+  
   // FUNCTIONS: useEffect ////////////////////////////////////////////////////////////////////
 
   const checkPermissions = async () => {
@@ -269,37 +272,49 @@ const EditEvent = () => {
         return false;
       }
     }
-
+  
     if (!validateDate(event.date)) {
       Alert.alert("Invalid Date Format", "Please enter date in DD/MM/YYYY format.");
       return false;
     }
-
+  
     if (!validateTime(event.time.getTime())) {
       Alert.alert("Invalid Time Format", "Please enter time in 24-hour HH:MM format.");
       return false;
     }
-
+  
     return true;
   };
 
   const handleUpdate = async () => {
     if (!validateForm()) return;
-
+  
     const updatedData = {
-      ...event,
+      name: event.name,
+      photo: event.photo || "",
+      lat: event.lat || "",
+      long: event.long || "",
+      location: event.location || "",
+      category: eventType || "",
       date: event.date.toISOString(),
       time: event.time.toISOString(),
+      description: event.description || "",
+      public: event.public,
+      society: event.society,
     };
-
+  
+    // Debugging log
+    console.log("Updating event with data:", updatedData); 
+  
     try {
-      await axios.put(`${BASE_URL}/events/update/${id}`, updatedData);
+      const response = await axios.put(`${BASE_URL}/events/update/${id}`, updatedData);
       router.push({ pathname: "event-details", params: { id } });
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.error("Failed to update event:", error);
+      console.error("Response data:", error.response?.data);
     }
   };
-
+  
   // const handleCreate = async () => {
   //   if (!validateForm()) {
   //     return;
