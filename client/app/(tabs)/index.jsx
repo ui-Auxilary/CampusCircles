@@ -90,12 +90,30 @@ const HomeTab = () => {
     }
   };
 
-  const handleAcceptInvite = (notificationId) => {
-    console.log("Accept invite for notification:", notificationId);
+  const handleAcceptInvite = async (notificationId) => {
+    try {
+      await axios.put(`${BASE_URL}/invite/${notificationId}/accept`);
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notif) => notif.id !== notificationId)
+      );
+      Alert.alert("Success", "Invitation accepted!");
+    } catch (error) {
+      console.error("Error accepting invite:", error);
+      Alert.alert("Error", "Failed to accept the invitation.");
+    }
   };
 
-  const handleRejectInvite = (notificationId) => {
-    console.log("Reject invite for notification:", notificationId);
+  const handleRejectInvite = async (notificationId) => {
+    try {
+      await axios.put(`${BASE_URL}/invite/${notificationId}/reject`);
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notif) => notif.id !== notificationId)
+      );
+      Alert.alert("Success", "Invitation rejected!");
+    } catch (error) {
+      console.error("Error rejecting invite:", error);
+      Alert.alert("Error", "Failed to reject the invitation.");
+    }
   };
 
   return (
