@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../client.js";
 
 export const createUser = async (req, res) => {
@@ -39,11 +40,19 @@ export const createUser = async (req, res) => {
       data: user.id,
     });
   } catch (e) {
-    console.log(e);
-    res.status(500).json({
-      status: false,
-      message: "Server error",
-    });
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        res.status(400).json({
+          status: false,
+          message: "Username/email already exists",
+        });
+      }
+    } else {
+      res.status(500).json({
+        status: false,
+        message: "Server error",
+      });
+    }
   }
 };
 
@@ -365,7 +374,6 @@ export const removeFriend = async (req, res) => {
     });
   }
 };
-
 
 // Ethan: function used on index (homepage)
 export const getUserNotifs = async (req, res) => {

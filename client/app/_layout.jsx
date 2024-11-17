@@ -1,7 +1,5 @@
 import UserProvider from "@/hooks/userContext";
 import { Stack } from "expo-router/stack";
-import { useEffect } from "react";
-import { StatusBar } from "react-native";
 
 export default function Layout() {
   return (
@@ -34,6 +32,18 @@ export default function Layout() {
         />
         <Stack.Screen
           name='edit-profile'
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name='settings'
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name='setting-route'
           options={{
             headerShown: false,
           }}

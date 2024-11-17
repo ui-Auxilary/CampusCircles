@@ -93,8 +93,11 @@ const Register = () => {
         });
       })
       .catch((e) => {
-        console.log(e);
-        // Raise error message
+        if (e.response && e.response.status === 400) {
+          Alert.alert(e.response?.data?.message);
+        } else {
+          console.log(e);
+        }
       });
   };
 
