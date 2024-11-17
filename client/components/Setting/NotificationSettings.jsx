@@ -1,26 +1,26 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
+import React, { useState } from "react";
 
 import Right from "../../assets/chev-right.svg";
 
 const NotificationSettings = () => {
+  const [enabled, setEnabled] = useState(false);
+  const setToggle = () => setEnabled(!enabled);
+
   return (
     <View style={styles.container}>
       <View style={styles.inputBlock}>
         <View style={styles.inputRow}>
-          <Text style={styles.inputLabel}>Notification Settings</Text>
-          <TouchableOpacity
-            style={{ flex: 1, alignItems: "flex-end" }}
-            onPress={() =>
-              // router.push({
-              //   pathname: "/setting-route",
-              //   params: { page: "account" },
-              // })
-              {}
-            }
-          >
+          <Text style={styles.inputLabel}>Allow push notifications</Text>
+          <TouchableOpacity style={{ flex: 1, alignItems: "flex-end" }}>
             <View style={styles.flexRow}>
-              <Right width={25} height={25} />
+              <Switch
+                trackColor={{ false: "#767577", true: "#76DA69" }}
+                thumbColor={"#f4f3f4"}
+                ios_backgroundColor='#3e3e3e'
+                onValueChange={setToggle}
+                value={enabled}
+              />
             </View>
           </TouchableOpacity>
         </View>

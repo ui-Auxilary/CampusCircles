@@ -88,10 +88,6 @@ const Edit = () => {
     1;
   };
 
-  useEffect(() => {
-    console.log("PAGE", params.page);
-  }, [params.page]);
-
   return (
     <View style={styles.container}>
       <Logo style={styles.logo} width={50} height={50} />

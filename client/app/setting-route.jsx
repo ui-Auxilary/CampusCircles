@@ -43,7 +43,6 @@ const SettingRoute = () => {
   }, [params.type]);
 
   const handleBack = () => {
-    console.log("PAGE", params.page);
     switch (params.page) {
       case "settings":
         router.back();

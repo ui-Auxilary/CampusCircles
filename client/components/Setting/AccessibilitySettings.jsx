@@ -1,14 +1,18 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
+import React, { useState } from "react";
 
 import Right from "../../assets/chev-right.svg";
 
 const AccessibilitySettings = () => {
+  const [haptic, setHaptic] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+  const toggleHaptic = () => setHaptic((haptic) => !haptic);
   return (
     <View style={styles.container}>
       <View style={styles.inputBlock}>
         <View style={styles.inputRow}>
-          <Text style={styles.inputLabel}>Accessibility</Text>
+          <Text style={styles.inputLabel}>Haptic feedback</Text>
           <TouchableOpacity
             style={{ flex: 1, alignItems: "flex-end" }}
             onPress={() =>
@@ -20,6 +24,37 @@ const AccessibilitySettings = () => {
             }
           >
             <View style={styles.flexRow}>
+              <Switch
+                trackColor={{ false: "#767577", true: "#76DA69" }}
+                thumbColor={"#f4f3f4"}
+                ios_backgroundColor='#3e3e3e'
+                onValueChange={toggleHaptic}
+                value={haptic}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>
+            High contrast mode (non-functional)
+          </Text>
+          <TouchableOpacity style={{ flex: 1, alignItems: "flex-end" }}>
+            <View style={styles.flexRow}>
+              <Switch
+                trackColor={{ false: "#767577", true: "#76DA69" }}
+                thumbColor={"#f4f3f4"}
+                ios_backgroundColor='#3e3e3e'
+                onValueChange={toggleSwitch}
+                value={isEnabled}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Text size (non-functional)</Text>
+          <TouchableOpacity style={{ flex: 1, alignItems: "flex-end" }}>
+            <View style={styles.flexRow}>
+              <Text style={styles.paramText}>Medium</Text>
               <Right width={25} height={25} />
             </View>
           </TouchableOpacity>
@@ -65,6 +100,10 @@ const styles = StyleSheet.create({
   inputLabel: {
     color: "#000000",
     fontSize: 16,
+    fontFamily: "Lexend_400Regular",
+  },
+  paramText: {
+    color: "#C3B6B6",
     fontFamily: "Lexend_400Regular",
   },
 });

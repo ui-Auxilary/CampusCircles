@@ -69,6 +69,10 @@ export const createUser = async (req, res) => {
     studyYear: "",
     interests: "",
     courses: "",
+    showAge: true,
+    showPronoun: true,
+    allowNotif: true,
+    hasHaptic: false,
     eventsAttend: {},
     eventsCreated: {},
     invReceived: {},
@@ -222,19 +226,34 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   const userId = req.params.id;
-  console.log("USER", userId);
   try {
-    let user = await prisma.user.delete({
-      where: {
-        id: userId,
-      },
+    await prisma.event.deleteMany({
+      where: { creatorId: userId },
     });
-    console.log("User", user);
+
+    await prisma.invitation.deleteMany({
+      where: { inviterId: userId },
+    });
+
+    await prisma.invitation.deleteMany({
+      where: { inviteeId: userId },
+    });
+
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+
+    console.log("User deleted successfully");
+    res
+      .status(200)
+      .json({ status: true, message: "User deleted successfully" });
   } catch (e) {
-    console.log(e);
-    return res
-      .status(500)
-      .json({ status: false, message: "Unable to delete user" });
+    console.error("Failed to delete user:", e);
+    res.status(500).json({
+      status: false,
+      message: "Unable to delete user",
+      error: e.message,
+    });
   }
 };
 
