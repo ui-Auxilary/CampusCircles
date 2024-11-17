@@ -9,7 +9,7 @@ export default function EditBlock({ type }) {
   const handleTextChange = (val) => {
     let interests = val.split(", ");
     if (interests.length > 3) {
-      Alert.alert("You can only specify up to 3 interests!");
+      Alert.alert(`You can only specify up to 3 ${type}!`);
       return;
     }
 

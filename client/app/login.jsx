@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import Logo from "../assets/campuslogo.svg";
@@ -24,14 +25,25 @@ const Login = () => {
   const [show, setShow] = useState(false);
 
   const handleLogin = async () => {
-    console.log("posting");
+    let requiredFields = ["username", "password"];
+
+    for (let field of requiredFields) {
+      if (!loginData[field]) {
+        Alert.alert("Form Incomplete", `Please fill out the ${field} field.`);
+        return;
+      }
+    }
+
     await axios
       .post(`${BASE_URL}/users/login`, loginData)
       .then(({ data }) => {
         console.log("DATA", data);
         router.push({ pathname: "/(tabs)", params: { id: data.data } });
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        Alert.alert("Incorrect username or password");
+        return;
+      });
   };
 
   return (

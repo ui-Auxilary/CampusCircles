@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   logo: {
     position: "absolute",
     left: 20,
-    top: 60,
+    top: "50%",
   },
   headerText: {
     top: -5,
