@@ -91,14 +91,6 @@ const CreateProfile = () => {
 
   const handleCreateProfile = () => {
     let userData = editData;
-    userData.interests =
-      typeof userData === "string"
-        ? userData.interests.split(",")
-        : userData.interests;
-    userData.courses =
-      typeof userData === "string"
-        ? userData.courses.split(",")
-        : userData.courses;
 
     console.log("ID", userId, editData);
     axios
@@ -109,7 +101,7 @@ const CreateProfile = () => {
         // Reset data
         setEditData({
           name: "",
-          age: 0,
+          age: "",
           languages: [],
           bio: "",
           mbti: "",
@@ -191,7 +183,9 @@ const CreateProfile = () => {
                 ellipsizeMode='tail'
                 style={styles.paramText}
               >
-                {editData?.languages ? editData.languages.join(", ") : ""}
+                {editData?.languages
+                  ? editData.languages.filter((lang) => lang).join(", ")
+                  : ""}
               </Text>
               <Right width={25} height={25} />
             </View>

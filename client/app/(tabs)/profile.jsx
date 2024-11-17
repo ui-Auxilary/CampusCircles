@@ -26,12 +26,6 @@ const ProfileTab = () => {
       axios
         .get(`${BASE_URL}/users/${userId}`)
         .then(({ data }) => {
-          let updateData = data.data;
-          let { courses, interests } = updateData;
-
-          updateData.courses = courses.split(",");
-          updateData.interests = interests.split(",");
-
           setUserData(data.data);
         })
         .catch((e) => console.log(e));
@@ -41,6 +35,7 @@ const ProfileTab = () => {
   useEffect(() => {
     console.log("Userdata", userData);
   }, [userData]);
+
   return (
     <ScrollView style={styles.profileContainer}>
       <View style={styles.editProfile}>

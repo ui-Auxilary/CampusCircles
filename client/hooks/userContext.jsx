@@ -9,7 +9,7 @@ export default function UserProvider({ children }) {
   const [userId, setUserId] = useState("");
   const [editData, setEditData] = useState({
     name: "",
-    age: 0,
+    age: "",
     languages: [],
     bio: "",
     mbti: "",

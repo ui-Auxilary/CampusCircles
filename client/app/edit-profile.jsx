@@ -46,6 +46,7 @@ const EditProfile = () => {
     console.log("USER", params.data);
     console.log("EDIT", editData);
   }, [params.data]);
+
   const renderDegree = () => {
     let studyYear = editData.studyYear;
     let degree = editData.degree;
@@ -73,15 +74,6 @@ const EditProfile = () => {
 
   const handleEditProfile = () => {
     let userData = editData;
-    userData.interests =
-      typeof userData === "string"
-        ? userData.interests.split(",")
-        : userData.interests;
-    userData.courses =
-      typeof userData === "string"
-        ? userData.courses.split(",")
-        : userData.courses;
-
     console.log("ID", userId, editData);
     axios
       .put(`${BASE_URL}/users/${userId}`, userData)

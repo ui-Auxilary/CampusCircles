@@ -54,7 +54,7 @@ export default function AboutBlock() {
                 setAge(text);
                 setEditData({
                   ...editData,
-                  ["age"]: isNaN(text) ? "0" : parseInt(text),
+                  ["age"]: text,
                 });
               } else {
                 setAge("");

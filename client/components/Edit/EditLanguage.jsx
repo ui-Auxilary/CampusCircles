@@ -21,8 +21,10 @@ export default function EditLanguage() {
 
   const updateLanguage = (language, langIdx, idx) => {
     console.log("Language", language, idx, selectedLanguage);
+
     let newLanguages = selectedLanguage;
-    newLanguages[idx] = languages[langIdx - 1]["label"];
+    newLanguages[idx] =
+      language === "null" ? null : languages[langIdx - 1]["label"];
     console.log("New", newLanguages);
     setSelectedLanguage((prev) => [...newLanguages]);
     setEditData({ ...editData, languages: [...newLanguages] });

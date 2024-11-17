@@ -19,7 +19,7 @@ model User {
 
   photo           String
   gender          String
-  age             Int
+  age             String
   mbti            String
   degree          String
   studyYear       String

@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
 import React, { useState } from "react";
 import { getUserData } from "@/hooks/userContext";
 
@@ -7,9 +7,15 @@ export default function EditBlock({ type }) {
   const [typeData, setTypeData] = useState(editData[type] || "");
 
   const handleTextChange = (val) => {
-    let text = val.substring(0, 25);
-    setTypeData(text);
-    setEditData({ ...editData, [type]: text });
+    let interests = val.split(", ");
+    if (interests.length > 3) {
+      Alert.alert("You can only specify up to 3 interests!");
+      return;
+    }
+
+    val = type === "courses" ? val.toUpperCase() : val;
+    setTypeData(val);
+    setEditData({ ...editData, [type]: val });
   };
 
   return (
@@ -21,11 +27,8 @@ export default function EditBlock({ type }) {
           }}
           value={typeData}
           style={[styles.inputField, { minWidth: 200 }]}
-          placeholder='Enter name'
+          placeholder={`Enter ${type}`}
         />
-        <Text style={styles.editCount}>
-          {typeData.length} / {25}
-        </Text>
       </View>
       <Text style={styles.editHint}>Comma separated, up to 3</Text>
     </View>
@@ -53,10 +56,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderRadius: 5,
     marginBottom: 10,
+    height: 60,
   },
   inputField: {
     paddingHorizontal: 10,
-    width: "85%",
+    width: "100%",
     borderBottomColor: "#D9D9D9",
     borderBottomWidth: 2,
     fontFamily: "Lexend_400Regular",
