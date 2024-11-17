@@ -5,7 +5,7 @@ import { BASE_URL } from '@/constants/api';
 import axios from 'axios';
 import TagRow from '@/components/TagRow/TagRow';
 import LanguageRow from '@/components/LanguageRow/LanguageRow';
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { getUserData } from '@/hooks/userContext';
 
 const OtherProfile = () => {
@@ -15,27 +15,28 @@ const OtherProfile = () => {
   const [userData, setUserData] = useState({});
   const [isFriend, setIsFriend] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/users/${userId}`);
-        setUserData(response.data.data);
-
-        // check if friend alr
-        if (response.data.data.friendIds && response.data.data.friendIds.includes(currentUserId)) {
-          setIsFriend(true);
-        } else {
-          setIsFriend(false);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(`${BASE_URL}/users/${userId}`);
+          const { data } = response.data;
+          setUserData(data);
+          setIsFriend(data.friendIds?.includes(currentUserId) ?? false);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
         }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+      };
+  
+      if (userId) {
+        fetchData();
       }
-    };
-
-    if (userId) {
-      fetchData();
-    }
-  }, [userId, currentUserId]);
+  
+      return () => {
+        setUserData({});
+      };
+    }, [userId, currentUserId])
+  );
 
   const handleAddFriend = async () => {
     try {

@@ -39,6 +39,25 @@ const UserList = () => {
     }, [userId])
   );
 
+  const handleAddFriend = async (friendId) => {
+    try {
+      const url = `${BASE_URL}/users/${userId}/add-friend`;
+      const response = await axios.post(url, { friendId });
+
+      if (response.data.status) {
+        // Remove the added friend from the nonFriends list
+        setNonFriends((prevNonFriends) =>
+          prevNonFriends.filter((user) => user.id !== friendId)
+        );
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error("Failed to add friend:", error);
+      alert("An error occurred. Please try again later.");
+    }
+  };
+
   // filter for people
   const filteredUsers = nonFriends.filter((user) => {
     const userMatch = user.name.toLowerCase().includes(search.toLowerCase());
