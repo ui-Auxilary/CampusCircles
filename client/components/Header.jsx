@@ -4,12 +4,9 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
-  Dimensions,
-  TouchableOpacity,
 } from "react-native";
 import Logo from "../assets/logo2.svg";
-import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import HeaderAction from "./HeaderAction/HeaderAction";
 
 const Header = ({ title, showAddFriendButton, showSettings }) => {
@@ -64,7 +61,7 @@ const styles = StyleSheet.create({
   logo: {
     position: "absolute",
     left: 20,
-    top: "50%",
+    top: 60,
   },
   headerText: {
     top: -5,
