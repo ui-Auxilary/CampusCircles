@@ -1,8 +1,5 @@
-/*
-NOTES
-- have to complete accepting and rejecting notifications
-- have to test functionality with data
-*/
+// need to replace dummy data
+// maybe add pfp to notification list items
 
 import {
   View,
@@ -19,16 +16,31 @@ import { Link, useLocalSearchParams, router } from "expo-router";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
+import { useIsFocused } from "@react-navigation/native";
 
 import tick from "../../assets/images/tick.png";
 import cross from "../../assets/images/cross.png";
 import { useFocusEffect } from "@react-navigation/native";
 
 const HomeTab = () => {
+  const isFocused = useIsFocused();
   const { setUserId } = getUserData();
   const params = useLocalSearchParams();
   const [notifications, setNotifications] = useState([]);
   const [events, setEvents] = useState({ created: [], attending: [] });
+
+  const dummyNotifs = [
+    {
+      id: "1",
+      inviter: { name: "John Doe" },
+      event: { name: "Study Time" },
+    },
+    {
+      id: "2",
+      inviter: { name: "Jane Smith" },
+      event: { name: "Eat Sesh" },
+    },
+  ];
 
   useFocusEffect(
     useCallback(() => {
@@ -40,6 +52,19 @@ const HomeTab = () => {
       }
     }, [params.id])
   );
+
+
+  useEffect(() => {
+    // delete this when dummy data out of use
+    setNotifications(dummyNotifs);
+
+    if (isFocused) {
+      if (params.id) {
+        fetchUserNotifications(params.id);
+        fetchUserEvents(params.id);
+      }
+    }
+  }, [isFocused, params.id]);
 
   const fetchUserNotifications = async (userId) => {
     try {
@@ -56,6 +81,7 @@ const HomeTab = () => {
   useEffect(() => {
     console.log("EVENT DATA", events);
   }, [events]);
+
   const fetchUserEvents = async (userId) => {
     try {
       const events = await axios
@@ -70,14 +96,30 @@ const HomeTab = () => {
     }
   };
 
-  // TODO FINISH OFF THIS SHIT
-
-  const handleAcceptInvite = (notificationId) => {
-    console.log("Accept invite for notification:", notificationId);
+  const handleAcceptInvite = async (notificationId) => {
+    try {
+      await axios.put(`${BASE_URL}/invite/${notificationId}/accept`);
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notif) => notif.id !== notificationId)
+      );
+      Alert.alert("Success", "Invitation accepted!");
+    } catch (error) {
+      console.error("Error accepting invite:", error);
+      Alert.alert("Error", "Failed to accept the invitation.");
+    }
   };
 
-  const handleRejectInvite = (notificationId) => {
-    console.log("Reject invite for notification:", notificationId);
+  const handleRejectInvite = async (notificationId) => {
+    try {
+      await axios.put(`${BASE_URL}/invite/${notificationId}/reject`);
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notif) => notif.id !== notificationId)
+      );
+      Alert.alert("Success", "Invitation rejected!");
+    } catch (error) {
+      console.error("Error rejecting invite:", error);
+      Alert.alert("Error", "Failed to reject the invitation.");
+    }
   };
 
   return (
@@ -165,7 +207,6 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   text: {
-    paddingLeft: 7.5,
     color: "#454545",
     fontSize: 25,
   },
@@ -196,10 +237,7 @@ const styles = StyleSheet.create({
   },
   eventName: {
     fontWeight: "bold",
-    color: "#333333",
     flex: 1,
-    color: "#FFFFFF",
-    backgroundColor: "#421f1f86",
     width: "100%",
     position: "absolute",
     bottom: 0,
@@ -215,7 +253,6 @@ const styles = StyleSheet.create({
   actionIcon: {
     width: 20,
     height: 20,
-    tintColor: "#454545",
   },
   eventsList: {
     flexDirection: "row",

@@ -10,6 +10,15 @@ import {
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams, router } from "expo-router";
+
+import {
+  Lexend_300Regular,
+  Lexend_400Regular,
+  Lexend_500Medium,
+  Lexend_600SemiBold,
+  Lexend_700Bold,
+  useFonts,
+} from "@expo-google-fonts/lexend";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import { Link } from "@react-navigation/native";
@@ -242,7 +251,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 20,
     left: 15,
-    zIndex: 2,
+    zIndex: 1000,
     flexDirection: "row",
     gap: 5,
     alignItems: "center",
