@@ -1,4 +1,56 @@
+import { Prisma } from "@prisma/client";
 import prisma from "../client.js";
+
+import { v2 as cloudinary } from "cloudinary";
+import "dotenv/config";
+
+cloudinary.config({
+  cloud_name: "dy8fmhrfq",
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
+
+// Uploads an image file to cloudinary
+const uploadImage = async (imageSrc, imageName) => {
+  const options = {
+    public_id: imageName,
+    folder: "Users",
+    use_filename: true,
+    unique_filename: false,
+    overwrite: true,
+  };
+
+  try {
+    // Upload the image
+    const result = await cloudinary.uploader.upload(
+      `data:image/png;base64,${imageSrc}`,
+      options
+    );
+    console.log(result);
+    return result.secure_url;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const uploadProfile = async (req, res) => {
+  let { photo } = req.body;
+  let id = req.params.id;
+
+  console.log("Received upload data");
+
+  try {
+    let image = await uploadImage(photo, id);
+    res.status(200).json({
+      status: true,
+      message: "Image uploaded successfully",
+      data: image,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 export const createUser = async (req, res) => {
   console.log("Request", req.body);
@@ -6,16 +58,17 @@ export const createUser = async (req, res) => {
   let userData = req.body;
 
   let defaultUser = {
+    name: "",
     photo: "",
     gender: "",
-    age: 0,
+    age: "",
     bio: "",
     mbti: "",
     gender: "",
     degree: "",
     studyYear: "",
-    interests: [],
-    courses: [],
+    interests: "",
+    courses: "",
     eventsAttend: {},
     eventsCreated: {},
     invReceived: {},
@@ -38,11 +91,19 @@ export const createUser = async (req, res) => {
       data: user.id,
     });
   } catch (e) {
-    console.log(e);
-    res.status(500).json({
-      status: false,
-      message: "Server error",
-    });
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2002") {
+        res.status(400).json({
+          status: false,
+          message: "Username/email already exists",
+        });
+      }
+    } else {
+      res.status(500).json({
+        status: false,
+        message: "Server error",
+      });
+    }
   }
 };
 
@@ -113,7 +174,18 @@ export const getUsers = async (req, res) => {
 export const updateUser = async (req, res) => {
   console.log("ID", req.params.id);
   let userData = req.body;
-  console.log("data", userData);
+
+  let photo = userData.photo;
+
+  if (photo) {
+    console.log("UPLOADING IMAGE");
+    try {
+      await uploadImage(photo, `${req.params.id}`);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   const users = await prisma.user.update({
     where: {
       id: req.params.id,
@@ -174,13 +246,11 @@ export const getUserFriends = async (req, res) => {
       },
     });
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Friends fetched successfully",
-        data: friends,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Friends fetched successfully",
+      data: friends,
+    });
   } catch (error) {
     console.error("Failed to fetch friends:", error);
     res
@@ -217,13 +287,11 @@ export const getNonFriends = async (req, res) => {
       },
     });
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        message: "Non-friend users fetched successfully",
-        data: nonFriends,
-      });
+    res.status(200).json({
+      status: true,
+      message: "Non-friend users fetched successfully",
+      data: nonFriends,
+    });
   } catch (error) {
     console.error("Failed to fetch non-friends:", error);
     res
@@ -296,6 +364,71 @@ export const addFriend = async (req, res) => {
     });
   } catch (error) {
     console.error("Failed to add friend:", error);
+    res.status(500).json({
+      status: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+export const removeFriend = async (req, res) => {
+  const userId = req.params.id;
+  const { friendId } = req.body;
+
+  console.log("Remove friend request received:", { userId, friendId });
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { friendIds: true },
+    });
+
+    const friend = await prisma.user.findUnique({
+      where: { id: friendId },
+      select: { friendIds: true },
+    });
+
+    if (!user || !friend) {
+      console.error("User or friend not found:", userId, friendId);
+      return res
+        .status(404)
+        .json({ status: false, message: "User or friend not found" });
+    }
+
+    if (!user.friendIds.includes(friendId)) {
+      console.error("User is not a friend:", friendId);
+      return res
+        .status(400)
+        .json({ status: false, message: "User is not a friend" });
+    }
+
+    // Remove friendId from user's friendIds
+    const updatedUserFriends = user.friendIds.filter((id) => id !== friendId);
+
+    // Remove userId from friend's friendIds
+    const updatedFriendFriends = friend.friendIds.filter((id) => id !== userId);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        friendIds: updatedUserFriends,
+      },
+    });
+
+    await prisma.user.update({
+      where: { id: friendId },
+      data: {
+        friendIds: updatedFriendFriends,
+      },
+    });
+
+    res.status(200).json({
+      status: true,
+      message: "Friend removed successfully for both users",
+    });
+  } catch (error) {
+    console.error("Failed to remove friend:", error);
     res.status(500).json({
       status: false,
       message: "Server error",

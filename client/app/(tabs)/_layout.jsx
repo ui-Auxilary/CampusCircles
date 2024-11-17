@@ -3,7 +3,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import Header from "../../components/Header";
 import { View, StyleSheet, Text, Dimensions } from "react-native";
-import { router } from "expo-router"; // Ensure router is imported
+import { router } from "expo-router";
 
 const { height } = Dimensions.get("window");
 
@@ -16,6 +16,7 @@ export default function TabLayout() {
           header: () => {
             let title = "";
             let showAddFriendButton = false;
+            let showSettings = false;
 
             switch (route.name) {
               case "index":
@@ -33,6 +34,13 @@ export default function TabLayout() {
                 break;
               case "profile":
                 title = "Profile";
+                showSettings = true;
+                break;
+              case "addFriends":
+                title = "Add Friends";
+                break;
+              case "otherProfile":
+                title = "Profile";
                 break;
               default:
                 title = "Campus Circles";
@@ -42,6 +50,7 @@ export default function TabLayout() {
               <Header
                 title={title}
                 showAddFriendButton={showAddFriendButton}
+                showSettings={showSettings}
                 onAddFriend={() => {
                   console.log(
                     "Navigating to addFriends screen using router.push"
@@ -55,25 +64,25 @@ export default function TabLayout() {
         })}
       >
         <Tabs.Screen
-          name="index"
+          name='index'
           options={{
             title: "Home",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name="home-outline" color={color} />
+              <Ionicons size={28} name='home-outline' color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="events"
+          name='events'
           options={{
             title: "Events",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name="location-outline" color={color} />
+              <Ionicons size={28} name='location-outline' color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="create"
+          name='create'
           options={{
             title: "Create",
             tabBarIcon: ({ focused }) => (
@@ -83,31 +92,32 @@ export default function TabLayout() {
                   focused && styles.createButtonFocused,
                 ]}
               >
-                <Ionicons size={32} name="add" color="#fff" />
+                <Ionicons size={32} name='add' color='#fff' />
               </View>
             ),
           }}
         />
         <Tabs.Screen
-          name="friends"
+          name='friends'
           options={{
             title: "Friends",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name="people-outline" color={color} />
+              <Ionicons size={28} name='people-outline' color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="profile"
+          name='profile'
           options={{
             title: "Profile",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name="person-circle-outline" color={color} />
+              <Ionicons size={28} name='person-circle-outline' color={color} />
             ),
           }}
         />
         {/* Remove the extra "header" screen definition */}
-        <Tabs.Screen name="addFriends" options={{ href: null }} />
+        <Tabs.Screen name='addFriends' options={{ href: null }} />
+        <Tabs.Screen name='otherProfile' options={{ href: null }} />
       </Tabs>
     </View>
   );

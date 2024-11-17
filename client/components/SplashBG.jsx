@@ -1,10 +1,11 @@
-import * as React from 'react';
-import Svg, { Circle, Path } from 'react-native-svg';
+import * as React from "react";
+import Svg, { Circle, Path } from "react-native-svg";
 const BG = (props) => (
   <Svg
     xmlns='http://www.w3.org/2000/svg'
-    width={'100%'}
-    height={'100%'}
+    width={1000}
+    height={"100%"}
+    style={{ flex: 1 }}
     fill='none'
     {...props}
   >

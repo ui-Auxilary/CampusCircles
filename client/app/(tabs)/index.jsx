@@ -11,8 +11,8 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useLocalSearchParams, router } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
+import { Link, useLocalSearchParams, router } from "expo-router";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
@@ -20,6 +20,7 @@ import { useIsFocused } from "@react-navigation/native";
 
 import tick from "../../assets/images/tick.png";
 import cross from "../../assets/images/cross.png";
+import { useFocusEffect } from "@react-navigation/native";
 
 const HomeTab = () => {
   const isFocused = useIsFocused();
@@ -41,12 +42,17 @@ const HomeTab = () => {
     },
   ];
 
-  useEffect(() => {
-    if (params.id) {
-      console.log("Home ID", params);
-      setUserId(params.id);
-    }
-  }, [params.id]);
+  useFocusEffect(
+    useCallback(() => {
+      if (params.id) {
+        console.log("Home ID", params);
+        setUserId(params.id);
+        fetchUserNotifications(params.id);
+        fetchUserEvents(params.id);
+      }
+    }, [params.id])
+  );
+
 
   useEffect(() => {
     // delete this when dummy data out of use

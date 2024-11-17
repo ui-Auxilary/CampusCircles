@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Language from './Language';
+import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import Language from "./Language";
 
-import langCode from '../../data/lang_code.json';
+import langCode from "../../data/lang_code.json";
 
 export default function LanguageRow({ languages }) {
   const [langCodes, setLangCodes] = useState([]);
@@ -12,17 +12,18 @@ export default function LanguageRow({ languages }) {
   };
 
   useEffect(() => {
-    console.log('Languages', languages);
+    console.log("Languages", languages);
     if (languages) {
+      languages = languages.filter((language) => language);
       for (let language of languages) {
-        let code = getCode(language)['value'];
+        let code = getCode(language)["value"];
         setLangCodes((prev) => [...prev, [code, language]]);
       }
     }
   }, [languages]);
 
   useEffect(() => {
-    console.log('Languages!', langCodes);
+    console.log("Languages!", langCodes);
   }, [langCode]);
 
   return (
@@ -40,8 +41,8 @@ export default function LanguageRow({ languages }) {
 
 const styles = StyleSheet.create({
   languageWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     marginTop: 10,
   },
