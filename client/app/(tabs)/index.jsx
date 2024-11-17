@@ -23,7 +23,21 @@ const HomeTab = () => {
   const [notifications, setNotifications] = useState([]);
   const [events, setEvents] = useState({ created: [], attending: [] });
   const [expandedNotifications, setExpandedNotifications] = useState({}); // Track expanded state for all notifications
-  const username = "";
+  const [username, setUsername] = useState("");
+  const { userId } = getUserData();
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    if (userId) {
+      // Fetch request
+      axios
+        .get(`${BASE_URL}/users/${userId}`)
+        .then(({ data }) => {
+          setUserData(data.data);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
 
   const dumb = [
     {
@@ -63,7 +77,7 @@ const HomeTab = () => {
 
     if (params.id) {
       console.log("Home ID", params);
-      username = params.name;
+      setUsername(params.name);
       setUserId(params.id);
       fetchUserNotifications(params.id);
       fetchUserEvents(params.id);
@@ -136,7 +150,7 @@ const HomeTab = () => {
   return (
     <View style={styles.homepage}>
       <View style={styles.titleContainer}>
-        <Text style={[styles.text, styles.titleText]}>Welcome, {username}</Text>
+        <Text style={[styles.text, styles.titleText]}>Welcome, {userData.name}</Text>
       </View>
 
       {/* Notifications Section */}
