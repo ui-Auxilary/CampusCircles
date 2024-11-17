@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -26,8 +26,16 @@ import {
 } from "@expo-google-fonts/lexend";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
+import { useFocusEffect } from "@react-navigation/native";
 
-const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
+const categories = [
+  "All Categories",
+  "Hang",
+  "Study",
+  "Eat",
+  "Society",
+  "Other",
+];
 const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 
 // placeholder data
@@ -136,16 +144,18 @@ export default function EventTab() {
     }
   };
 
-  useEffect(() => {
-    // Fetch events once
-    console.log("Fetching events today");
-    axios
-      .get(`${BASE_URL}/events/get/today`)
-      .then(({ data }) => {
-        setEvents(data.data);
-      })
-      .catch((e) => console.log(e));
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      // Fetch events once
+      console.log("Fetching events today");
+      axios
+        .get(`${BASE_URL}/events/get/today`)
+        .then(({ data }) => {
+          setEvents(data.data);
+        })
+        .catch((e) => console.log(e));
+    }, [])
+  );
 
   const openTimePicker = () => setTimePickerVisibility(true);
   const closeTimePicker = () => setTimePickerVisibility(false);
@@ -156,6 +166,7 @@ export default function EventTab() {
       href={{
         pathname: "/event-details",
         params: {
+          id: item.id,
           name: item.name,
           time: item.time,
           location: item.location,
@@ -166,12 +177,15 @@ export default function EventTab() {
         },
       }}
       asChild
-      onPress={collapseActionSheet}>
+      onPress={collapseActionSheet}
+    >
       <TouchableOpacity style={styles.eventItem}>
         <View style={styles.eventContent}>
           <Image
             source={
-              item.category ? getIcon(item.category) : require("../../assets/images/hang.png")
+              item.category
+                ? getIcon(item.category)
+                : require("../../assets/images/hang.png")
             }
             style={styles.eventIcon}
           />
@@ -195,7 +209,8 @@ export default function EventTab() {
             latitudeDelta: 0.0088,
             longitudeDelta: 0.0091,
           }}
-          style={styles.map}>
+          style={styles.map}
+        >
           <Marker
             key={1}
             coordinate={{ latitude: -33.91719, longitude: 151.233033 }}
@@ -209,12 +224,12 @@ export default function EventTab() {
       <View style={styles.searchbarContainer}>
         <TextInput
           style={styles.searchbar}
-          placeholder="Search events"
+          placeholder='Search events'
           value={searchText}
           onChangeText={(text) => setSearchText(text)}
         />
         <TouchableOpacity style={styles.filterIcon}>
-          <Ionicons name="filter-circle-outline" size={30} color="#4285F4" />
+          <Ionicons name='filter-circle-outline' size={30} color='#4285F4' />
         </TouchableOpacity>
       </View>
 
@@ -223,8 +238,11 @@ export default function EventTab() {
         {/* Time filter */}
         <TouchableOpacity
           style={[styles.quickFilterButtons, styles.selectedFilter]}
-          onPress={openTimePicker}>
-          <Text style={[styles.filterText, styles.selectedFilterText]}>{selectedTime}</Text>
+          onPress={openTimePicker}
+        >
+          <Text style={[styles.filterText, styles.selectedFilterText]}>
+            {selectedTime}
+          </Text>
         </TouchableOpacity>
 
         {/* category filters */}
@@ -235,12 +253,16 @@ export default function EventTab() {
               styles.quickFilterButtons,
               selectedCategory === category ? styles.selectedFilter : null,
             ]}
-            onPress={() => setSelectedCategory(category)}>
+            onPress={() => setSelectedCategory(category)}
+          >
             <Text
               style={[
                 styles.filterText,
-                selectedCategory === category ? styles.selectedFilterText : null,
-              ]}>
+                selectedCategory === category
+                  ? styles.selectedFilterText
+                  : null,
+              ]}
+            >
               {category}
             </Text>
           </TouchableOpacity>
@@ -250,24 +272,30 @@ export default function EventTab() {
         <Modal
           transparent={true}
           visible={TimePickerVisibility}
-          animationType="slide"
-          onRequestClose={closeTimePicker}>
+          animationType='slide'
+          onRequestClose={closeTimePicker}
+        >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Select Time Period</Text>
               {timeOptions.map((option) => (
                 <TouchableOpacity
                   key={option}
-                  style={[styles.modalOption, option === selectedTime && styles.selectedFilter]}
+                  style={[
+                    styles.modalOption,
+                    option === selectedTime && styles.selectedFilter,
+                  ]}
                   onPress={() => {
                     setSelectedTime(option);
                     closeTimePicker();
-                  }}>
+                  }}
+                >
                   <Text
                     style={[
                       styles.modalOptionText,
                       option === selectedTime && styles.selectedFilterText,
-                    ]}>
+                    ]}
+                  >
                     {option}
                   </Text>
                 </TouchableOpacity>
@@ -284,7 +312,8 @@ export default function EventTab() {
           if (actionSheetRef.current) {
             actionSheetRef.current.setModalVisible(true);
           }
-        }}>
+        }}
+      >
         <Text style={styles.openSheetButtonText}>Show Events</Text>
       </TouchableOpacity>
 

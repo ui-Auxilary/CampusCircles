@@ -262,7 +262,7 @@ const CreateTab = () => {
         if (createdEvent && createdEvent.id) {
           router.push({
             pathname: "event-details",
-            params: { id: createdEvent.id },
+            params: { id: createdEvent.id, page: "create" },
           });
         }
       })

@@ -30,6 +30,7 @@ const EventDetails = () => {
     attendees,
     creatorId,
     id,
+    page,
   } = useLocalSearchParams();
 
   const [eventData, setEventData] = useState({
@@ -74,13 +75,23 @@ const EventDetails = () => {
         headerImage={
           <Image
             source={{
-              uri: eventData.photo ? eventData.photo : "https://www.openday.unsw.edu.au/share.jpg",
+              uri: eventData.photo
+                ? eventData.photo
+                : "https://www.openday.unsw.edu.au/share.jpg",
             }}
             style={styles.eventImage}
           />
         }
-        headerBackgroundColor={""}>
-        <TouchableOpacity style={styles.linkContainer} onPress={() => router.back()}>
+        headerBackgroundColor={""}
+      >
+        <TouchableOpacity
+          style={styles.linkContainer}
+          onPress={() =>
+            page === "create"
+              ? router.push("/(tabs)")
+              : router.push("/(tabs)/events")
+          }
+        >
           <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
           <Text style={styles.backLink}>Go Back</Text>
         </TouchableOpacity>
@@ -90,19 +101,28 @@ const EventDetails = () => {
             <Text style={styles.title}>{eventData.name}</Text>
 
             <TouchableOpacity
-              onPress={() => router.push({ pathname: "/event-edit", params: { id } })}
-              style={styles.editEventButton}>
+              onPress={() =>
+                router.push({ pathname: "/event-edit", params: { id } })
+              }
+              style={styles.editEventButton}
+            >
               <Text style={styles.editEventText}>Edit Event</Text>
             </TouchableOpacity>
           </View>
 
           <Text style={styles.description}>{eventData.description}</Text>
           <View style={styles.detailsContainer}>
-            <Image source={require("../assets/images/date.png")} style={styles.icon} />
+            <Image
+              source={require("../assets/images/date.png")}
+              style={styles.icon}
+            />
             <Text style={styles.detailsText}>{eventData.time}</Text>
           </View>
           <View style={styles.detailsContainer}>
-            <Image source={require("../assets/images/location.png")} style={styles.icon} />
+            <Image
+              source={require("../assets/images/location.png")}
+              style={styles.icon}
+            />
             <Text style={styles.detailsText}>{eventData.location}</Text>
           </View>
         </View>
@@ -114,7 +134,10 @@ const EventDetails = () => {
             {/* invite friend icon */}
 
             <TouchableOpacity
-              onPress={() => router.push({ pathname: "/event-invite", params: { id } })}>
+              onPress={() =>
+                router.push({ pathname: "/event-invite", params: { id } })
+              }
+            >
               <Image
                 source={require("../assets/images/invite-friend.png")}
                 style={styles.attendeeImage}
@@ -143,7 +166,8 @@ const EventDetails = () => {
 
             latitudeDelta: 0.00922,
             longitudeDelta: 0.00421,
-          }}>
+          }}
+        >
           <Marker
             // change this too
             // coordinate={{ latitude: latitude, longitude: longitude }}
@@ -156,7 +180,8 @@ const EventDetails = () => {
       {/* switch between join and leave button */}
       <TouchableOpacity
         style={joined ? styles.leaveButton : styles.joinButton}
-        onPress={setJoinLeave}>
+        onPress={setJoinLeave}
+      >
         <Text style={joined ? styles.leaveButtonText : styles.joinButtonText}>
           {joined ? "Leave Event" : "Join now!"}
         </Text>
