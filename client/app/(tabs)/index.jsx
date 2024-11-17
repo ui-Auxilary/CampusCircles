@@ -1,6 +1,3 @@
-// need to replace dummy data
-// maybe add pfp to notification list items
-
 import {
   View,
   Text,
@@ -29,19 +26,6 @@ const HomeTab = () => {
   const [notifications, setNotifications] = useState([]);
   const [events, setEvents] = useState({ created: [], attending: [] });
 
-  const dummyNotifs = [
-    {
-      id: "1",
-      inviter: { name: "John Doe" },
-      event: { name: "Study Time" },
-    },
-    {
-      id: "2",
-      inviter: { name: "Jane Smith" },
-      event: { name: "Eat Sesh" },
-    },
-  ];
-
   useFocusEffect(
     useCallback(() => {
       if (params.id) {
@@ -53,11 +37,7 @@ const HomeTab = () => {
     }, [params.id])
   );
 
-
   useEffect(() => {
-    // delete this when dummy data out of use
-    setNotifications(dummyNotifs);
-
     if (isFocused) {
       if (params.id) {
         fetchUserNotifications(params.id);

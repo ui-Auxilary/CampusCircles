@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {} from "../controllers.invite.js"; /////////// do this
+import { acceptInvite, rejectInvite } from "../controllers.invite.js"; /////////// do this
 
 const inviteRoute = Router();
 
