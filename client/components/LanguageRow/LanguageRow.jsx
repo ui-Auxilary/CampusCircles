@@ -14,10 +14,12 @@ export default function LanguageRow({ languages }) {
   useEffect(() => {
     console.log("Languages", languages);
     if (languages) {
+      let languageArray = [];
       languages = languages.filter((language) => language);
       for (let language of languages) {
         let code = getCode(language)["value"];
-        setLangCodes((prev) => [...prev, [code, language]]);
+        languageArray.push([code, language]);
+        setLangCodes(languageArray);
       }
     }
   }, [languages]);

@@ -26,8 +26,6 @@ const Header = ({ title, showAddFriendButton, showSettings }) => {
       };
 
       if (showSettings || showAddFriendButton) {
-        console.log("GET ACTION", showAddFriendButton);
-        console.log("SETTINGS", showSettings);
         getAction();
       }
     }, [showAddFriendButton, showSettings])

@@ -18,27 +18,30 @@ import { getUserData } from "@/hooks/userContext";
 import axios from "axios";
 import S from "../styles/global";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { uploadImage } from "@/helper/uploadImage";
 
 const EditProfile = () => {
-  const pickerRef = useRef();
-
   const params = useLocalSearchParams();
   const { userId, setUserId, editData, setEditData } = getUserData();
-  const [age, setAge] = useState(editData.age);
-  const [name, setName] = useState(editData.name);
+  const [photo, setPhoto] = useState("");
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images", "videos"],
       quality: 1,
       base64: true,
     });
 
     if (result) {
-      setEditData({
-        ...editData,
-        photo: result.assets ? result.assets[0].uri : "",
-      });
+      uploadImage(userId, {
+        photo: result.assets ? result.assets[0].base64 : "",
+      })
+        .then(({ data }) => {
+          setEditData({ ...editData, photo: data.data });
+        })
+        .catch((e) => console.log(e));
+
+      setPhoto(result.assets ? result.assets[0].uri : "");
     }
   };
 
@@ -89,6 +92,10 @@ const EditProfile = () => {
       })
       .catch((e) => console.log(e));
   };
+
+  useEffect(() => {
+    console.log("EDIT", editData);
+  }, []);
   return (
     <View style={styles.container}>
       <Logo style={styles.logo} width={50} height={50} />
@@ -103,7 +110,7 @@ const EditProfile = () => {
             style={styles.profileImg}
             source={{
               uri:
-                editData.photo ||
+                photo ||
                 "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
             }}
           />

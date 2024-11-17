@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { getUserData } from "@/hooks/userContext";
 import { BASE_URL } from "@/constants/api";
@@ -16,25 +16,28 @@ import LanguageRow from "@/components/LanguageRow/LanguageRow";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { router } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 const ProfileTab = () => {
-  const { userId } = getUserData();
-  const [userData, setUserData] = useState({});
+  const { userId, editData, setEditData } = getUserData();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userId) {
+        // Fetch request
+        axios
+          .get(`${BASE_URL}/users/${userId}`)
+          .then(({ data }) => {
+            console.log("EDIT DATA", data);
+            setEditData(data.data);
+          })
+          .catch((e) => console.log(e));
+      }
+    }, [])
+  );
 
   useEffect(() => {
-    if (userId) {
-      // Fetch request
-      axios
-        .get(`${BASE_URL}/users/${userId}`)
-        .then(({ data }) => {
-          setUserData(data.data);
-        })
-        .catch((e) => console.log(e));
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log("Userdata", userData);
-  }, [userData]);
+    console.log("editData", editData);
+  }, [editData]);
 
   return (
     <ScrollView style={styles.profileContainer}>
@@ -43,7 +46,7 @@ const ProfileTab = () => {
           onPress={() =>
             router.push({
               pathname: "edit-profile",
-              params: { data: JSON.stringify(userData) },
+              params: { data: JSON.stringify(editData) },
             })
           }
           style={styles.editWrapper}
@@ -57,20 +60,20 @@ const ProfileTab = () => {
           <Image
             style={styles.profileImg}
             source={{
-              uri: userData.photo
-                ? userData.photo
+              uri: editData.photo
+                ? editData.photo
                 : "https://www.gravatar.com/avatar/?d=identicon",
             }}
           />
           <View style={styles.userDetails}>
             <View style={styles.userNameWrapper}>
-              <Text style={styles.userNameTitle}>{userData.name}</Text>
+              <Text style={styles.userNameTitle}>{editData.name}</Text>
               <Text style={styles.age}>
-                {userData.age} • {userData.gender}
+                {editData.age} • {editData.gender}
               </Text>
             </View>
             <Text style={styles.yearOfStudy}>3rd year | Computer science</Text>
-            <LanguageRow languages={userData.languages} />
+            <LanguageRow languages={editData.languages} />
           </View>
         </View>
         <View style={styles.metricsContainer}>
@@ -87,7 +90,7 @@ const ProfileTab = () => {
       <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Self introduction</Text>
         <View style={styles.introBlock}>
-          <Text style={styles.introText}>{userData.bio}</Text>
+          <Text style={styles.introText}>{editData.bio}</Text>
         </View>
       </View>
       <View style={styles.profileSection}>
@@ -97,16 +100,16 @@ const ProfileTab = () => {
           end={{ x: 1, y: 0 }}
           style={styles.mbtiBlock}
         >
-          <Text style={styles.mbtiText}>{userData.mbti}</Text>
+          <Text style={styles.mbtiText}>{editData.mbti}</Text>
         </LinearGradient>
       </View>
       <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Interests</Text>
-        <TagRow tags={userData.interests} />
+        <TagRow tags={editData.interests} />
       </View>
       <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Courses I'm doing</Text>
-        <TagRow tags={userData.courses} />
+        <TagRow tags={editData.courses} />
       </View>
       <View style={styles.overscroll} />
     </ScrollView>
