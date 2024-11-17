@@ -40,7 +40,7 @@ export default function AboutBlock() {
             placeholder='Enter name'
           />
           <Text style={styles.editCount}>
-            {editData.name.length || 0} / {25}
+            {editData?.name?.length || 0} / {25}
           </Text>
         </View>
       </View>

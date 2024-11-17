@@ -28,7 +28,7 @@ import AboutBlock from "@/components/Edit/AboutBlock";
 
 const Edit = () => {
   const params = useLocalSearchParams();
-  const { editData } = getUserData();
+  const { editData, userId } = getUserData();
 
   const renderEditBlock = useCallback(() => {
     switch (params.type) {
@@ -42,6 +42,12 @@ const Edit = () => {
         return <EditDegree />;
       case "courses":
         return <EditBlock type={"courses"} />;
+      case "username":
+        return <EditBlock type={"username"} />;
+      case "email":
+        return <EditBlock type={"email"} />;
+      case "password":
+        return <EditBlock type={"password"} />;
       case "about":
         return <AboutBlock />;
       case "interests":
@@ -51,11 +57,35 @@ const Edit = () => {
     }
   }, [params.type]);
 
+  const navigate = () => {
+    switch (params.page) {
+      case "edit":
+        router.push({
+          pathname: "/edit-profile",
+        });
+        break;
+      case "create":
+        router.push({
+          pathname: "/create-profile",
+        });
+        break;
+      default:
+        router.push({
+          pathname: "/setting-route",
+          params: { page: params.page },
+        });
+    }
+  };
   const handleSave = () => {
-    router.push({
-      pathname: params.page === "edit" ? "/edit-profile" : "/create-profile",
-      params: { data: JSON.stringify(editData) },
-    });
+    console.log("Updated", editData);
+    axios
+      .put(`${BASE_URL}/users/${userId}`, editData)
+      .then(() => {
+        console.log("Successfully edited field");
+        navigate();
+      })
+      .catch((e) => console.log(e));
+    1;
   };
 
   useEffect(() => {
@@ -66,16 +96,14 @@ const Edit = () => {
     <View style={styles.container}>
       <Logo style={styles.logo} width={50} height={50} />
       <View style={styles.profileHeader}>
-        <Text style={styles.headerTitle}>Add {params.type}</Text>
+        <Text style={styles.headerTitle}>
+          {params.page === "create" ? "Add" : "Edit"} {params.type}
+        </Text>
       </View>
       <ScrollView style={styles.createContainer}>
-        <View style={styles.backBtn}>
-          <Link
-            href={params.page === "edit" ? "/edit-profile" : "/create-profile"}
-          >
-            <Text style={styles.backTxt}>Back</Text>
-          </Link>
-        </View>
+        <TouchableOpacity onPress={handleSave} style={styles.backBtn}>
+          <Text style={styles.backTxt}>Back</Text>
+        </TouchableOpacity>
 
         <View
           style={{

@@ -350,7 +350,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
   },
-
   loginButton: {
     paddingHorizontal: 10,
     backgroundColor: "#76DA69",

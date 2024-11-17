@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router";
 
 const UserList = () => {
   const { userId } = getUserData();
@@ -16,22 +25,24 @@ const UserList = () => {
     navigation.navigate("otherProfile", { userId: friendId, key: friendId });
   };
 
-  useEffect(() => {
-    const fetchNonFriends = async () => {
-      try {
-        const url = `${BASE_URL}/users/${userId}/non-friends`;
-        console.log("Fetching non-friends from:", url);
-        const response = await axios.get(url);
-        setNonFriends(response.data.data);
-      } catch (error) {
-        console.error("Error fetching non-friend users:", error);
-      }
-    };
+  useFocusEffect(
+    useCallback(() => {
+      const fetchNonFriends = async () => {
+        try {
+          const url = `${BASE_URL}/users/${userId}/non-friends`;
+          console.log("Fetching non-friends from:", url);
+          const response = await axios.get(url);
+          setNonFriends(response.data.data);
+        } catch (error) {
+          console.error("Error fetching non-friend users:", error);
+        }
+      };
 
-    if (userId) {
-      fetchNonFriends();
-    }
-  }, [userId]);
+      if (userId) {
+        fetchNonFriends();
+      }
+    }, [userId])
+  );
 
   const handleAddFriend = async (friendId) => {
     try {
@@ -60,15 +71,15 @@ const UserList = () => {
     <View style={styles.container}>
       <View style={styles.searchContainer}>
         <Ionicons
-          name="search"
+          name='search'
           size={20}
-          color="#888"
+          color='#888'
           style={styles.searchIcon}
         />
         <TextInput
           style={styles.searchBar}
-          placeholder="Search by name..."
-          placeholderTextColor="#888"
+          placeholder='Search by name...'
+          placeholderTextColor='#888'
           value={search}
           onChangeText={(text) => setSearch(text)}
         />
@@ -100,7 +111,7 @@ const UserList = () => {
               style={styles.addButton}
               onPress={(e) => handleAddFriend(user.id, e)}
             >
-              <Ionicons name="person-add" size={24} color="#3b82f6" />
+              <Ionicons name='person-add' size={24} color='#3b82f6' />
             </TouchableOpacity>
           </TouchableOpacity>
         ))}

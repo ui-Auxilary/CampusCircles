@@ -12,7 +12,10 @@ const Settings = () => {
       <View style={styles.profileHeader}>
         <Text style={styles.headerTitle}>Settings</Text>
       </View>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+      <TouchableOpacity
+        onPress={() => router.push("/(tabs)/profile")}
+        style={styles.backBtn}
+      >
         <Text style={styles.backTxt}>Back</Text>
       </TouchableOpacity>
       <View style={styles.inputBlock}>

@@ -220,6 +220,24 @@ export const updateUser = async (req, res) => {
   });
 };
 
+export const deleteUser = async (req, res) => {
+  const userId = req.params.id;
+  console.log("USER", userId);
+  try {
+    let user = await prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+    console.log("User", user);
+  } catch (e) {
+    console.log(e);
+    return res
+      .status(500)
+      .json({ status: false, message: "Unable to delete user" });
+  }
+};
+
 export const getUserFriends = async (req, res) => {
   const userId = req.params.id;
 

@@ -12,12 +12,14 @@ import {
   addFriend,
   removeFriend,
   uploadProfile,
+  deleteUser,
 } from "../controllers/user.js";
 
 const userRoute = Router();
 
 userRoute.get("", getUsers);
 userRoute.get("/:id", getUser);
+userRoute.delete("/:id", deleteUser);
 userRoute.post("", createUser);
 userRoute.post("/:id/upload", uploadProfile);
 userRoute.put("/:id", updateUser);
