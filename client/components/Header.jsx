@@ -26,7 +26,7 @@ const Header = ({ title, showAddFriendButton }) => {
             style={styles.addFriendButton}
             onPress={() => navigation.navigate("addFriends")}
           >
-            <Ionicons name="person-add-outline" size={28} color="#3A72FF" />
+            <Ionicons name='person-add-outline' size={28} color='#3A72FF' />
           </TouchableOpacity>
         )}
       </View>
@@ -55,9 +55,10 @@ const styles = StyleSheet.create({
   logo: {
     position: "absolute",
     left: 20,
-    top: 75,
+    top: 60,
   },
   headerText: {
+    top: -5,
     fontSize: 24,
     fontWeight: "bold",
     color: "#333",
