@@ -15,6 +15,7 @@ export default function TabLayout() {
           header: () => {
             let title = "";
             let showAddFriendButton = false;
+            let showSettings = false;
 
             switch (route.name) {
               case "index":
@@ -32,6 +33,7 @@ export default function TabLayout() {
                 break;
               case "profile":
                 title = "Profile";
+                showSettings = true;
                 break;
               case "addFriends":
                   title = "Add Friend";
@@ -50,6 +52,7 @@ export default function TabLayout() {
               <Header
                 title={title}
                 showAddFriendButton={showAddFriendButton}
+                showSettings={showSettings}
                 onAddFriend={() => {
                   console.log(
                     "Navigating to addFriends screen using router.push"
