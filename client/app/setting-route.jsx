@@ -19,64 +19,40 @@ import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 
-import EditLanguage from "@/components/Edit/EditLanguage";
-import EditIntroduction from "@/components/Edit/EditIntroduction";
-import EditMbti from "@/components/Edit/EditMbti";
-import EditBlock from "@/components/Edit/EditBlock";
-import EditDegree from "@/components/Edit/EditDegree";
-import AboutBlock from "@/components/Edit/AboutBlock";
+import AccountSettings from "@/components/Setting/AccountSettings";
+import AccessibilitySettings from "@/components/Setting/AccessibilitySettings";
+import NotificationSettings from "@/components/Setting/NotificationSettings";
+import PrivacySettings from "@/components/Setting/PrivacySettings";
 
-const Edit = () => {
+const SettingRoute = () => {
   const params = useLocalSearchParams();
-  const { editData } = getUserData();
 
   const renderEditBlock = useCallback(() => {
-    switch (params.type) {
-      case "language":
-        return <EditLanguage />;
-      case "mbti":
-        return <EditMbti />;
-      case "intro":
-        return <EditIntroduction />;
-      case "degree":
-        return <EditDegree />;
-      case "courses":
-        return <EditBlock type={"courses"} />;
-      case "about":
-        return <AboutBlock />;
-      case "interests":
-        return <EditBlock type={"interests"} />;
+    switch (params.page) {
+      case "account":
+        return <AccountSettings />;
+      case "accessibility":
+        return <AccessibilitySettings />;
+      case "notification":
+        return <NotificationSettings />;
+      case "privacy":
+        return <PrivacySettings />;
       default:
         return null;
     }
   }, [params.type]);
 
-  const handleSave = () => {
-    router.push({
-      pathname: params.page === "edit" ? "/edit-profile" : "/create-profile",
-      params: { data: JSON.stringify(editData) },
-    });
-  };
-
-  useEffect(() => {
-    console.log("PAGE", params.page);
-  }, [params.page]);
-
   return (
     <View style={styles.container}>
-      <Logo style={styles.logo} width={50} height={50} />
       <View style={styles.profileHeader}>
-        <Text style={styles.headerTitle}>Add {params.type}</Text>
+        <Text style={styles.headerTitle}>
+          {params.page.charAt(0).toUpperCase() + params.page.substring(1)}
+        </Text>
       </View>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+        <Text style={styles.backTxt}>Back</Text>
+      </TouchableOpacity>
       <ScrollView style={styles.createContainer}>
-        <View style={styles.backBtn}>
-          <Link
-            href={params.page === "edit" ? "/edit-profile" : "/create-profile"}
-          >
-            <Text style={styles.backTxt}>Back</Text>
-          </Link>
-        </View>
-
         <View
           style={{
             flex: 1,
@@ -86,16 +62,12 @@ const Edit = () => {
         >
           {renderEditBlock()}
         </View>
-
-        <TouchableOpacity onPress={handleSave} style={S.btnMed}>
-          <Text style={S.txtLrg}>Save</Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );
 };
 
-export default Edit;
+export default SettingRoute;
 
 const styles = StyleSheet.create({
   container: {
@@ -109,18 +81,19 @@ const styles = StyleSheet.create({
     padding: 20,
     top: 0,
     alignItems: "center",
+    justifyContent: "center",
     paddingTop: 40,
-  },
-  headerTitle: {
-    color: "#454545",
-    fontSize: 28,
-    fontFamily: "Lexend_700Bold",
   },
   logo: {
     position: "absolute",
     top: 35,
     left: 15,
     zIndex: 2,
+  },
+  headerTitle: {
+    fontSize: 24,
+    color: "#333",
+    fontFamily: "Lexend_500Medium",
   },
   createContainer: {
     flex: 1,

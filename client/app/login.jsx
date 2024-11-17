@@ -4,14 +4,17 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Pressable,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
-import Logo from "@/components/Logo";
+import Logo from "../assets/campuslogo.svg";
 import { Link, router } from "expo-router";
 
 import S from "../styles/global";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
+import { Ionicons } from "@expo/vector-icons";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({
@@ -19,15 +22,28 @@ const Login = () => {
     password: "",
   });
 
+  const [show, setShow] = useState(false);
+
   const handleLogin = async () => {
-    console.log("posting");
+    let requiredFields = ["username", "password"];
+
+    for (let field of requiredFields) {
+      if (!loginData[field]) {
+        Alert.alert("Form Incomplete", `Please fill out the ${field} field.`);
+        return;
+      }
+    }
+
     await axios
       .post(`${BASE_URL}/users/login`, loginData)
       .then(({ data }) => {
         console.log("DATA", data);
         router.push({ pathname: "/(tabs)", params: { id: data.data } });
       })
-      .catch((e) => console.log(e));
+      .catch((e) => {
+        Alert.alert("Incorrect username or password");
+        return;
+      });
   };
 
   return (
@@ -42,19 +58,27 @@ const Login = () => {
                 setLoginData({ ...loginData, username: val })
               }
               style={styles.inputField}
-              placeholder="Email/Username"
+              placeholder='Email/Username'
             />
           </View>
           <View>
             <Text style={styles.inputLabel}>Password</Text>
-            <TextInput
-              onChangeText={(val) =>
-                setLoginData({ ...loginData, password: val })
-              }
-              secureTextEntry={true}
-              style={styles.inputField}
-              placeholder="Password"
-            />
+            <Pressable style={styles.inputBox} onPress={() => setShow(!show)}>
+              <TextInput
+                onChangeText={(val) =>
+                  setLoginData({ ...loginData, password: val })
+                }
+                secureTextEntry={show ? false : true}
+                style={styles.inputField}
+                placeholder='Password'
+              />
+              <Ionicons
+                name={show ? "eye-off" : "eye"}
+                size={28}
+                style={styles.eye}
+                color={"#BDBFC3"}
+              />
+            </Pressable>
           </View>
           <TouchableOpacity style={S.btnLrg} onPress={handleLogin}>
             <Text style={S.txtLrg}>Login</Text>
@@ -63,8 +87,9 @@ const Login = () => {
         <Logo style={styles.logo} />
         <View style={styles.loginFooter}>
           <Link href={{ pathname: "register" }}>
-            <Text style={styles.registerText}>
-              Don't have an account? Register here
+            <Text style={styles.loginText}>
+              Don't have an account?
+              <Text style={styles.bold}> Register here</Text>
             </Text>
           </Link>
         </View>
@@ -138,8 +163,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
   },
-  registerText: {
+  loginText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 17,
+    fontFamily: "Lexend_400Regular",
+    textDecorationLine: "underline",
+  },
+  bold: {
+    fontFamily: "Lexend_700Bold",
+    color: "#76DA69",
+  },
+  inputBox: {
+    justifyContent: "center",
+  },
+  eye: {
+    alignSelf: "flex-end",
+    position: "absolute",
+    zIndex: 2,
+    right: 10,
   },
 });

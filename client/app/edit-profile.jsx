@@ -42,10 +42,6 @@ const EditProfile = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("USER", params.data);
-    console.log("EDIT", editData);
-  }, [params.data]);
   const renderDegree = () => {
     let studyYear = editData.studyYear;
     let degree = editData.degree;
@@ -73,15 +69,6 @@ const EditProfile = () => {
 
   const handleEditProfile = () => {
     let userData = editData;
-    userData.interests =
-      typeof userData === "string"
-        ? userData.interests.split(",")
-        : userData.interests;
-    userData.courses =
-      typeof userData === "string"
-        ? userData.courses.split(",")
-        : userData.courses;
-
     console.log("ID", userId, editData);
     axios
       .put(`${BASE_URL}/users/${userId}`, userData)
@@ -294,12 +281,19 @@ const styles = StyleSheet.create({
     padding: 20,
     top: 0,
     alignItems: "center",
+    justifyContent: "center",
     paddingTop: 40,
   },
+  logo: {
+    position: "absolute",
+    top: 35,
+    left: 15,
+    zIndex: 2,
+  },
   headerTitle: {
-    color: "#454545",
-    fontSize: 28,
-    fontFamily: "Lexend_700Bold",
+    fontSize: 24,
+    color: "#333",
+    fontFamily: "Lexend_500Medium",
   },
   inputBlock: {
     marginTop: 5,
@@ -337,12 +331,6 @@ const styles = StyleSheet.create({
   loginFooter: {
     alignItems: "center",
     marginTop: 20,
-  },
-  logo: {
-    position: "absolute",
-    top: 35,
-    left: 15,
-    zIndex: 2,
   },
   createContainer: {
     flex: 1,
