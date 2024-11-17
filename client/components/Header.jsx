@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,26 +9,35 @@ import {
 } from "react-native";
 import Logo from "../assets/logo2.svg";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import HeaderAction from "./HeaderAction/HeaderAction";
 
-const { width } = Dimensions.get("window");
+const Header = ({ title, showAddFriendButton, showSettings }) => {
+  const [action, setAction] = useState("");
 
-const Header = ({ title, showAddFriendButton }) => {
-  const navigation = useNavigation();
+  useFocusEffect(
+    useCallback(() => {
+      const getAction = () => {
+        if (showAddFriendButton) {
+          setAction("addFriends");
+        } else if (showSettings) {
+          setAction("settings");
+        }
+      };
 
+      if (showSettings || showAddFriendButton) {
+        console.log("GET ACTION", showAddFriendButton);
+        console.log("SETTINGS", showSettings);
+        getAction();
+      }
+    }, [showAddFriendButton, showSettings])
+  );
   return (
     <SafeAreaView style={styles.safeArea}>
       <Logo style={styles.logo} width={50} height={50} />
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{title}</Text>
-        {showAddFriendButton && (
-          <TouchableOpacity
-            style={styles.addFriendButton}
-            onPress={() => navigation.navigate("addFriends")}
-          >
-            <Ionicons name='person-add-outline' size={28} color='#3A72FF' />
-          </TouchableOpacity>
-        )}
+        {action ? <HeaderAction action={action} /> : null}
       </View>
     </SafeAreaView>
   );
@@ -36,7 +45,7 @@ const Header = ({ title, showAddFriendButton }) => {
 
 const styles = StyleSheet.create({
   safeArea: {
-    width: width,
+    width: "100%",
     backgroundColor: "#ffffff",
     borderBottomWidth: 1,
     borderColor: "#e0e0e0",
@@ -55,21 +64,13 @@ const styles = StyleSheet.create({
   logo: {
     position: "absolute",
     left: 20,
-    top: 60,
+    top: "50%",
   },
   headerText: {
     top: -5,
     fontSize: 24,
-    fontWeight: "bold",
     color: "#333",
-    fontFamily: "Lexend_400Regular",
-  },
-  addFriendButton: {
-    position: "absolute",
-    right: 20,
-    top: 10,
-    borderRadius: 20,
-    padding: 5,
+    fontFamily: "Lexend_500Medium",
   },
 });
 

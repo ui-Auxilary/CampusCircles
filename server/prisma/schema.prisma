@@ -19,14 +19,14 @@ model User {
 
   photo           String
   gender          String
-  age             Int
+  age             String
   mbti            String
   degree          String
   studyYear       String
   bio             String
   languages       String[]
-  interests       String[]
-  courses         String[]
+  interests       String
+  courses         String
 
   eventsCreated   Event[]         @relation("EventsCreated")
   eventsAttend    EventAttendee[] @relation("EventAttendees")

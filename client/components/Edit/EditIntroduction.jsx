@@ -1,12 +1,14 @@
-import { View, Text, StyleSheet, TextInput } from 'react-native';
-import React, { useRef, useState } from 'react';
+import { View, Text, StyleSheet, TextInput } from "react-native";
+import React, { useRef, useState } from "react";
+import { getUserData } from "@/hooks/userContext";
 
-export default function EditIntroduction({ data, setData }) {
-  const [bio, setBio] = useState(data.bio);
+export default function EditIntroduction() {
+  const { editData, setEditData } = getUserData();
+  const [bio, setBio] = useState(editData.bio);
 
   const onHandleChange = (val) => {
     let text = val.substring(0, 250);
-    setBio(text), setData({ ...data, bio: text });
+    setBio(text), setEditData({ ...editData, bio: text });
   };
 
   return (
@@ -31,31 +33,31 @@ export default function EditIntroduction({ data, setData }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EEEEEE',
+    backgroundColor: "#EEEEEE",
   },
   selectBtn: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   editLabel: {
-    fontFamily: 'Lexend_400Regular',
+    fontFamily: "Lexend_400Regular",
   },
   editBlock: {
-    flexDirection: 'column',
+    flexDirection: "column",
     gap: 8,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     minHeight: 180,
     maxHeight: 300,
     borderRadius: 20,
     padding: 15,
-    fontFamily: 'Lexend_400Regular',
+    fontFamily: "Lexend_400Regular",
     marginBottom: 10,
   },
   editContainer: {
     padding: 15,
   },
   editCount: {
-    fontFamily: 'Lexend_400Regular',
-    color: '#AEAEB2',
-    alignSelf: 'flex-end',
+    fontFamily: "Lexend_400Regular",
+    color: "#AEAEB2",
+    alignSelf: "flex-end",
   },
 });

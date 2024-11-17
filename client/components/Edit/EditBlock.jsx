@@ -1,15 +1,21 @@
-import { View, Text, TextInput, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
-import { getUserData } from '@/hooks/userContext';
+import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
+import React, { useState } from "react";
+import { getUserData } from "@/hooks/userContext";
 
-export default function EditBlock({ data, setData, type }) {
-  const { editData } = getUserData();
-  const [typeData, setTypeData] = useState(editData[type] || '');
+export default function EditBlock({ type }) {
+  const { editData, setEditData } = getUserData();
+  const [typeData, setTypeData] = useState(editData[type] || "");
 
   const handleTextChange = (val) => {
-    let text = val.substring(0, 25);
-    setTypeData(text);
-    setData({ ...data, [type]: text });
+    let interests = val.split(", ");
+    if (interests.length > 3) {
+      Alert.alert(`You can only specify up to 3 ${type}!`);
+      return;
+    }
+
+    val = type === "courses" ? val.toUpperCase() : val;
+    setTypeData(val);
+    setEditData({ ...editData, [type]: val });
   };
 
   return (
@@ -21,11 +27,8 @@ export default function EditBlock({ data, setData, type }) {
           }}
           value={typeData}
           style={[styles.inputField, { minWidth: 200 }]}
-          placeholder='Enter name'
+          placeholder={`Enter ${type}`}
         />
-        <Text style={styles.editCount}>
-          {typeData.length} / {25}
-        </Text>
       </View>
       <Text style={styles.editHint}>Comma separated, up to 3</Text>
     </View>
@@ -40,43 +43,44 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   inputRow: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    flexDirection: "row",
     paddingHorizontal: 15,
     paddingVertical: 10,
     marginTop: 5,
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: 10,
-    borderBottomColor: '#EEEEEE',
+    borderBottomColor: "#EEEEEE",
     borderBottomWidth: 2,
     borderRadius: 5,
     marginBottom: 10,
+    height: 60,
   },
   inputField: {
     paddingHorizontal: 10,
-    width: '85%',
-    borderBottomColor: '#D9D9D9',
+    width: "100%",
+    borderBottomColor: "#D9D9D9",
     borderBottomWidth: 2,
-    fontFamily: 'Lexend_400Regular',
+    fontFamily: "Lexend_400Regular",
     zIndex: 2,
   },
   inputLabel: {
-    color: '#000000',
+    color: "#000000",
     fontSize: 16,
-    fontFamily: 'Lexend_400Regular',
+    fontFamily: "Lexend_400Regular",
   },
   editHint: {
-    color: '#AEAEB2',
+    color: "#AEAEB2",
     fontSize: 12,
-    fontFamily: 'Lexend_400Regular',
+    fontFamily: "Lexend_400Regular",
     marginBottom: 10,
   },
   editCount: {
-    color: '#AEAEB2',
+    color: "#AEAEB2",
     fontSize: 12,
-    alignSelf: 'flex-end',
-    fontFamily: 'Lexend_400Regular',
+    alignSelf: "flex-end",
+    fontFamily: "Lexend_400Regular",
   },
 });

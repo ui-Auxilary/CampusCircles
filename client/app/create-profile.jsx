@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Image,
   StyleSheet,
   Text,
@@ -12,33 +13,56 @@ import Right from "../assets/chev-right.svg";
 import Logo from "../assets/logo2.svg";
 
 import * as ImagePicker from "expo-image-picker";
-
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 import axios from "axios";
 import S from "../styles/global";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { uploadImage } from "@/helper/uploadImage";
 
 const CreateProfile = () => {
-  const pickerRef = useRef();
+  const [mediaLibraryPermissions, requestMediaLibraryPermissions] =
+    ImagePicker.useMediaLibraryPermissions();
 
   const params = useLocalSearchParams();
   const { userId, setUserId, editData, setEditData } = getUserData();
-  const [age, setAge] = useState(editData.age);
-  const [name, setName] = useState(editData.name);
+  const [photo, setPhoto] = useState("");
 
   const pickImage = async () => {
+    if (!mediaLibraryPermissions?.granted) {
+      const hasPermissions = await checkPermissions();
+      if (!hasPermissions) return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images", "videos"],
       quality: 1,
       base64: true,
     });
 
     if (result) {
-      setEditData({
-        ...editData,
-        photo: result.assets ? result.assets[0].uri : "",
-      });
+      uploadImage(userId, {
+        photo: result.assets ? result.assets[0].base64 : "",
+      })
+        .then(({ data }) => {
+          setEditData({ ...editData, photo: data.data });
+        })
+        .catch((e) => console.log(e));
+
+      setPhoto(result.assets ? result.assets[0].uri : "");
+    }
+  };
+
+  const checkPermissions = async () => {
+    if (!mediaLibraryPermissions?.granted) {
+      const libraryStatus = await requestMediaLibraryPermissions();
+
+      if (!libraryStatus.granted) {
+        Alert.alert(
+          "Permissions Required",
+          "Please grant camera and media library permissions in settings to use this feature."
+        );
+      }
     }
   };
 
@@ -67,20 +91,8 @@ const CreateProfile = () => {
     }
   }, []);
 
-  useEffect(() => {
-    console.log("Data", editData);
-  }, [editData]);
-
   const handleCreateProfile = () => {
     let userData = editData;
-    userData.interests =
-      typeof userData === "string"
-        ? userData.interests.split(",")
-        : userData.interests;
-    userData.courses =
-      typeof userData === "string"
-        ? userData.courses.split(",")
-        : userData.courses;
 
     console.log("ID", userId, editData);
     axios
@@ -91,7 +103,7 @@ const CreateProfile = () => {
         // Reset data
         setEditData({
           name: "",
-          age: 0,
+          age: "",
           languages: [],
           bio: "",
           mbti: "",
@@ -119,7 +131,7 @@ const CreateProfile = () => {
             style={styles.profileImg}
             source={{
               uri:
-                editData.photo ||
+                photo ||
                 "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
             }}
           />
@@ -173,7 +185,9 @@ const CreateProfile = () => {
                 ellipsizeMode='tail'
                 style={styles.paramText}
               >
-                {editData?.languages ? editData.languages.join(", ") : ""}
+                {editData?.languages
+                  ? editData.languages.filter((lang) => lang).join(", ")
+                  : ""}
               </Text>
               <Right width={25} height={25} />
             </View>

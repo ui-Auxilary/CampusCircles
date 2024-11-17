@@ -1,17 +1,11 @@
 import { Stack, Link } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  StatusBar,
-} from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useEffect } from "react";
 
 import Logo from "../assets/campuslogo.svg";
 import CampSplash from "@/assets/campsplash.png";
+import SplashBG from "@/assets/splashbg.png";
 
 import {
   Lexend_400Regular,
@@ -21,7 +15,6 @@ import {
   useFonts,
 } from "@expo-google-fonts/lexend";
 import * as SplashScreen from "expo-splash-screen";
-import BG from "@/components/SplashBG";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -59,8 +52,8 @@ export default function Home() {
         </TouchableOpacity>
       </View>
       <View style={styles.splashContainer}>
-        <BG style={{ position: "absolute", transform: [{ scale: 0.9 }] }} />
         <Image style={styles.splashImg} source={CampSplash} />
+        <Image style={styles.splashBG} source={SplashBG} />
       </View>
       <Logo style={styles.campusLogo} width={"20%"} height={"10%"} />
     </View>
@@ -104,6 +97,16 @@ const styles = StyleSheet.create({
   splashImg: {
     objectFit: "contain",
     height: "100%",
+  },
+  splashImg: {
+    objectFit: "contain",
+    height: "100%",
+    zIndex: 1,
+  },
+  splashBG: {
+    objectFit: "contain",
+    height: "100%",
+    position: "absolute",
   },
   campusLogo: {
     position: "absolute",
