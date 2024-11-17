@@ -64,10 +64,6 @@ const Edit = () => {
 
   return (
     <View style={styles.container}>
-      <Logo style={styles.logo} width={50} height={50} />
-      <View style={styles.profileHeader}>
-        <Text style={styles.headerTitle}>Add {params.type}</Text>
-      </View>
       <ScrollView style={styles.createContainer}>
         <View style={styles.backBtn}>
           <Link
@@ -101,26 +97,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#EEEEEE",
-  },
-  profileHeader: {
-    height: 100,
-    backgroundColor: "#FFFFFF",
-    width: "100%",
-    padding: 20,
-    top: 0,
-    alignItems: "center",
-    paddingTop: 40,
-  },
-  headerTitle: {
-    color: "#454545",
-    fontSize: 28,
-    fontFamily: "Lexend_700Bold",
-  },
-  logo: {
-    position: "absolute",
-    top: 35,
-    left: 15,
-    zIndex: 2,
   },
   createContainer: {
     flex: 1,

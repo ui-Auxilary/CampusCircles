@@ -44,11 +44,6 @@ const SettingRoute = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.profileHeader}>
-        <Text style={styles.headerTitle}>
-          {params.page.charAt(0).toUpperCase() + params.page.substring(1)}
-        </Text>
-      </View>
       <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
         <Text style={styles.backTxt}>Back</Text>
       </TouchableOpacity>
@@ -73,27 +68,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#EEEEEE",
-  },
-  profileHeader: {
-    height: 100,
-    backgroundColor: "#FFFFFF",
-    width: "100%",
-    padding: 20,
-    top: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 40,
-  },
-  logo: {
-    position: "absolute",
-    top: 35,
-    left: 15,
-    zIndex: 2,
-  },
-  headerTitle: {
-    fontSize: 24,
-    color: "#333",
-    fontFamily: "Lexend_500Medium",
   },
   createContainer: {
     flex: 1,
