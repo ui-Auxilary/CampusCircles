@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 
 import {
   Lexend_300Regular,
@@ -69,11 +69,14 @@ const EventDetails = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity style={styles.linkContainer}>
+      <TouchableOpacity
+        style={styles.linkContainer}
+        onPress={() => {
+          console.log("pressed");
+          router.push("/events");
+        }}
+      >
         <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
-        <Link to='/(tabs)' style={styles.backLink}>
-          Go home
-        </Link>
       </TouchableOpacity>
       <Image
         source={{
@@ -179,9 +182,9 @@ const styles = StyleSheet.create({
   },
   linkContainer: {
     position: "absolute",
-    top: 15,
+    top: 50,
     left: 15,
-    zIndex: 2,
+    zIndex: 1000,
     flexDirection: "row",
     gap: 5,
     alignItems: "center",
