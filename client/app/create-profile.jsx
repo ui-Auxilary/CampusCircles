@@ -45,8 +45,7 @@ const CreateProfile = () => {
         photo: result.assets ? result.assets[0].base64 : "",
       })
         .then(({ data }) => {
-          console.log("DATA", data.data);
-          setEditData({ ...editData, photo: data.data.secure_url });
+          setEditData({ ...editData, photo: data.data });
         })
         .catch((e) => console.log(e));
 
