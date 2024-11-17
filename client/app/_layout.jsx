@@ -1,11 +1,18 @@
 import UserProvider from "@/hooks/userContext";
 import { Stack } from "expo-router/stack";
+import Header from "../components/Header";
+import React from 'react';
 
 export default function Layout() {
   return (
     <UserProvider>
       <Stack>
-        <Stack.Screen name='index' />
+        <Stack.Screen 
+          name='index'
+          options={{
+            header: () => <Header title="Home" />
+          }}
+        />
         <Stack.Screen
           name='login'
           options={{
@@ -21,37 +28,40 @@ export default function Layout() {
         <Stack.Screen
           name='create-profile'
           options={{
-            headerShown: false,
+            header: () => <Header title="Create Profile" />
           }}
         />
         <Stack.Screen
           name='edit'
-          options={{
-            headerShown: false,
-          }}
+          options={({ route }) => ({
+            header: () => <Header title={`Add ${route.params?.type}`} />
+          })}
         />
         <Stack.Screen
           name='edit-profile'
           options={{
-            headerShown: false,
+            header: () => <Header title="Edit Profile" />
           }}
         />
         <Stack.Screen
           name='settings'
           options={{
-            headerShown: false,
+            header: () => <Header title="Settings" />
           }}
         />
         <Stack.Screen
           name='setting-route'
-          options={{
-            headerShown: false,
-          }}
+          options={({ route }) => ({
+            header: () => {
+              const title = route.params?.page ? `${route.params.page.charAt(0).toUpperCase()}${route.params.page.slice(1)}` : 'Settings';
+              return <Header title={title} />;
+            }
+          })}
         />
         <Stack.Screen
           name='event-details'
           options={{
-            headerShown: false,
+            header: () => <Header title="Event Details" />
           }}
         />
         <Stack.Screen
