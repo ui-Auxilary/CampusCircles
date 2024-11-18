@@ -90,12 +90,6 @@ const Edit = () => {
 
   return (
     <View style={styles.container}>
-      <Logo style={styles.logo} width={50} height={50} />
-      <View style={styles.profileHeader}>
-        <Text style={styles.headerTitle}>
-          {params.page === "create" ? "Add" : "Edit"} {params.type}
-        </Text>
-      </View>
       <ScrollView style={styles.createContainer}>
         <TouchableOpacity onPress={handleSave} style={styles.backBtn}>
           <Text style={styles.backTxt}>Back</Text>

@@ -1,10 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-} from "react-native";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import Logo from "../assets/logo2.svg";
 import { useFocusEffect } from "@react-navigation/native";
 import HeaderAction from "./HeaderAction/HeaderAction";
@@ -23,8 +18,6 @@ const Header = ({ title, showAddFriendButton, showSettings }) => {
       };
 
       if (showSettings || showAddFriendButton) {
-        console.log("GET ACTION", showAddFriendButton);
-        console.log("SETTINGS", showSettings);
         getAction();
       }
     }, [showAddFriendButton, showSettings])

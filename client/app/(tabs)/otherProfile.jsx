@@ -12,8 +12,6 @@ import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import TagRow from "@/components/TagRow/TagRow";
 import LanguageRow from "@/components/LanguageRow/LanguageRow";
-import { useRoute } from "@react-navigation/native";
-import { getUserData } from "@/hooks/userContext";
 import * as Haptics from "expo-haptics";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import { getUserData } from "@/hooks/userContext";
