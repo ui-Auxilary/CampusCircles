@@ -116,11 +116,11 @@ const CreateProfile = () => {
           courses: "",
         });
         // Navigate to wizard or homepage for now
-        router.push("/(tabs)");
+        router.push("/wizard");
       })
       .catch((e) => console.log(e));
 
-    router.push("/(tabs)");
+    router.push("/wizard");
   };
   return (
     <View style={styles.container}>

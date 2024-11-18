@@ -3,6 +3,7 @@ import { Tabs } from "expo-router";
 import Header from "../../components/Header";
 import { View, StyleSheet, Text, Dimensions } from "react-native";
 import { router } from "expo-router";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const { height } = Dimensions.get("window");
 
@@ -11,7 +12,8 @@ export default function TabLayout() {
     <View style={styles.container}>
       <Tabs
         screenOptions={({ route }) => ({
-          tabBarActiveTintColor: "blue",
+          tabBarActiveTintColor: "#116DFF",
+
           header: () => {
             let title = "";
             let showAddFriendButton = false;
@@ -36,14 +38,14 @@ export default function TabLayout() {
                 showSettings = true;
                 break;
               case "addFriends":
-                  title = "Add Friend";
-                  break;
+                title = "Add Friend";
+                break;
               case "friendFilter":
-                  title = "Add Friend";
-                  break;
+                title = "Add Friend";
+                break;
               case "otherProfile":
-                  title = "Profile";
-                  break;
+                title = "Profile";
+                break;
               default:
                 title = "Campus Circles";
             }
@@ -66,26 +68,29 @@ export default function TabLayout() {
         })}
       >
         <Tabs.Screen
-          name="index"
+          name='index'
           options={{
+            tabBarLabelStyle: styles.tabLabelStyle,
             title: "Home",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name="home-outline" color={color} />
+              <Ionicons size={28} name='home-outline' color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="events"
+          name='events'
           options={{
+            tabBarLabelStyle: styles.tabLabelStyle,
             title: "Events",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name="location-outline" color={color} />
+              <Ionicons size={28} name='location-outline' color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="create"
+          name='create'
           options={{
+            tabBarLabelStyle: styles.tabLabelStyle,
             title: "Create",
             tabBarIcon: ({ focused }) => (
               <View
@@ -94,33 +99,35 @@ export default function TabLayout() {
                   focused && styles.createButtonFocused,
                 ]}
               >
-                <Ionicons size={32} name="add" color="#fff" />
+                <Ionicons size={32} name='add' color='#fff' />
               </View>
             ),
           }}
         />
         <Tabs.Screen
-          name="friends"
+          name='friends'
           options={{
+            tabBarLabelStyle: styles.tabLabelStyle,
             title: "Friends",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name="people-outline" color={color} />
+              <Ionicons size={28} name='people-outline' color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="profile"
+          name='profile'
           options={{
+            tabBarLabelStyle: styles.tabLabelStyle,
             title: "Profile",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name="person-circle-outline" color={color} />
+              <Ionicons size={28} name='person-circle-outline' color={color} />
             ),
           }}
         />
         {/* Remove the extra "header" screen definition */}
-        <Tabs.Screen name="addFriends" options={{ href: null }} />
-        <Tabs.Screen name="otherProfile" options={{ href: null }} />
-        <Tabs.Screen name="friendFilter" options={{ href: null }} />
+        <Tabs.Screen name='addFriends' options={{ href: null }} />
+        <Tabs.Screen name='otherProfile' options={{ href: null }} />
+        <Tabs.Screen name='friendFilter' options={{ href: null }} />
       </Tabs>
     </View>
   );
@@ -138,6 +145,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     elevation: 10,
+  },
+  tabLabelStyle: {
+    fontFamily: "Lexend_400Regular",
+    fontSize: 14,
   },
   createButton: {
     width: 60,

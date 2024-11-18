@@ -3,6 +3,9 @@ import { useNavigation } from "@react-navigation/native";
 import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useEffect } from "react";
 
+import "react-native-reanimated";
+import "react-native-gesture-handler";
+
 import Logo from "../assets/campuslogo.svg";
 import CampSplash from "@/assets/campsplash.png";
 import SplashBG from "@/assets/splashbg.png";
