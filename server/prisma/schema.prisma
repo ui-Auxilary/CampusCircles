@@ -61,9 +61,6 @@ model Event {
   eventAttendees  String[]        @db.ObjectId
   invitations     Invitation[]    @relation("EventInvitations")
 
-  tag             Tag             @relation("EventTag", fields: [tagId], references: [id])
-  tagId           String          @db.ObjectId
-
   creator         User            @relation("EventsCreated", fields: [creatorId], references: [id])
   creatorId       String          @db.ObjectId
 
@@ -86,13 +83,4 @@ model Invitation {
   inviter         User             @relation("InvitationsSent", fields: [inviterId], references: [id])
   inviterId       String           @db.ObjectId
   status          InvitationStatus @default(pending)
-}
-
-model Tag {
-  id              String          @id @default(auto()) @map("_id") @db.ObjectId
-  name            String          @unique
-  events          Event[]         @relation("EventTag")
-
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
 }
