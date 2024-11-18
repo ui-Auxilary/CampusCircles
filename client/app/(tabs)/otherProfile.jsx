@@ -1,16 +1,26 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { BASE_URL } from '@/constants/api';
-import axios from 'axios';
-import TagRow from '@/components/TagRow/TagRow';
-import LanguageRow from '@/components/LanguageRow/LanguageRow';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { getUserData } from '@/hooks/userContext';
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { BASE_URL } from "@/constants/api";
+import axios from "axios";
+import TagRow from "@/components/TagRow/TagRow";
+import LanguageRow from "@/components/LanguageRow/LanguageRow";
+import { useRoute } from "@react-navigation/native";
+import { getUserData } from "@/hooks/userContext";
+import * as Haptics from "expo-haptics";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
+import { getUserData } from "@/hooks/userContext";
 
 const OtherProfile = () => {
   const route = useRoute();
-  const { userId: currentUserId } = getUserData();
+  const { userId: currentUserId, hasHaptic } = getUserData();
   const { userId } = route.params;
   const [userData, setUserData] = useState({});
   const [isFriend, setIsFriend] = useState(false);
@@ -24,14 +34,18 @@ const OtherProfile = () => {
           setUserData(data);
           setIsFriend(data.friendIds?.includes(currentUserId) ?? false);
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          {
+            hasHaptic &&
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          }
+          console.error("Error fetching user data:", error);
         }
       };
-  
+
       if (userId) {
         fetchData();
       }
-  
+
       return () => {
         setUserData({});
       };
@@ -40,40 +54,58 @@ const OtherProfile = () => {
 
   const handleAddFriend = async () => {
     try {
-      const response = await axios.post(`${BASE_URL}/users/${currentUserId}/add-friend`, {
-        friendId: userId,
-      });
+      const response = await axios.post(
+        `${BASE_URL}/users/${currentUserId}/add-friend`,
+        {
+          friendId: userId,
+        }
+      );
 
       if (response.data.status) {
         setIsFriend(true);
       } else {
+        {
+          hasHaptic &&
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
         alert(response.data.message);
       }
     } catch (error) {
-      console.error('Failed to add friend:', error);
-      alert('An error occurred. Please try again later.');
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+      console.error("Failed to add friend:", error);
+      alert("An error occurred. Please try again later.");
     }
   };
 
   const handleRemoveFriend = async () => {
     try {
-      const response = await axios.post(`${BASE_URL}/users/${currentUserId}/remove-friend`, {
-        friendId: userId,
-      });
+      const response = await axios.post(
+        `${BASE_URL}/users/${currentUserId}/remove-friend`,
+        {
+          friendId: userId,
+        }
+      );
 
       if (response.data.status) {
         setIsFriend(false);
       } else {
+        {
+          hasHaptic &&
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
         alert(response.data.message);
       }
     } catch (error) {
-      console.error('Failed to remove friend:', error);
-      alert('An error occurred. Please try again later.');
+      console.error("Failed to remove friend:", error);
+      alert("An error occurred. Please try again later.");
     }
   };
 
   useEffect(() => {
-    console.log('Userdata', userData);
+    console.log("Userdata", userData);
   }, [userData]);
 
   return (
@@ -83,18 +115,23 @@ const OtherProfile = () => {
           <Image
             style={styles.profileImg}
             source={{
-              uri: userData.photo ? userData.photo : "https://www.gravatar.com/avatar/?d=identicon",
+              uri: userData.photo
+                ? userData.photo
+                : "https://www.gravatar.com/avatar/?d=identicon",
             }}
           />
           <View style={styles.userDetails}>
             <View style={styles.userNameWrapper}>
-              <Text style={styles.userNameTitle}>{userData.name || "Unknown Name"}</Text>
+              <Text style={styles.userNameTitle}>
+                {userData.name || "Unknown Name"}
+              </Text>
               <Text style={styles.age}>
                 {userData.age || "N/A"} • {userData.gender || "N/A"}
               </Text>
             </View>
             <Text style={styles.yearOfStudy}>
-              {userData.studyYear || "Unknown Year"} | {userData.studyField || "Unknown Degree"}
+              {userData.studyYear || "Unknown Year"} |{" "}
+              {userData.studyField || "Unknown Degree"}
             </Text>
             {userData.languages && userData.languages.length > 0 && (
               <LanguageRow languages={userData.languages} />
@@ -103,11 +140,15 @@ const OtherProfile = () => {
         </View>
         <View style={styles.metricsContainer}>
           <View>
-            <Text style={styles.metricText}>{userData.friendIds ? userData.friendIds.length : 0}</Text>
+            <Text style={styles.metricText}>
+              {userData.friendIds ? userData.friendIds.length : 0}
+            </Text>
             <Text style={styles.metricSpan}>Friends</Text>
           </View>
           <View>
-            <Text style={styles.metricText}>{userData.eventsAttend ? userData.eventsAttend.length : 0}</Text>
+            <Text style={styles.metricText}>
+              {userData.eventsAttend ? userData.eventsAttend.length : 0}
+            </Text>
             <Text style={styles.metricSpan}>Events</Text>
           </View>
         </View>
@@ -115,7 +156,9 @@ const OtherProfile = () => {
       <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Self introduction</Text>
         <View style={styles.introBlock}>
-          <Text style={styles.introText}>{userData.bio || "No bio available"}</Text>
+          <Text style={styles.introText}>
+            {userData.bio || "No bio available"}
+          </Text>
         </View>
       </View>
       <View style={styles.profileSection}>
@@ -147,7 +190,13 @@ const OtherProfile = () => {
           style={isFriend ? styles.removeFriendButton : styles.addFriendButton}
           onPress={isFriend ? handleRemoveFriend : handleAddFriend}
         >
-          <Text style={isFriend ? styles.removeFriendButtonText : styles.addFriendButtonText}>
+          <Text
+            style={
+              isFriend
+                ? styles.removeFriendButtonText
+                : styles.addFriendButtonText
+            }
+          >
             {isFriend ? "Remove Friend" : "Add Friend"}
           </Text>
         </TouchableOpacity>
@@ -162,82 +211,82 @@ export default OtherProfile;
 const styles = StyleSheet.create({
   profileContainer: {
     flex: 1,
-    backgroundColor: '#EEEEEE',
+    backgroundColor: "#EEEEEE",
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
   container: {
     flex: 1,
-    backgroundColor: '#EEEEEE',
+    backgroundColor: "#EEEEEE",
   },
   profileHeader: {
     height: 100,
-    backgroundColor: '#FFFFFF',
-    width: '100%',
+    backgroundColor: "#FFFFFF",
+    width: "100%",
     padding: 20,
     top: 0,
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 40,
   },
   headerTitle: {
-    color: '#454545',
+    color: "#454545",
     fontSize: 28,
-    fontFamily: 'Lexend_700Bold',
+    fontFamily: "Lexend_700Bold",
   },
   inputBlock: {},
   inputRow: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
+    width: "100%",
+    backgroundColor: "#FFFFFF",
+    flexDirection: "row",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: 20,
-    borderBottomColor: '#EEEEEE',
+    borderBottomColor: "#EEEEEE",
     borderBottomWidth: 2,
   },
   inputField: {
     paddingHorizontal: 15,
-    width: '70%',
-    borderBottomColor: '#D9D9D9',
+    width: "70%",
+    borderBottomColor: "#D9D9D9",
     borderBottomWidth: 2,
     zIndex: 2,
   },
   inputLabel: {
-    color: '#000000',
+    color: "#000000",
     fontSize: 16,
-    fontFamily: 'Lexend_400Regular',
+    fontFamily: "Lexend_400Regular",
   },
 
   loginButton: {
     paddingHorizontal: 10,
-    backgroundColor: '#76DA69',
+    backgroundColor: "#76DA69",
     height: 55,
     borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginTop: 20,
   },
   loginText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 20,
-    fontFamily: 'Lexend_700Bold',
+    fontFamily: "Lexend_700Bold",
   },
   loginFooter: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
   },
   registerText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 16,
     zIndex: 2,
   },
   profileImgContainer: {
     height: 150,
-    backgroundColor: '#EEEEEE',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#EEEEEE",
+    alignItems: "center",
+    justifyContent: "center",
     marginVertical: 5,
   },
   profileImg: {
@@ -246,76 +295,76 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   userDetailsWrapper: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
   },
   userNameWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
   userNameTitle: {
-    fontFamily: 'Lexend_600SemiBold',
+    fontFamily: "Lexend_600SemiBold",
     fontSize: 18,
   },
   userContainer: {
-    flexDirection: 'column',
+    flexDirection: "column",
     gap: 25,
     marginTop: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     padding: 20,
     borderRadius: 20,
     elevation: 4,
   },
   age: {
-    backgroundColor: '#3A72FF',
+    backgroundColor: "#3A72FF",
     paddingHorizontal: 10,
     paddingVertical: 2,
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     letterSpacing: -0.5,
     borderRadius: 20,
-    alignItems: 'center',
-    fontFamily: 'Lexend_600SemiBold',
+    alignItems: "center",
+    fontFamily: "Lexend_600SemiBold",
   },
   yearOfStudy: {
-    fontFamily: 'Lexend_400Regular',
-    color: '#8E8E93',
+    fontFamily: "Lexend_400Regular",
+    color: "#8E8E93",
   },
 
   metricsContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-around",
   },
   metricText: {
-    fontFamily: 'Lexend_700Bold',
+    fontFamily: "Lexend_700Bold",
     fontSize: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   metricSpan: {
-    fontFamily: 'Lexend_400Regular',
-    color: '#AEAEB2',
+    fontFamily: "Lexend_400Regular",
+    color: "#AEAEB2",
     fontSize: 12,
   },
   profileSection: {
     paddingHorizontal: 10,
   },
   profileTitle: {
-    fontFamily: 'Lexend_700Bold',
+    fontFamily: "Lexend_700Bold",
     fontSize: 18,
     marginTop: 10,
-    color: '#20303C',
+    color: "#20303C",
   },
   mbtiBlock: {
     borderRadius: 10,
-    width: '100%',
+    width: "100%",
     height: 55,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: 'black',
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "black",
     shadowOpacity: 0.1,
     shadowRadius: 2,
     shadowOffsetWidth: 10,
@@ -324,69 +373,69 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   mbtiText: {
-    fontFamily: 'Lexend_700Bold',
+    fontFamily: "Lexend_700Bold",
     fontSize: 20,
-    color: '#AE79F9',
+    color: "#AE79F9",
   },
   introBlock: {
     padding: 5,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     height: 120,
-    width: '100%',
+    width: "100%",
     marginTop: 10,
     borderRadius: 10,
     elevation: 4,
     padding: 10,
   },
   introText: {
-    fontFamily: 'Lexend_500Medium',
+    fontFamily: "Lexend_500Medium",
     fontSize: 12,
-    color: '#20303C',
+    color: "#20303C",
   },
   overscroll: {
     height: 50,
   },
   editText: {
-    fontFamily: 'Lexend_700Bold',
+    fontFamily: "Lexend_700Bold",
     fontSize: 16,
-    color: '#3A72FF',
+    color: "#3A72FF",
   },
   editProfile: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
   },
   editWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 5,
   },
   buttonContainer: {
     marginTop: -30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   addFriendButton: {
-    width: '90%',
+    width: "90%",
     paddingVertical: 20,
-    backgroundColor: '#8a2be2',
+    backgroundColor: "#8a2be2",
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   addFriendButtonText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   removeFriendButton: {
-    width: '90%',
+    width: "90%",
     paddingVertical: 20,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: 2,
-    borderColor: '#ff0000',
+    borderColor: "#ff0000",
   },
   removeFriendButtonText: {
-    color: '#ff0000',
+    color: "#ff0000",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { acceptInvite, rejectInvite } from "../controllers/invite.js"; // Correct path and file name
 
-const inviteRoute = Router();
+// const inviteRoute = Router();
 
 inviteRoute.put("/:id/accept", acceptInvite);
 inviteRoute.put("/:id/reject", rejectInvite);
 
-export default inviteRoute;
+// export default inviteRoute;

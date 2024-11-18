@@ -1,19 +1,33 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
-import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import * as Haptics from "expo-haptics";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 
 const UserList = () => {
-  const { userId } = getUserData();
+  const { userId, hasHaptic } = getUserData();
   const [search, setSearch] = useState("");
   const [nonFriends, setNonFriends] = useState([]);
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { selectedYear, selectedLanguage, course, interest } = route.params || {};
+  const { selectedYear, selectedLanguage, course, interest } =
+    route.params || {};
 
   const handleNavigateToProfile = (friendId) => {
     navigation.navigate("otherProfile", { userId: friendId, key: friendId });
@@ -26,9 +40,12 @@ const UserList = () => {
           const url = `${BASE_URL}/users/${userId}/non-friends`;
           console.log("Fetching non-friends from:", url);
           const response = await axios.get(url);
-          console.log("Non-friends data:", response.data.data);
           setNonFriends(response.data.data);
         } catch (error) {
+          {
+            hasHaptic &&
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          }
           console.error("Error fetching non-friend users:", error);
         }
       };
@@ -50,10 +67,18 @@ const UserList = () => {
           prevNonFriends.filter((user) => user.id !== friendId)
         );
       } else {
+        {
+          hasHaptic &&
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
         alert(response.data.message);
       }
     } catch (error) {
       console.error("Failed to add friend:", error);
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       alert("An error occurred. Please try again later.");
     }
   };
@@ -61,34 +86,45 @@ const UserList = () => {
   // filter for people
   const filteredUsers = nonFriends.filter((user) => {
     const userMatch = user.name.toLowerCase().includes(search.toLowerCase());
-    const courseMatch = course ? user.courses?.toLowerCase().includes(course.toLowerCase()) : true;
-    const interestMatch = interest ? user.interests?.toLowerCase().includes(interest.toLowerCase()) : true;
-    
-    return userMatch && (!selectedYear || user.studyYear === selectedYear) &&
-           (!selectedLanguage || user.languages?.includes(selectedLanguage)) &&
-           courseMatch && interestMatch;
+    const courseMatch = course
+      ? user.courses?.toLowerCase().includes(course.toLowerCase())
+      : true;
+    const interestMatch = interest
+      ? user.interests?.toLowerCase().includes(interest.toLowerCase())
+      : true;
+
+    return (
+      userMatch &&
+      (!selectedYear || user.studyYear === selectedYear) &&
+      (!selectedLanguage || user.languages?.includes(selectedLanguage)) &&
+      courseMatch &&
+      interestMatch
+    );
   });
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("friends")} style={styles.backButtonContainer}>
-          <Ionicons name="arrow-back" size={24} color="black" />
+        <TouchableOpacity
+          onPress={() => navigation.navigate("friends")}
+          style={styles.backButtonContainer}
+        >
+          <Ionicons name='arrow-back' size={24} color='black' />
           <Text style={styles.backButton}> Back</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.searchContainer}>
         <View style={styles.searchBarContainer}>
           <Ionicons
-            name="search"
+            name='search'
             size={20}
-            color="#888"
+            color='#888'
             style={styles.searchIcon}
           />
           <TextInput
             style={styles.searchBar}
-            placeholder="Search users by name..."
-            placeholderTextColor="#888"
+            placeholder='Search users by name...'
+            placeholderTextColor='#888'
             value={search}
             onChangeText={(text) => setSearch(text)}
           />
@@ -97,7 +133,7 @@ const UserList = () => {
           style={styles.filterButton}
           onPress={() => navigation.navigate("friendFilter")}
         >
-          <Ionicons name="funnel-outline" size={20} color="#fff" />
+          <Ionicons name='funnel-outline' size={20} color='#fff' />
           <Text style={styles.filterText}>Filter</Text>
         </TouchableOpacity>
       </View>
@@ -130,7 +166,7 @@ const UserList = () => {
               style={styles.addButton}
               onPress={(e) => handleAddFriend(user.id, e)}
             >
-              <Ionicons name="person-add" size={24} color="#3b82f6" />
+              <Ionicons name='person-add' size={24} color='#3b82f6' />
             </TouchableOpacity>
           </TouchableOpacity>
         ))}
@@ -150,12 +186,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   backButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   backButton: {
     fontSize: 16,
-    color: '#000'
+    color: "#000",
   },
   searchContainer: {
     flexDirection: "row",

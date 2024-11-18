@@ -20,6 +20,8 @@ import * as WebBrowser from "expo-web-browser";
 import * as Linking from "expo-linking";
 import { Ionicons } from "@expo/vector-icons";
 
+import * as Haptics from "expo-haptics";
+
 const Register = () => {
   const [user, setUser] = useState({
     username: "",
@@ -65,6 +67,7 @@ const Register = () => {
     const requiredFields = ["username", "email", "password"];
     for (let field of requiredFields) {
       if (!userData[field] || !confirmPassword) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert(`One of more required fields missing`);
         return;
       }
@@ -74,11 +77,13 @@ const Register = () => {
 
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
     if (reg.test(email) !== true) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(`Email is in the incorrect format`);
       return;
     }
 
     if (password !== confirmPassword) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(`Passwords don't match, please try again`);
       return;
     }

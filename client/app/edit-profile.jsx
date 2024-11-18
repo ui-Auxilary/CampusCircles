@@ -11,6 +11,7 @@ import {
 import Right from "../assets/chev-right.svg";
 import Logo from "../assets/logo2.svg";
 
+import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 
 import { BASE_URL } from "@/constants/api";
@@ -23,13 +24,13 @@ const EditProfile = () => {
   const pickerRef = useRef();
 
   const params = useLocalSearchParams();
-  const { userId, setUserId, editData, setEditData } = getUserData();
+  const { userId, setUserId, editData, setEditData, hasHaptic } = getUserData();
   const [age, setAge] = useState(editData.age);
   const [name, setName] = useState(editData.name);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images", "videos"],
       quality: 1,
       base64: true,
     });
@@ -68,6 +69,10 @@ const EditProfile = () => {
   }, []);
 
   const handleEditProfile = () => {
+    {
+      hasHaptic && Haptics.selectionAsync();
+    }
+
     let userData = editData;
     console.log("ID", userId, editData);
     axios

@@ -11,7 +11,9 @@ import {
 } from "react-native";
 import Right from "../assets/chev-right.svg";
 
+import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
+
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 import axios from "axios";
@@ -24,7 +26,7 @@ const CreateProfile = () => {
     ImagePicker.useMediaLibraryPermissions();
 
   const params = useLocalSearchParams();
-  const { userId, setUserId, editData, setEditData } = getUserData();
+  const { userId, setUserId, editData, setEditData, hasHaptic } = getUserData();
   const [photo, setPhoto] = useState("");
 
   const pickImage = async () => {
@@ -57,6 +59,10 @@ const CreateProfile = () => {
       const libraryStatus = await requestMediaLibraryPermissions();
 
       if (!libraryStatus.granted) {
+        {
+          hasHaptic &&
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
         Alert.alert(
           "Permissions Required",
           "Please grant camera and media library permissions in settings to use this feature."
@@ -331,7 +337,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
   },
-
   loginButton: {
     paddingHorizontal: 10,
     backgroundColor: "#76DA69",

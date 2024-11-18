@@ -69,6 +69,10 @@ export const createUser = async (req, res) => {
     studyYear: "",
     interests: "",
     courses: "",
+    showAge: true,
+    showPronoun: true,
+    allowNotif: true,
+    hasHaptic: true,
     eventsAttend: {},
     eventsCreated: {},
     invReceived: {},
@@ -132,11 +136,12 @@ export const loginUser = async (req, res) => {
     });
 
     console.log("USER", user);
+    let { showAge, showPronoun, allowNotif, hasHaptic, id } = user;
 
     res.status(201).json({
       status: true,
       message: "User exists, logging them in",
-      data: user.id,
+      data: { showAge, showPronoun, allowNotif, hasHaptic, id },
     });
   } catch (e) {
     console.log("Invalid username or password", e);
@@ -177,7 +182,7 @@ export const updateUser = async (req, res) => {
 
   let photo = userData.photo;
 
-  if (photo) {
+  if (photo && !photo.includes("cloudinary")) {
     console.log("UPLOADING IMAGE");
     try {
       await uploadImage(photo, `${req.params.id}`);
@@ -205,6 +210,10 @@ export const updateUser = async (req, res) => {
       studyYear: userData.studyYear || undefined,
       interests: userData.interests || undefined,
       courses: userData.courses || undefined,
+      showAge: userData.showAge,
+      showPronoun: userData.showPronoun,
+      allowNotif: userData.allowNotif,
+      hasHaptic: userData.hasHaptic,
       eventsAttend: userData.eventsAttend || undefined,
       eventsCreated: userData.eventsCreated || undefined,
       invReceived: userData.invReceived || undefined,
@@ -218,6 +227,39 @@ export const updateUser = async (req, res) => {
     message: "Users fetched successfully",
     data: users,
   });
+};
+
+export const deleteUser = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    await prisma.event.deleteMany({
+      where: { creatorId: userId },
+    });
+
+    await prisma.invitation.deleteMany({
+      where: { inviterId: userId },
+    });
+
+    await prisma.invitation.deleteMany({
+      where: { inviteeId: userId },
+    });
+
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+
+    console.log("User deleted successfully");
+    res
+      .status(200)
+      .json({ status: true, message: "User deleted successfully" });
+  } catch (e) {
+    console.error("Failed to delete user:", e);
+    res.status(500).json({
+      status: false,
+      message: "Unable to delete user",
+      error: e.message,
+    });
+  }
 };
 
 export const getUserFriends = async (req, res) => {

@@ -6,7 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { getUserData } from "@/hooks/userContext";
 import { BASE_URL } from "@/constants/api";
@@ -15,26 +15,24 @@ import TagRow from "@/components/TagRow/TagRow";
 import LanguageRow from "@/components/LanguageRow/LanguageRow";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 const ProfileTab = () => {
-  const { userId } = getUserData();
+  const { userId, showAge, showPronoun } = getUserData();
   const [userData, setUserData] = useState({});
 
-  useEffect(() => {
-    if (userId) {
-      // Fetch request
-      axios
-        .get(`${BASE_URL}/users/${userId}`)
-        .then(({ data }) => {
-          setUserData(data.data);
-        })
-        .catch((e) => console.log(e));
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log("Userdata", userData);
-  }, [userData]);
+  useFocusEffect(
+    useCallback(() => {
+      if (userId) {
+        // Fetch request
+        axios
+          .get(`${BASE_URL}/users/${userId}`)
+          .then(({ data }) => {
+            setUserData(data.data);
+          })
+          .catch((e) => console.log(e));
+      }
+    }, [])
+  );
 
   return (
     <ScrollView style={styles.profileContainer}>
@@ -66,7 +64,8 @@ const ProfileTab = () => {
             <View style={styles.userNameWrapper}>
               <Text style={styles.userNameTitle}>{userData.name}</Text>
               <Text style={styles.age}>
-                {userData.age} • {userData.gender}
+                {showAge ? userData.age : "??"} •{" "}
+                {showPronoun ? userData.gender : "??"}
               </Text>
             </View>
             <Text style={styles.yearOfStudy}>3rd year | Computer science</Text>

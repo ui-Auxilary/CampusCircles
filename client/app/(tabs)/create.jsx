@@ -23,6 +23,7 @@ import axios from "axios";
 
 // imported components
 import * as ImagePicker from "expo-image-picker";
+import * as Haptics from "expo-haptics";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 // imported assets
@@ -41,7 +42,7 @@ import UNSW_LOCATIONS from "../../data/locations.json";
 
 const CreateTab = () => {
   // Variables //////////////////////////////////////////////////////////
-  const { userId } = getUserData();
+  const { userId, hasHaptic } = getUserData();
   const navigation = useNavigation();
   const [eventType, setEventType] = useState("Hang");
   const [image, setImage] = useState(null);
@@ -92,6 +93,10 @@ const CreateTab = () => {
       const libraryStatus = await requestMediaLibraryPermissions();
 
       if (!libraryStatus.granted) {
+        {
+          hasHaptic &&
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
         Alert.alert(
           "Permissions Required",
           "Please grant camera and media library permissions in settings to use this feature."
@@ -222,12 +227,20 @@ const CreateTab = () => {
     const requiredFields = ["name", "location", "date", "time", "description"];
     for (let field of requiredFields) {
       if (!event[field]) {
+        {
+          hasHaptic &&
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
         Alert.alert("Form Incomplete", `Please fill out the ${field} field.`);
         return false;
       }
     }
 
     if (!validateDate(event.date)) {
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       Alert.alert(
         "Invalid Date Format",
         "Please enter date in DD/MM/YYYY format."
@@ -236,6 +249,10 @@ const CreateTab = () => {
     }
 
     if (!validateTime(event.time.getTime())) {
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       Alert.alert(
         "Invalid Time Format",
         "Please enter time in 24-hour HH:MM format."
@@ -257,13 +274,19 @@ const CreateTab = () => {
       time: event.time.toISOString(),
       category: eventType,
     };
-
+    Haptics.selectionAsync();
     console.log("POSTING", postData);
     await axios
       .post(`${BASE_URL}/events/create`, postData)
       .then(({ data }) => {
         let createdEvent = data.data;
         if (createdEvent && createdEvent.id) {
+          {
+            hasHaptic &&
+              Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success
+              );
+          }
           router.push({
             pathname: "event-details",
             params: { id: createdEvent.id, page: "create" },
@@ -371,7 +394,7 @@ const CreateTab = () => {
               <Text style={styles.label}>Event Name</Text>
               <TextInput
                 style={[styles.field, { flex: 1 }]}
-                placeholder="Enter event name"
+                placeholder='Enter event name'
                 value={event.name}
                 onChangeText={(value) => handleInputChange("name", value)}
               />
@@ -395,7 +418,7 @@ const CreateTab = () => {
                     borderBottomColor: "#ccc",
                   },
                 ]}
-                placeholder="Search for location"
+                placeholder='Search for location'
                 value={locationQuery}
                 onChangeText={handleLocationChange}
               />
@@ -428,7 +451,7 @@ const CreateTab = () => {
             </Pressable>
             <DateTimePickerModal
               isVisible={isDatePickerVisible}
-              mode="date"
+              mode='date'
               onConfirm={handleConfirmDate}
               onCancel={() => setDatePickerVisibility(false)}
             />
@@ -445,7 +468,7 @@ const CreateTab = () => {
             </Pressable>
             <DateTimePickerModal
               isVisible={isTimePickerVisible}
-              mode="time"
+              mode='time'
               onConfirm={handleConfirmTime}
               onCancel={() => setTimePickerVisibility(false)}
             />
@@ -457,11 +480,11 @@ const CreateTab = () => {
           <Text style={styles.label}>Description</Text>
           <TextInput
             style={styles.descriptionContainer}
-            placeholder="Describe the event details"
+            placeholder='Describe the event details'
             value={event.description}
             onChangeText={(value) => handleInputChange("description", value)}
             multiline
-            textAlignVertical="top"
+            textAlignVertical='top'
           />
         </View>
 

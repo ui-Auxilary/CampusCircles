@@ -15,6 +15,9 @@ import S from "../styles/global";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { Ionicons } from "@expo/vector-icons";
+import { getUserData } from "@/hooks/userContext";
+
+import * as Haptics from "expo-haptics";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({
@@ -23,12 +26,15 @@ const Login = () => {
   });
 
   const [show, setShow] = useState(false);
+  const { setShowAge, setShowPronoun, setHasHaptic, setAllowNotif } =
+    getUserData();
 
   const handleLogin = async () => {
     let requiredFields = ["username", "password"];
 
     for (let field of requiredFields) {
       if (!loginData[field]) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         Alert.alert("Form Incomplete", `Please fill out the ${field} field.`);
         return;
       }
@@ -38,9 +44,15 @@ const Login = () => {
       .post(`${BASE_URL}/users/login`, loginData)
       .then(({ data }) => {
         console.log("DATA", data);
-        router.push({ pathname: "/(tabs)", params: { id: data.data } });
+        let { showAge, showPronoun, allowNotif, hasHaptic, id } = data.data;
+        setShowAge(showAge);
+        setShowPronoun(showPronoun);
+        setAllowNotif(allowNotif);
+        setHasHaptic(hasHaptic);
+        router.push({ pathname: "/(tabs)", params: { id } });
       })
       .catch((e) => {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert("Incorrect username or password");
         return;
       });

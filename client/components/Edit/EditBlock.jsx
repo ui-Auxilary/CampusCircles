@@ -2,15 +2,23 @@ import { View, Text, TextInput, StyleSheet, Alert } from "react-native";
 import React, { useState } from "react";
 import { getUserData } from "@/hooks/userContext";
 
+import * as Haptics from "expo-haptics";
+
 export default function EditBlock({ type }) {
-  const { editData, setEditData } = getUserData();
+  const { editData, setEditData, hasHaptic } = getUserData();
   const [typeData, setTypeData] = useState(editData[type] || "");
 
   const handleTextChange = (val) => {
-    let interests = val.split(", ");
-    if (interests.length > 3) {
-      Alert.alert(`You can only specify up to 3 ${type}!`);
-      return;
+    if (type === "interests" || type === "courses") {
+      let interests = val.split(", ");
+      if (interests.length > 3) {
+        {
+          hasHaptic &&
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+        Alert.alert(`You can only specify up to 3 ${type}!`);
+        return;
+      }
     }
 
     val = type === "courses" ? val.toUpperCase() : val;
@@ -30,7 +38,10 @@ export default function EditBlock({ type }) {
           placeholder={`Enter ${type}`}
         />
       </View>
-      <Text style={styles.editHint}>Comma separated, up to 3</Text>
+      {type === "interests" ||
+        (type === "courses" && (
+          <Text style={styles.editHint}>Comma separated, up to 3</Text>
+        ))}
     </View>
   );
 }

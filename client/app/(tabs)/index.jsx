@@ -14,11 +14,13 @@ import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 
+import * as Haptics from "expo-haptics";
+
 import tick from "../../assets/images/tick.png";
 import cross from "../../assets/images/cross.png";
 
 const HomeTab = () => {
-  const { setUserId } = getUserData();
+  const { setUserId, hasHaptic } = getUserData();
   const params = useLocalSearchParams();
   const [notifications, setNotifications] = useState([]);
   const [events, setEvents] = useState({ created: [], attending: [] });
@@ -91,6 +93,10 @@ const HomeTab = () => {
         .catch((e) => console.log(e));
       setNotifications(notifs.data.data);
     } catch (e) {
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       console.log("Error fetching notifications:", e);
       Alert.alert("Error", "Could not fetch notifications");
     }
@@ -109,6 +115,10 @@ const HomeTab = () => {
         })
         .catch((e) => console.log(e));
     } catch (e) {
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       console.log("Error fetching events:", e);
       Alert.alert("Error", "Could not fetch events");
     }
@@ -120,8 +130,16 @@ const HomeTab = () => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif.id !== notificationId)
       );
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Succeess);
+      }
       Alert.alert("Success", "Invitation accepted!");
     } catch (error) {
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       console.error("Error accepting invite:", error);
       Alert.alert("Error", "Failed to accept the invitation.");
     }
@@ -133,8 +151,16 @@ const HomeTab = () => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif.id !== notificationId)
       );
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Succeess);
+      }
       Alert.alert("Success", "Invitation rejected!");
     } catch (error) {
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       console.error("Error rejecting invite:", error);
       Alert.alert("Error", "Failed to reject the invitation.");
     }
@@ -150,7 +176,9 @@ const HomeTab = () => {
   return (
     <View style={styles.homepage}>
       <View style={styles.titleContainer}>
-        <Text style={[styles.text, styles.titleText]}>Welcome, {userData.name}</Text>
+        <Text style={[styles.text, styles.titleText]}>
+          Welcome, {userData.name}
+        </Text>
       </View>
 
       {/* Notifications Section */}
@@ -170,7 +198,7 @@ const HomeTab = () => {
                   <Text
                     style={styles.notificationText}
                     numberOfLines={isExpanded ? null : 1} // Expand if isExpanded is true
-                    ellipsizeMode="tail"
+                    ellipsizeMode='tail'
                   >
                     {notification.inviter.name} invited you to{" "}
                     <Text style={styles.eventName}>

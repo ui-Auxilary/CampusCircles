@@ -1,14 +1,25 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 
 import Right from "../assets/chev-right.svg";
 import Logo from "../assets/logo2.svg";
 import { Link, router } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import axios from "axios";
+import { BASE_URL } from "@/constants/api";
+import { getUserData } from "@/hooks/userContext";
 
 const Settings = () => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+      <Logo style={styles.logo} width={50} height={50} />
+      <View style={styles.profileHeader}>
+        <Text style={styles.headerTitle}>Settings</Text>
+      </View>
+      <TouchableOpacity
+        onPress={() => router.push("/(tabs)/profile")}
+        style={styles.backBtn}
+      >
         <Text style={styles.backTxt}>Back</Text>
       </TouchableOpacity>
       <View style={styles.inputBlock}>

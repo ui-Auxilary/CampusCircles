@@ -27,13 +27,15 @@ import PrivacySettings from "@/components/Setting/PrivacySettings";
 const SettingRoute = () => {
   const params = useLocalSearchParams();
 
+  const { userId, showAge, showPronoun, allowNotif, hasHaptic } = getUserData();
+
   const renderEditBlock = useCallback(() => {
     switch (params.page) {
       case "account":
         return <AccountSettings />;
       case "accessibility":
         return <AccessibilitySettings />;
-      case "notification":
+      case "notifications":
         return <NotificationSettings />;
       case "privacy":
         return <PrivacySettings />;
@@ -42,9 +44,35 @@ const SettingRoute = () => {
     }
   }, [params.type]);
 
+  const handleBack = () => {
+    axios
+      .put(`${BASE_URL}/users/${userId}`, {
+        showAge,
+        showPronoun,
+        allowNotif,
+        hasHaptic,
+      })
+      .then(() => console.log("Settings updated"))
+      .catch((e) => console.log(e));
+
+    switch (params.page) {
+      case "settings":
+        router.back();
+        break;
+      default:
+        router.push("/settings");
+        break;
+    }
+  };
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+      <Logo style={styles.logo} width={50} height={50} />
+      <View style={styles.profileHeader}>
+        <Text style={styles.headerTitle}>
+          {params.page.charAt(0).toUpperCase() + params.page.substring(1)}
+        </Text>
+      </View>
+      <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
         <Text style={styles.backTxt}>Back</Text>
       </TouchableOpacity>
       <ScrollView style={styles.createContainer}>

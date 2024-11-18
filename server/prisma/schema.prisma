@@ -28,6 +28,11 @@ model User {
   interests       String
   courses         String
 
+  showAge         Boolean
+  showPronoun     Boolean
+  allowNotif      Boolean
+  hasHaptic       Boolean
+
   eventsCreated   Event[]         @relation("EventsCreated")
   eventsAttend    EventAttendee[] @relation("EventAttendees")
 
