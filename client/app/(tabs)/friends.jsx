@@ -76,9 +76,9 @@ const FriendsList = () => {
             <View style={styles.details}>
               <Text style={styles.name}>{friend.name}</Text>
               <View style={styles.separator} />
-              <Text style={styles.info}>{`${
-                friend.studyYear || "Unknown Year"
-              } | ${friend.degree || "Unknown Degree"}`}</Text>
+              <Text style={styles.info}>{`${friend.studyYear || "Unknown Year"} | ${
+                friend.degree || "Unknown Degree"
+              }`}</Text>
             </View>
           </TouchableOpacity>
         ))}

@@ -1,6 +1,4 @@
-// changed search result suggestions to scrollview
-// fixed layering issue with search suggestions
-// changed borderRadius and border visibility for location field to dynamic
+// issue with locaiton search dropdown
 
 import {
   StyleSheet,
@@ -18,7 +16,7 @@ import {
 import React, { useState, useEffect } from "react";
 
 // backend
-import { router, useNavigation } from "expo-router";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import axios from "axios";
 
 // imported components
@@ -26,22 +24,24 @@ import * as ImagePicker from "expo-image-picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 // imported assets
-import pic from "../../assets/images/Image.png";
-import unchecked from "../../assets/images/unchecked.png";
-import checked from "../../assets/images/checked.png";
+import pic from "../assets/images/Image.png";
+import unchecked from "../assets/images/unchecked.png";
+import checked from "../assets/images/checked.png";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
 
 // UNSW Locations
-import UNSW_LOCATIONS from "../../data/locations.json";
+import UNSW_LOCATIONS from "../data/locations.json";
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-const CreateTab = () => {
+const EditEvent = () => {
   // Variables //////////////////////////////////////////////////////////
   const { userId } = getUserData();
+  const { id } = useLocalSearchParams();
+
   const navigation = useNavigation();
   const [eventType, setEventType] = useState("Hang");
   const [image, setImage] = useState(null);
@@ -84,6 +84,54 @@ const CreateTab = () => {
   };
 
   const [event, setEvent] = useState(defaultEventData);
+
+  useEffect(() => {
+    console.log("ID", id);
+    if (!id) return;
+
+    const fetchEvent = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/events/get/${id}`);
+        const fetchedEvent = response.data.data;
+        console.log("Fetched event");
+
+        setEvent({
+          name: fetchedEvent.name || "",
+          photo: fetchedEvent.photo || "",
+          lat: fetchedEvent.lat || "",
+          long: fetchedEvent.long || "",
+          location: fetchedEvent.location || "",
+          category: fetchedEvent.category || "",
+          date: fetchedEvent.date ? new Date(fetchedEvent.date) : new Date(),
+          time: fetchedEvent.time ? new Date(fetchedEvent.time) : new Date(),
+          description: fetchedEvent.description || "",
+          public:
+            fetchedEvent.public !== undefined ? fetchedEvent.public : true,
+          tag: fetchedEvent.tag || {
+            connectOrCreate: {
+              where: { name: "" },
+              create: { name: "" },
+            },
+          },
+          eventAttendees: fetchedEvent.eventAttendees || {},
+          society: fetchedEvent.society || false,
+          invitations: fetchedEvent.invitations || {},
+          creator: {
+            connect: {
+              id: fetchedEvent.creator?.id || "",
+            },
+          },
+        });
+
+        setImage(fetchedEvent.photo || null);
+        setLocationQuery(fetchedEvent.location || "");
+      } catch (error) {
+        console.error("Error fetching event data:", error);
+      }
+    };
+
+    fetchEvent();
+  }, [id]);
 
   // FUNCTIONS: useEffect ////////////////////////////////////////////////////////////////////
 
@@ -152,6 +200,7 @@ const CreateTab = () => {
 
   const handleLocationChange = (query) => {
     setLocationQuery(query);
+
     if (query.length > 1) {
       const filteredResults = UNSW_LOCATIONS.filter((location) =>
         location.name.toLowerCase().includes(query.toLowerCase())
@@ -246,34 +295,65 @@ const CreateTab = () => {
     return true;
   };
 
-  const handleCreate = async () => {
-    if (!validateForm()) {
-      return;
-    }
+  const handleUpdate = async () => {
+    if (!validateForm()) return;
 
-    let postData = {
-      ...event,
+    const updatedData = {
+      name: event.name,
+      photo: event.photo || "",
+      lat: event.lat || "",
+      long: event.long || "",
+      location: event.location || "",
+      category: eventType || "",
       date: event.date.toISOString(),
       time: event.time.toISOString(),
-      category: eventType,
+      description: event.description || "",
+      public: event.public,
+      society: event.society,
     };
 
-    console.log("POSTING", postData);
-    await axios
-      .post(`${BASE_URL}/events/create`, postData)
-      .then(({ data }) => {
-        let createdEvent = data.data;
-        if (createdEvent && createdEvent.id) {
-          router.push({
-            pathname: "event-details",
-            params: { id: createdEvent.id, page: "create" },
-          });
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    // Debugging log
+    console.log("Updating event with data:", updatedData);
+
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/events/update/${id}`,
+        updatedData
+      );
+      router.push({ pathname: "event-details", params: { id } });
+    } catch (error) {
+      console.error("Failed to update event:", error);
+      console.error("Response data:", error.response?.data);
+    }
   };
+
+  // const handleCreate = async () => {
+  //   if (!validateForm()) {
+  //     return;
+  //   }
+
+  //   let postData = {
+  //     ...event,
+  //     date: event.date.toISOString(),
+  //     time: event.time.toISOString(),
+  //   };
+
+  //   console.log("POSTING", postData);
+  //   await axios
+  //     .post(`${BASE_URL}/events/create`, postData)
+  //     .then(({ data }) => {
+  //       let createdEvent = data.data;
+  //       if (createdEvent && createdEvent.id) {
+  //         router.push({
+  //           pathname: "event-details",
+  //           params: { id: createdEvent.id },
+  //         });
+  //       }
+  //     })
+  //     .catch((e) => {
+  //       console.log(e);
+  //     });
+  // };
 
   const resetForm = () => {
     setEvent({ ...defaultEventData });
@@ -356,7 +436,7 @@ const CreateTab = () => {
           </Pressable>
         </View>
 
-        <View style={[styles.horiz, { zIndex: 3, position: "relative" }]}>
+        <View style={styles.horiz}>
           {/* Image */}
           <Pressable onPress={handleImagePick} style={styles.imageContainer}>
             {event.photo ? (
@@ -366,41 +446,27 @@ const CreateTab = () => {
             )}
           </Pressable>
           {/* Event Name */}
-          <View style={[styles.verti, { zIndex: 4, position: "relative" }]}>
+          <View style={styles.verti}>
             <View style={styles.detailContainer}>
               <Text style={styles.label}>Event Name</Text>
               <TextInput
                 style={[styles.field, { flex: 1 }]}
-                placeholder="Enter event name"
+                placeholder='Enter event name'
                 value={event.name}
                 onChangeText={(value) => handleInputChange("name", value)}
               />
             </View>
             {/* Location */}
-            <View
-              style={[
-                styles.detailContainer,
-                { zIndex: 5, position: "relative" },
-              ]}
-            >
+            <View style={styles.detailContainer}>
               <Text style={styles.label}>Location</Text>
               <TextInput
-                style={[
-                  styles.field,
-                  {
-                    flex: 1,
-                    borderBottomLeftRadius: showSuggestions ? 0 : 10,
-                    borderBottomRightRadius: showSuggestions ? 0 : 10,
-                    borderBottomWidth: 1,
-                    borderBottomColor: "#ccc",
-                  },
-                ]}
-                placeholder="Search for location"
+                style={[styles.field, { flex: 1 }]}
+                placeholder='Search for location'
                 value={locationQuery}
                 onChangeText={handleLocationChange}
               />
               {showSuggestions && (
-                <ScrollView style={styles.suggestionsContainer}>
+                <View style={styles.suggestionsContainer}>
                   {locationResults.map((location, idx) => (
                     <TouchableOpacity
                       key={idx}
@@ -410,7 +476,7 @@ const CreateTab = () => {
                       <Text>{location.name}</Text>
                     </TouchableOpacity>
                   ))}
-                </ScrollView>
+                </View>
               )}
             </View>
           </View>
@@ -428,7 +494,7 @@ const CreateTab = () => {
             </Pressable>
             <DateTimePickerModal
               isVisible={isDatePickerVisible}
-              mode="date"
+              mode='date'
               onConfirm={handleConfirmDate}
               onCancel={() => setDatePickerVisibility(false)}
             />
@@ -445,7 +511,7 @@ const CreateTab = () => {
             </Pressable>
             <DateTimePickerModal
               isVisible={isTimePickerVisible}
-              mode="time"
+              mode='time'
               onConfirm={handleConfirmTime}
               onCancel={() => setTimePickerVisibility(false)}
             />
@@ -457,11 +523,11 @@ const CreateTab = () => {
           <Text style={styles.label}>Description</Text>
           <TextInput
             style={styles.descriptionContainer}
-            placeholder="Describe the event details"
+            placeholder='Describe the event details'
             value={event.description}
             onChangeText={(value) => handleInputChange("description", value)}
             multiline
-            textAlignVertical="top"
+            textAlignVertical='top'
           />
         </View>
 
@@ -513,12 +579,12 @@ const CreateTab = () => {
             <Text style={styles.label}>Society</Text>
           </View>
 
-          {/* Create Button */}
+          {/* Save Button */}
           <Pressable
-            onPress={handleCreate}
-            style={[styles.createButton, styles.shadow]}
+            onPress={handleUpdate}
+            style={[styles.saveButton, styles.shadow]}
           >
-            <Text style={styles.createText}>Create</Text>
+            <Text style={styles.createText}>Save</Text>
           </Pressable>
         </View>
       </View>
@@ -650,14 +716,13 @@ const styles = StyleSheet.create({
   },
   suggestionsContainer: {
     backgroundColor: "#fff",
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
+    borderRadius: 10,
     width: "100%",
-    position: "absolute",
-    top: 78,
-    zIndex: 10,
-    padding: 5,
     maxHeight: 150,
+    position: "absolute",
+    top: 70,
+    zIndex: 1000,
+    padding: 5,
   },
   locationItem: {
     paddingVertical: 10,
@@ -680,6 +745,7 @@ const styles = StyleSheet.create({
   },
   privacyButtonRight: {
     alignItems: "center",
+
     width: "50%",
     backgroundColor: "white",
     borderTopRightRadius: 10,
@@ -688,6 +754,7 @@ const styles = StyleSheet.create({
   },
   privacyButtonLeftInverted: {
     alignItems: "center",
+
     width: "50%",
     backgroundColor: "#3A72FF",
     paddingVertical: 10,
@@ -696,6 +763,7 @@ const styles = StyleSheet.create({
   },
   privacyButtonRightInverted: {
     alignItems: "center",
+
     width: "50%",
     backgroundColor: "#3A72FF",
     paddingVertical: 10,
@@ -717,7 +785,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   // Create
-  createButton: {
+  saveButton: {
     backgroundColor: "#76DA69",
     paddingHorizontal: 27.5,
     paddingVertical: 12.5,
@@ -750,4 +818,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreateTab;
+export default EditEvent;

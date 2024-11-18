@@ -25,6 +25,26 @@ export const createEvent = async (req, res) => {
   }
 };
 
+export const updateEvent = async (req, res) => {
+  try {
+    const updatedEvent = await prisma.event.update({
+      where: { id: req.params.id },
+      data: req.body,
+    });
+
+    res.status(201).json({
+      status: true,
+      message: "Event updated successfully",
+      data: updatedEvent,
+    });
+  } catch (e) {
+    res.status(500).json({
+      status: false,
+      message: "Server error: could not update event",
+    });
+  }
+};
+
 export const getEvent = async (req, res) => {
   const event = await prisma.event.findFirst({
     where: {
@@ -41,6 +61,25 @@ export const getEvent = async (req, res) => {
 
 export const getEvents = async (req, res) => {
   const events = await prisma.event.findMany();
+
+  res.json({
+    status: true,
+    message: "Events fetched successfully",
+    data: events,
+  });
+};
+
+export const getEventsToday = async (req, res) => {
+  let dateToday = new Date();
+  dateToday.setHours(0, 0, 0, 0);
+
+  const events = await prisma.event.findMany({
+    where: {
+      date: {
+        gte: dateToday.toISOString(),
+      },
+    },
+  });
 
   res.json({
     status: true,
