@@ -7,71 +7,18 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  FlatList,
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
-import { Link } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { getUserData } from "@/hooks/userContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 
-const placeholder = [
-  {
-    id: "1",
-    name: "Ian Jacobs",
-    year: "5th year",
-    field: "Business",
-    photo: "https://www.openday.unsw.edu.au/share.jpg",
-    attending: true,
-  },
-  {
-    id: "2",
-    name: "Richard Buckland",
-    year: "4th year",
-    field: "Computer Science",
-    photo: "https://www.openday.unsw.edu.au/share.jpg",
-    attending: true,
-  },
-  {
-    id: "3",
-    name: "Nadine Marcus",
-    year: "3rd year",
-    field: "Computer Science",
-    photo: "https://www.openday.unsw.edu.au/share.jpg",
-    attending: false,
-  },
-  {
-    id: "4",
-    name: "Nadine Marcus",
-    year: "3rd year",
-    field: "Computer Science",
-    photo: "https://www.openday.unsw.edu.au/share.jpg",
-    attending: false,
-  },
-  {
-    id: "5",
-    name: "Nadine Marcus",
-    year: "3rd year",
-    field: "Computer Science",
-    photo: "https://www.openday.unsw.edu.au/share.jpg",
-  },
-  {
-    id: "6",
-    name: "Nadine Marcus",
-    year: "3rd year",
-    field: "Computer Science",
-    photo: "https://www.openday.unsw.edu.au/share.jpg",
-    attending: false,
-  },
-];
-
 const EventInvite = () => {
   const navigation = useNavigation();
   const {
-    // title,
     date,
     name,
     time,
@@ -86,7 +33,6 @@ const EventInvite = () => {
   } = useLocalSearchParams();
 
   const [eventData, setEventData] = useState({
-    // title,
     date,
     name,
     time,
@@ -95,7 +41,7 @@ const EventInvite = () => {
     lat,
     long,
     photo,
-    attendees,
+    attendees: attendees || [],
     creatorId,
   });
 
@@ -142,14 +88,54 @@ const EventInvite = () => {
     friend.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // check if a user has been invited
   const [invitedFriends, setInvitedFriends] = useState({});
 
-  const toggleInvite = (id) => {
-    setInvitedFriends((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+  const toggleInvite = async (friendId) => {
+    try {
+      if (!id || !userId || !friendId) {
+        console.error("Missing required fields: eventId, inviterId, or inviteeId");
+        return;
+      }
+
+      console.log("Event ID:", id);
+      console.log("Inviter ID:", userId);
+      console.log("Invitee ID:", friendId);
+
+      if (!invitedFriends[friendId]) {
+        console.log("Sending invitation to friend ID:", friendId);
+        // Send invitation
+        const response = await axios.post(`${BASE_URL}/invitations/send`, {
+          eventId: id,
+          inviteeId: friendId,
+          inviterId: userId,
+        });
+        console.log("Invitation response:", response.data);
+        if (response.data.status) {
+          const invitationId = response.data.data.id;
+          setInvitedFriends((prev) => ({
+            ...prev,
+            [friendId]: invitationId,
+          }));
+        }
+      } else {
+        console.log("Unsending invitation for friend ID:", friendId);
+        const invitationId = invitedFriends[friendId];
+
+        const response = await axios.post(`${BASE_URL}/invitations/unsend`, {
+          invitationId: invitationId,
+        });
+        console.log("Invitation unsent for friend ID:", friendId);
+        if (response.data.status) {
+          setInvitedFriends((prev) => {
+            const updated = { ...prev };
+            delete updated[friendId];
+            return updated;
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error toggling invitation:", error);
+    }
   };
 
   return (
@@ -166,7 +152,7 @@ const EventInvite = () => {
       />
       <Text style={styles.inviteTitle}>Invite your friends:</Text>
 
-      {/* search bar */}
+      {/* Search bar */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
         <TextInput
@@ -194,20 +180,19 @@ const EventInvite = () => {
                 friend.degree || "Unknown Degree"
               }`}</Text>
             </View>
-            {/* show icon depending on if a user is attending and if has been invited */}
             {friend.attending ? (
-              // if already attending
+              // If already attending
               <Image
                 source={require("../assets/images/attending.png")}
                 style={styles.attendingIcon}
               />
             ) : invitedFriends[friend.id] ? (
-              // if invited by user
+              // If invited by user
               <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
                 <Ionicons name="remove-circle-outline" size={30} color="#FF3B30" />
               </TouchableOpacity>
             ) : (
-              // if neither
+              // If neither
               <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
                 <Ionicons name="add-circle-outline" size={30} color="#116DFF" />
               </TouchableOpacity>
@@ -225,9 +210,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-  },
-  scrollContainer: {
-    paddingBottom: 37,
   },
   eventImage: {
     width: "100%",
@@ -279,9 +261,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000",
   },
-  friendList: {
-    paddingHorizontal: 20,
-  },
   friendCard: {
     flexDirection: "row",
     alignItems: "center",
@@ -327,11 +306,5 @@ const styles = StyleSheet.create({
     width: 27,
     height: 27,
     marginRight: 12,
-  },
-  noFriends: {
-    textAlign: "center",
-    fontSize: 15,
-    marginTop: 18,
-    fontFamily: "Lexend_400Regular",
   },
 });
