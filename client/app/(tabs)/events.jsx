@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  Alert,
   Image,
   TextInput,
   Modal,
@@ -19,15 +18,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 
-const categories = [
-  "All Categories",
-  "Hang",
-  "Study",
-  "Eat",
-  "Society",
-  "Other",
-];
+const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
 const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 
 // placeholder data
@@ -108,9 +101,10 @@ const events2 = [
 
 export default function EventTab() {
   const actionSheetRef = useRef(null);
+  const route = useRoute();
+
   const [searchText, setSearchText] = useState("");
   const [events, setEvents] = useState([]);
-
   const [selectedTime, setSelectedTime] = useState("Anytime");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [TimePickerVisibility, setTimePickerVisibility] = useState(false);
@@ -150,6 +144,12 @@ export default function EventTab() {
     }
   };
 
+  useEffect(() => {
+    if (route.params?.openEventsList && actionSheetRef.current) {
+      actionSheetRef.current.setModalVisible(true);
+    }
+  }, [route.params]);
+
   useFocusEffect(
     useCallback(() => {
       // Fetch events once
@@ -184,15 +184,12 @@ export default function EventTab() {
         },
       }}
       asChild
-      onPress={collapseActionSheet}
-    >
+      onPress={collapseActionSheet}>
       <TouchableOpacity style={styles.eventItem}>
         <View style={styles.eventContent}>
           <Image
             source={
-              item.category
-                ? getIcon(item.category)
-                : require("../../assets/images/hang.png")
+              item.category ? getIcon(item.category) : require("../../assets/images/hang.png")
             }
             style={styles.eventIcon}
           />
@@ -216,33 +213,27 @@ export default function EventTab() {
             latitudeDelta: 0.0088,
             longitudeDelta: 0.0091,
           }}
-          style={styles.map}
-        >
+          style={styles.map}>
           {events
-            ? events.map(
-                ({ id, lat, long, description, name, category }, idx) => (
-                  <Marker
-                    key={idx}
-                    coordinate={{
-                      latitude: parseFloat(lat),
-                      longitude: parseFloat(long),
-                    }}
-                    title={name}
-                    description={description}
-                  >
-                    <View>
-                      <Image
-                        style={styles.customMarker}
-                        source={
-                          category
-                            ? getMarker(category)
-                            : require("../../assets/images/study_m.png")
-                        }
-                      />
-                    </View>
-                  </Marker>
-                )
-              )
+            ? events.map(({ id, lat, long, description, name, category }, idx) => (
+                <Marker
+                  key={idx}
+                  coordinate={{
+                    latitude: parseFloat(lat),
+                    longitude: parseFloat(long),
+                  }}
+                  title={name}
+                  description={description}>
+                  <View>
+                    <Image
+                      style={styles.customMarker}
+                      source={
+                        category ? getMarker(category) : require("../../assets/images/study_m.png")
+                      }
+                    />
+                  </View>
+                </Marker>
+              ))
             : null}
         </MapView>
       </View>
@@ -251,13 +242,16 @@ export default function EventTab() {
       <View style={styles.searchbarContainer}>
         <TextInput
           style={styles.searchbar}
-          placeholder='Search events'
+          placeholder="Search events"
           value={searchText}
           onChangeText={(text) => setSearchText(text)}
         />
-        <TouchableOpacity style={styles.filterIcon}>
-          <Ionicons name='filter-circle-outline' size={30} color='#4285F4' />
-        </TouchableOpacity>
+        {/* full events filter */}
+        <Link href="/eventFilter" asChild>
+          <TouchableOpacity style={styles.filterIcon}>
+            <Ionicons name="filter-circle-outline" size={30} color="#4285F4" />
+          </TouchableOpacity>
+        </Link>
       </View>
 
       {/* quick filters */}
@@ -265,11 +259,8 @@ export default function EventTab() {
         {/* Time filter */}
         <TouchableOpacity
           style={[styles.quickFilterButtons, styles.selectedFilter]}
-          onPress={openTimePicker}
-        >
-          <Text style={[styles.filterText, styles.selectedFilterText]}>
-            {selectedTime}
-          </Text>
+          onPress={openTimePicker}>
+          <Text style={[styles.filterText, styles.selectedFilterText]}>{selectedTime}</Text>
         </TouchableOpacity>
 
         {/* category filters */}
@@ -280,16 +271,12 @@ export default function EventTab() {
               styles.quickFilterButtons,
               selectedCategory === category ? styles.selectedFilter : null,
             ]}
-            onPress={() => setSelectedCategory(category)}
-          >
+            onPress={() => setSelectedCategory(category)}>
             <Text
               style={[
                 styles.filterText,
-                selectedCategory === category
-                  ? styles.selectedFilterText
-                  : null,
-              ]}
-            >
+                selectedCategory === category ? styles.selectedFilterText : null,
+              ]}>
               {category}
             </Text>
           </TouchableOpacity>
@@ -299,30 +286,24 @@ export default function EventTab() {
         <Modal
           transparent={true}
           visible={TimePickerVisibility}
-          animationType='slide'
-          onRequestClose={closeTimePicker}
-        >
+          animationType="slide"
+          onRequestClose={closeTimePicker}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Select Time Period</Text>
               {timeOptions.map((option) => (
                 <TouchableOpacity
                   key={option}
-                  style={[
-                    styles.modalOption,
-                    option === selectedTime && styles.selectedFilter,
-                  ]}
+                  style={[styles.modalOption, option === selectedTime && styles.selectedFilter]}
                   onPress={() => {
                     setSelectedTime(option);
                     closeTimePicker();
-                  }}
-                >
+                  }}>
                   <Text
                     style={[
                       styles.modalOptionText,
                       option === selectedTime && styles.selectedFilterText,
-                    ]}
-                  >
+                    ]}>
                     {option}
                   </Text>
                 </TouchableOpacity>
@@ -332,16 +313,15 @@ export default function EventTab() {
         </Modal>
       </ScrollView>
 
-      {/* placeholder button to open the action sheet */}
+      {/* button to open the action sheet */}
       <TouchableOpacity
         style={styles.openSheetButton}
         onPress={() => {
           if (actionSheetRef.current) {
             actionSheetRef.current.setModalVisible(true);
           }
-        }}
-      >
-        <Text style={styles.openSheetButtonText}>Show Events</Text>
+        }}>
+        <Text style={styles.openSheetButtonText}>Events List</Text>
       </TouchableOpacity>
 
       {/* event list using the action sheet */}
@@ -373,7 +353,7 @@ const styles = StyleSheet.create({
   },
   openSheetButton: {
     position: "absolute",
-    bottom: 80,
+    bottom: 37,
     right: 20,
     backgroundColor: "#4285F4",
     padding: 15,
