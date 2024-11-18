@@ -1,9 +1,13 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 
 import Right from "../assets/chev-right.svg";
 import Logo from "../assets/logo2.svg";
 import { Link, router } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import axios from "axios";
+import { BASE_URL } from "@/constants/api";
+import { getUserData } from "@/hooks/userContext";
 
 const Settings = () => {
   return (

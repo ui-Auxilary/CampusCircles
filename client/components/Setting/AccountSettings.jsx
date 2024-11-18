@@ -7,8 +7,10 @@ import { getUserData } from "@/hooks/userContext";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 
+import * as Haptics from "expo-haptics";
+
 const AccountSettings = () => {
-  const { userId, setUserId, editData, setEditData } = getUserData();
+  const { userId, setUserId, editData, setEditData, hasHaptic } = getUserData();
   useFocusEffect(
     useCallback(() => {
       axios
@@ -19,19 +21,26 @@ const AccountSettings = () => {
   );
 
   const handleDelete = () => {
+    {
+      hasHaptic &&
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    }
     Alert.alert(
       "Delete account",
       "Are you sure you want to delete your account?",
       [
         {
           text: "Cancel",
-          onPress: () => {},
+          onPress: () => {
+            Haptics.selectionAsync();
+          },
           style: "cancel",
         },
         {
           text: "Delete",
           style: "destructive",
           onPress: () => {
+            Haptics.selectionAsync();
             console.log("Deleting");
             axios
               .delete(`${BASE_URL}/users/${userId}`)

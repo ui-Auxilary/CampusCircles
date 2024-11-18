@@ -15,8 +15,10 @@ import { getUserData } from "@/hooks/userContext";
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "expo-router";
 
+import * as Haptics from "expo-haptics";
+
 const UserList = () => {
-  const { userId } = getUserData();
+  const { userId, hasHaptic } = getUserData();
   const [search, setSearch] = useState("");
   const [nonFriends, setNonFriends] = useState([]);
   const navigation = useNavigation();
@@ -34,6 +36,10 @@ const UserList = () => {
           const response = await axios.get(url);
           setNonFriends(response.data.data);
         } catch (error) {
+          {
+            hasHaptic &&
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          }
           console.error("Error fetching non-friend users:", error);
         }
       };
@@ -55,10 +61,18 @@ const UserList = () => {
           prevNonFriends.filter((user) => user.id !== friendId)
         );
       } else {
+        {
+          hasHaptic &&
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
         alert(response.data.message);
       }
     } catch (error) {
       console.error("Failed to add friend:", error);
+      {
+        hasHaptic &&
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
       alert("An error occurred. Please try again later.");
     }
   };

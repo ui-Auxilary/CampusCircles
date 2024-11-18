@@ -2,10 +2,17 @@ import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
 import React, { useState } from "react";
 
 import Right from "../../assets/chev-right.svg";
+import axios from "axios";
+import { BASE_URL } from "@/constants/api";
+import { getUserData } from "@/hooks/userContext";
+import { useFocusEffect } from "expo-router";
 
 const NotificationSettings = () => {
-  const [enabled, setEnabled] = useState(false);
-  const setToggle = () => setEnabled(!enabled);
+  const { allowNotif, setAllowNotif } = getUserData();
+
+  const setToggle = () => {
+    setAllowNotif(!allowNotif);
+  };
 
   return (
     <View style={styles.container}>
@@ -19,7 +26,7 @@ const NotificationSettings = () => {
                 thumbColor={"#f4f3f4"}
                 ios_backgroundColor='#3e3e3e'
                 onValueChange={setToggle}
-                value={enabled}
+                value={allowNotif}
               />
             </View>
           </TouchableOpacity>

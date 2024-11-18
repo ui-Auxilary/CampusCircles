@@ -72,7 +72,7 @@ export const createUser = async (req, res) => {
     showAge: true,
     showPronoun: true,
     allowNotif: true,
-    hasHaptic: false,
+    hasHaptic: true,
     eventsAttend: {},
     eventsCreated: {},
     invReceived: {},
@@ -136,11 +136,12 @@ export const loginUser = async (req, res) => {
     });
 
     console.log("USER", user);
+    let { showAge, showPronoun, allowNotif, hasHaptic, id } = user;
 
     res.status(201).json({
       status: true,
       message: "User exists, logging them in",
-      data: user.id,
+      data: { showAge, showPronoun, allowNotif, hasHaptic, id },
     });
   } catch (e) {
     console.log("Invalid username or password", e);
@@ -181,7 +182,7 @@ export const updateUser = async (req, res) => {
 
   let photo = userData.photo;
 
-  if (photo) {
+  if (photo && !photo.includes("cloudinary")) {
     console.log("UPLOADING IMAGE");
     try {
       await uploadImage(photo, `${req.params.id}`);
@@ -209,6 +210,10 @@ export const updateUser = async (req, res) => {
       studyYear: userData.studyYear || undefined,
       interests: userData.interests || undefined,
       courses: userData.courses || undefined,
+      showAge: userData.showAge,
+      showPronoun: userData.showPronoun,
+      allowNotif: userData.allowNotif,
+      hasHaptic: userData.hasHaptic,
       eventsAttend: userData.eventsAttend || undefined,
       eventsCreated: userData.eventsCreated || undefined,
       invReceived: userData.invReceived || undefined,

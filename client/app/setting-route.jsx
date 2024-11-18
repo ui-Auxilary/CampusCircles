@@ -27,6 +27,8 @@ import PrivacySettings from "@/components/Setting/PrivacySettings";
 const SettingRoute = () => {
   const params = useLocalSearchParams();
 
+  const { userId, showAge, showPronoun, allowNotif, hasHaptic } = getUserData();
+
   const renderEditBlock = useCallback(() => {
     switch (params.page) {
       case "account":
@@ -43,6 +45,16 @@ const SettingRoute = () => {
   }, [params.type]);
 
   const handleBack = () => {
+    axios
+      .put(`${BASE_URL}/users/${userId}`, {
+        showAge,
+        showPronoun,
+        allowNotif,
+        hasHaptic,
+      })
+      .then(() => console.log("Settings updated"))
+      .catch((e) => console.log(e));
+
     switch (params.page) {
       case "settings":
         router.back();

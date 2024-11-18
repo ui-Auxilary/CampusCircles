@@ -64,13 +64,13 @@ export default function AboutBlock() {
                 });
               }
             }}
-            value={editData.age.toString() || age}
+            value={editData?.age?.toString() || age}
             style={[styles.inputField, { width: "55" }]}
             keyboardType='numeric'
             placeholder='0'
           />
           <Text style={styles.editCount}>
-            {editData.age.toString().length || 0} / {3}
+            {editData?.age?.toString().length || 0} / {3}
           </Text>
         </View>
       </View>

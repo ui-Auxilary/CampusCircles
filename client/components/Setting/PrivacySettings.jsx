@@ -2,13 +2,18 @@ import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
 import React, { useState } from "react";
 
 import Right from "../../assets/chev-right.svg";
+import { getUserData } from "@/hooks/userContext";
 
 const PrivacySettings = () => {
-  const [enableAge, setEnableAge] = useState(false);
-  const [enablePronouon, setEnablePronoun] = useState(false);
+  const { showAge, showPronoun, setShowAge, setShowPronoun } = getUserData();
 
-  const toggleAge = () => setEnableAge(!enableAge);
-  const togglePronoun = () => setEnablePronoun(!enablePronouon);
+  const toggleAge = () => {
+    setShowAge(!showAge);
+  };
+
+  const togglePronoun = () => {
+    setShowPronoun(!showPronoun);
+  };
 
   return (
     <View style={styles.container}>
@@ -22,7 +27,7 @@ const PrivacySettings = () => {
                 thumbColor={"#f4f3f4"}
                 ios_backgroundColor='#3e3e3e'
                 onValueChange={toggleAge}
-                value={enableAge}
+                value={showAge}
               />
             </View>
           </TouchableOpacity>
@@ -36,7 +41,7 @@ const PrivacySettings = () => {
                 thumbColor={"#f4f3f4"}
                 ios_backgroundColor='#3e3e3e'
                 onValueChange={togglePronoun}
-                value={enablePronouon}
+                value={showPronoun}
               />
             </View>
           </TouchableOpacity>

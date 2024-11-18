@@ -2,12 +2,17 @@ import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
 import React, { useState } from "react";
 
 import Right from "../../assets/chev-right.svg";
+import { getUserData } from "@/hooks/userContext";
 
 const AccessibilitySettings = () => {
-  const [haptic, setHaptic] = useState(false);
+  const { hasHaptic, setHasHaptic } = getUserData();
   const [isEnabled, setIsEnabled] = useState(false);
+
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
-  const toggleHaptic = () => setHaptic((haptic) => !haptic);
+  const toggleHaptic = () => {
+    setHasHaptic(!hasHaptic);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.inputBlock}>
@@ -29,7 +34,7 @@ const AccessibilitySettings = () => {
                 thumbColor={"#f4f3f4"}
                 ios_backgroundColor='#3e3e3e'
                 onValueChange={toggleHaptic}
-                value={haptic}
+                value={hasHaptic}
               />
             </View>
           </TouchableOpacity>
