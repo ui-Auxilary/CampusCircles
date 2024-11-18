@@ -291,14 +291,14 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#454545",
-    fontSize: 25,
+    fontSize: 24,
   },
   titleText: {
-    fontWeight: "bold",
+    fontFamily: "Lexend_700Bold",
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "Lexend_500Medium",
     color: "#454545",
   },
   notificationsList: {
