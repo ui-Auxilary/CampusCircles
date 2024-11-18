@@ -530,14 +530,13 @@ export const getUserEvents = async (req, res) => {
     });
 
     // get events user attending in order of most upcoming dates
-    const eventsAttending = await prisma.eventAttendee.findMany({
-      where: { userId: userId },
-      include: { event: true },
-      orderBy: {
-        event: {
-          date: "asc",
+    const eventsAttending = await prisma.event.findMany({
+      where: {
+        eventAttendees: {
+          has: userId,
         },
       },
+      orderBy: { date: "asc" },
     });
 
     console.log("CREATED", eventsCreated, "ATTEND", eventsAttending);
