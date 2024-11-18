@@ -16,14 +16,6 @@ import ActionSheet from "react-native-actions-sheet";
 import { Link } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import {
-  Lexend_300Regular,
-  Lexend_400Regular,
-  Lexend_500Medium,
-  Lexend_600SemiBold,
-  Lexend_700Bold,
-  useFonts,
-} from "@expo-google-fonts/lexend";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
@@ -144,6 +136,20 @@ export default function EventTab() {
     }
   };
 
+  const getMarker = (category) => {
+    console.log("Marker", category);
+    switch (category) {
+      case "Hang":
+        return require("../../assets/images/hang_m.png");
+      case "Study":
+        return require("../../assets/images/study_m.png");
+      case "Eat":
+        return require("../../assets/images/food_m.png");
+      default:
+        return require("../../assets/images/society_m.png");
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       // Fetch events once
@@ -151,6 +157,7 @@ export default function EventTab() {
       axios
         .get(`${BASE_URL}/events/get/today`)
         .then(({ data }) => {
+          console.log("EVENTs", data.data);
           setEvents(data.data);
         })
         .catch((e) => console.log(e));
@@ -211,12 +218,32 @@ export default function EventTab() {
           }}
           style={styles.map}
         >
-          <Marker
-            key={1}
-            coordinate={{ latitude: -33.91719, longitude: 151.233033 }}
-            name={"Cool marker"}
-            description={"Test marker"}
-          />
+          {events
+            ? events.map(
+                ({ id, lat, long, description, name, category }, idx) => (
+                  <Marker
+                    key={idx}
+                    coordinate={{
+                      latitude: parseFloat(lat),
+                      longitude: parseFloat(long),
+                    }}
+                    title={name}
+                    description={description}
+                  >
+                    <View>
+                      <Image
+                        style={styles.customMarker}
+                        source={
+                          category
+                            ? getMarker(category)
+                            : require("../../assets/images/study_m.png")
+                        }
+                      />
+                    </View>
+                  </Marker>
+                )
+              )
+            : null}
         </MapView>
       </View>
 
@@ -487,5 +514,9 @@ const styles = StyleSheet.create({
   modalOptionText: {
     fontSize: 14,
     fontFamily: "Lexend_400Regular",
+  },
+  customMarker: {
+    width: 52,
+    height: 60,
   },
 });

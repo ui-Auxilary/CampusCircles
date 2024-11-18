@@ -70,16 +70,21 @@ export const getEvents = async (req, res) => {
 };
 
 export const getEventsToday = async (req, res) => {
-  let dateToday = new Date();
-  dateToday.setHours(0, 0, 0, 0);
+  let dateToday = new Date(Date.now()).toISOString();
+  let splitDate = dateToday.split("T")[0];
+  let formatDate = `${splitDate}T00:00:00.000Z`;
+  let formatRange = `${splitDate}T23:59:59.000Z`;
 
   const events = await prisma.event.findMany({
     where: {
       date: {
-        gte: dateToday.toISOString(),
+        lte: formatRange,
+        gte: formatDate,
       },
     },
   });
+
+  console.log("EVENTS", events);
 
   res.json({
     status: true,
