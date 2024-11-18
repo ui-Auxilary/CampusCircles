@@ -64,7 +64,7 @@ const CreateTab = () => {
     time: new Date(),
     description: "",
     public: true,
-    eventAttendees: [], // Use an empty array to match the schema
+    eventAttendees: [ userId ],
     society: false,
     creator: {
       connect: {
@@ -240,6 +240,7 @@ const CreateTab = () => {
       time: event.time.toISOString(),
       description: event.description,
       public: event.public,
+      eventAttendees: [ userId ],
       society: event.society,
       location: event.location,
       creator: {

@@ -23,82 +23,6 @@ import { useRoute } from "@react-navigation/native";
 const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
 const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 
-// placeholder data
-const events2 = [
-  {
-    id: "1",
-    name: "Lunch @ the Quad",
-    time: "Today: 12-1pm",
-    location: "Quad",
-    // latitude: -33.91719,
-    // longitude: 151.233033,
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/food.png"),
-    description: "Description!!!",
-    attendees: ["001", "002"],
-  },
-  {
-    id: "2",
-    name: "Board games!",
-    time: "Today: 4-5:30pm",
-    location: "Village Green",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/hang.png"),
-    attendees: ["001", "002", "003"],
-  },
-  {
-    id: "3",
-    name: "Study session",
-    time: "Today: 3-5pm",
-    location: "SEB Basement",
-    description:
-      "Description !!! wowowowo w oweiriowe ioweriwoer ow ieriwo rweio rwioruwiru wiro weioru wioru woeiru weioruweioru wiorthdfsiogh sdfgihfds ihgdsiogh sdiofgh iosdfgh ",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/study.png"),
-    attendees: ["001", "002"],
-  },
-  {
-    id: "4",
-    name: "CSE Soc AGM",
-    time: "Today: 6pm",
-    location: "Ainsworth",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/society.png"),
-    attendees: ["001", "002", "003"],
-  },
-  {
-    id: "5",
-    name: "Other event",
-    time: "Today: 8pm",
-    location: "ASB",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/other.png"),
-    attendees: ["001", "003"],
-  },
-  {
-    id: "6",
-    name: "Other event",
-    time: "Today: 8pm",
-    location: "ASB",
-    description: "Description !!!",
-    icon: require("../../assets/images/other.png"),
-    attendees: ["001", "003"],
-  },
-  {
-    id: "7",
-    name: "Other event",
-    time: "Today: 8pm",
-    location: "ASB",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/other.png"),
-    attendees: ["001", "003"],
-  },
-];
-
 export default function EventTab() {
   const actionSheetRef = useRef(null);
   const route = useRoute();
@@ -131,7 +55,7 @@ export default function EventTab() {
   };
 
   const getMarker = (category) => {
-    console.log("Marker", category);
+    // console.log("Marker", category);
     switch (category) {
       case "Hang":
         return require("../../assets/images/hang_m.png");
@@ -150,18 +74,88 @@ export default function EventTab() {
     }
   }, [route.params]);
 
+  let { filters } = route.params || {};
+
+  if (filters && filters.selectedDate) {
+    filters = {
+      ...filters,
+      selectedDate: new Date(filters.selectedDate),
+    };
+  }
+
+  const filterEvents = (events, filters) => {
+    if (!filters) return events;
+  
+    return events.filter((event) => {
+      // Category Filter
+      const categoryMatch =
+        !filters.selectedCategory || filters.selectedCategory === "All Categories"
+          ? true
+          : event.category === filters.selectedCategory;
+  
+      // Time Filter
+      let timeCategory = "";
+      if (event.time) {
+        const eventDate = new Date(event.time?.$date || event.time);
+        const hours = eventDate.getHours();
+  
+        if (hours >= 6 && hours < 12) {
+          timeCategory = "Morning";
+        } else if (hours >= 12 && hours < 14) {
+          timeCategory = "Midday";
+        } else if (hours >= 14 && hours < 18) {
+          timeCategory = "Afternoon";
+        } else if (hours >= 18 || hours < 6) {
+          timeCategory = "Night";
+        }
+      }
+  
+      const timeMatch =
+        !filters.selectedTime || filters.selectedTime === "Anytime"
+          ? true
+          : filters.selectedTime === timeCategory;
+  
+      // Date Filter
+      const eventDate = new Date(event.date?.$date || event.date);
+      const filterDate = new Date(filters.selectedDate);
+  
+      // console.log("Event Date:", eventDate.toDateString());
+      // console.log("Filter Date:", filterDate.toDateString());
+      // Set both dates to midnight (ignore time)
+      eventDate.setHours(0, 0, 0, 0);
+      filterDate.setHours(0, 0, 0, 0);
+  
+      const dateMatch = filters.selectedDate
+        ? eventDate.getTime() === filterDate.getTime()
+        : true;
+
+      // console.log("Category Match:", categoryMatch);
+      // console.log("Time Match:", timeMatch);
+      // console.log("Date Match:", dateMatch);
+      return categoryMatch && timeMatch && dateMatch;
+    });
+  };
+
   useFocusEffect(
     useCallback(() => {
-      // Fetch events once
-      console.log("Fetching events today");
-      axios
-        .get(`${BASE_URL}/events/get/today`)
-        .then(({ data }) => {
-          console.log("EVENTs", data.data);
-          setEvents(data.data);
-        })
-        .catch((e) => console.log(e));
-    }, [])
+      const fetchEvents = async () => {
+        try {
+          const { data } = await axios.get(`${BASE_URL}/events/get/today`);
+          let fetchedEvents = data.data;
+
+          // Apply filters if any
+          if (filters) {
+            fetchedEvents = filterEvents(fetchedEvents, filters);
+          }
+
+          setEvents(fetchedEvents);
+        } catch (e) {
+          console.log("Error fetching events:", e);
+        }
+      };
+
+      fetchEvents();
+    }, [filters])
   );
 
   const openTimePicker = () => setTimePickerVisibility(true);
@@ -205,6 +199,7 @@ export default function EventTab() {
 
   return (
     <View style={styles.container}>
+      {/* Map Container */}
       <View style={styles.mapContainer}>
         <MapView
           initialRegion={{
@@ -214,7 +209,7 @@ export default function EventTab() {
             longitudeDelta: 0.0091,
           }}
           style={styles.map}>
-          {events
+          {events.length > 0
             ? events.map(({ id, lat, long, description, name, category }, idx) => (
                 <Marker
                   key={idx}
@@ -328,12 +323,26 @@ export default function EventTab() {
       <ActionSheet ref={actionSheetRef} gestureEnabled={true}>
         <View style={[styles.sheetItems, { height: 600 }]}>
           <Text style={styles.sheetTitle}>Events</Text>
-          <FlatList
-            data={events}
-            keyExtractor={(item) => item.id}
-            renderItem={renderEventItem}
-            contentContainerStyle={{ paddingBottom: 20 }}
-          />
+          {events.length > 0 ? (
+            <FlatList
+              data={events}
+              keyExtractor={(item) => item.id}
+              renderItem={renderEventItem}
+              contentContainerStyle={{ paddingBottom: 20 }}
+            />
+          ) : (
+            <View style={styles.noResultsContainer}>
+              <Text style={styles.noResultsText}>Oh no! There are no results matching your filter :(</Text>
+              <Link href="/eventFilter" asChild
+                onPress={() => {
+                  collapseActionSheet();
+                }}>
+                <TouchableOpacity style={styles.returnButton}>
+                  <Text style={styles.returnButtonText}>Return to Filters</Text>
+                </TouchableOpacity>
+              </Link>
+            </View>
+          )}
         </View>
       </ActionSheet>
     </View>
@@ -498,5 +507,29 @@ const styles = StyleSheet.create({
   customMarker: {
     width: 52,
     height: 60,
+  },
+  noResultsContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  noResultsText: {
+    paddingTop: 50,
+    fontSize: 18,
+    fontFamily: "Lexend_400Regular",
+    color: "#555",
+    marginBottom: 15,
+  },
+  returnButton: {
+    marginTop: 20,
+    backgroundColor: "#4285F4",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  returnButtonText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontFamily: "Lexend_400Regular",
   },
 });
