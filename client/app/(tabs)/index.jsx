@@ -48,7 +48,6 @@ const HomeTab = () => {
 
   useFocusEffect(
     useCallback(() => {
-      console.log("POST", setUserId);
       if (userId) {
         console.log("Home ID", params);
         setUsername(params.name);
