@@ -47,7 +47,7 @@ export default function EditDegree() {
           <Picker
             ref={pickerRef}
             style={styles.selectBtn}
-            selectedValue={gender}
+            selectedValue={year}
             onValueChange={(itemValue, itemIndex) => {
               if (itemValue !== "null") {
                 setYear(itemValue);

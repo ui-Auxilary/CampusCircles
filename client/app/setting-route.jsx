@@ -66,12 +66,6 @@ const SettingRoute = () => {
   };
   return (
     <View style={styles.container}>
-      <Logo style={styles.logo} width={50} height={50} />
-      <View style={styles.profileHeader}>
-        <Text style={styles.headerTitle}>
-          {params.page.charAt(0).toUpperCase() + params.page.substring(1)}
-        </Text>
-      </View>
       <TouchableOpacity onPress={handleBack} style={styles.backBtn}>
         <Text style={styles.backTxt}>Back</Text>
       </TouchableOpacity>

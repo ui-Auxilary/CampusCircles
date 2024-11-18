@@ -18,16 +18,7 @@ const AccessibilitySettings = () => {
       <View style={styles.inputBlock}>
         <View style={styles.inputRow}>
           <Text style={styles.inputLabel}>Haptic feedback</Text>
-          <TouchableOpacity
-            style={{ flex: 1, alignItems: "flex-end" }}
-            onPress={() =>
-              // router.push({
-              //   pathname: "/setting-route",
-              //   params: { page: "account" },
-              // })
-              {}
-            }
-          >
+          <TouchableOpacity style={{ flex: 1, alignItems: "flex-end" }}>
             <View style={styles.flexRow}>
               <Switch
                 trackColor={{ false: "#767577", true: "#76DA69" }}
