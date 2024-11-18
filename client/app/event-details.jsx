@@ -1,11 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams, router } from "expo-router";
 import { getUserData } from "@/hooks/userContext";
@@ -134,7 +128,7 @@ const EventDetails = () => {
         <TouchableOpacity
           style={styles.linkContainer}
           onPress={() =>
-            page === "create"
+            page === "create" || page === "home"
               ? router.push("/(tabs)")
               : router.push("/(tabs)/events")
           }

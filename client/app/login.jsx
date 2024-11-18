@@ -26,7 +26,7 @@ const Login = () => {
   });
 
   const [show, setShow] = useState(false);
-  const { setShowAge, setShowPronoun, setHasHaptic, setAllowNotif } =
+  const { setShowAge, setShowPronoun, setHasHaptic, setAllowNotif, setUserId } =
     getUserData();
 
   const handleLogin = async () => {
@@ -49,7 +49,8 @@ const Login = () => {
         setShowPronoun(showPronoun);
         setAllowNotif(allowNotif);
         setHasHaptic(hasHaptic);
-        router.push({ pathname: "/(tabs)", params: { id } });
+        setUserId(id);
+        router.push({ pathname: "/(tabs)" });
       })
       .catch((e) => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);

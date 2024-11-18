@@ -8,8 +8,13 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { Link, useLocalSearchParams, router } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Link,
+  useLocalSearchParams,
+  router,
+  useFocusEffect,
+} from "expo-router";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
@@ -74,17 +79,18 @@ const HomeTab = () => {
     },
   ];
 
-  useEffect(() => {
-    setNotifications(dumb);
-
-    if (params.id) {
-      console.log("Home ID", params);
-      setUsername(params.name);
-      setUserId(params.id);
-      fetchUserNotifications(params.id);
-      fetchUserEvents(params.id);
-    }
-  }, [params.id]);
+  useFocusEffect(
+    useCallback(() => {
+      setNotifications(dumb);
+      console.log("POST", setUserId);
+      if (userId) {
+        console.log("Home ID", params);
+        setUsername(params.name);
+        fetchUserNotifications(userId);
+        fetchUserEvents(userId);
+      }
+    }, [userId, params.name])
+  );
 
   const fetchUserNotifications = async (userId) => {
     try {
@@ -101,10 +107,6 @@ const HomeTab = () => {
       Alert.alert("Error", "Could not fetch notifications");
     }
   };
-
-  useEffect(() => {
-    console.log("EVENT DATA", events);
-  }, [events]);
 
   const fetchUserEvents = async (userId) => {
     try {
@@ -128,7 +130,7 @@ const HomeTab = () => {
     try {
       await axios.put(`${BASE_URL}/invite/${notificationId}/accept`);
       setNotifications((prevNotifications) =>
-        prevNotifications.filter((notif) => notif.id !== notificationId)
+        prevNotifications.filter((notif) => notif?.id !== notificationId)
       );
       {
         hasHaptic &&
@@ -149,7 +151,7 @@ const HomeTab = () => {
     try {
       await axios.put(`${BASE_URL}/invite/${notificationId}/reject`);
       setNotifications((prevNotifications) =>
-        prevNotifications.filter((notif) => notif.id !== notificationId)
+        prevNotifications.filter((notif) => notif?.id !== notificationId)
       );
       {
         hasHaptic &&
@@ -177,7 +179,7 @@ const HomeTab = () => {
     <View style={styles.homepage}>
       <View style={styles.titleContainer}>
         <Text style={[styles.text, styles.titleText]}>
-          Welcome, {userData.name}
+          Welcome, {userData?.name}
         </Text>
       </View>
 
@@ -189,10 +191,10 @@ const HomeTab = () => {
           contentContainerStyle={{ paddingBottom: 10, flexGrow: 1 }}
         >
           {notifications.map((notification) => {
-            const isExpanded = expandedNotifications[notification.id] || false;
+            const isExpanded = expandedNotifications[notification?.id] || false;
 
             return (
-              <View key={notification.id} style={styles.notificationItem}>
+              <View key={notification?.id} style={styles.notificationItem}>
                 <View style={styles.notificationTextContainer}>
                   {/* Notification Text */}
                   <Text
@@ -202,7 +204,7 @@ const HomeTab = () => {
                   >
                     {notification.inviter.name} invited you to{" "}
                     <Text style={styles.eventName}>
-                      {notification.event.name}
+                      {notification.event?.name}
                     </Text>
                   </Text>
                 </View>
@@ -210,7 +212,9 @@ const HomeTab = () => {
                 <View style={styles.notificationActions}>
                   {/* Dropdown Arrow */}
                   <TouchableOpacity
-                    onPress={() => toggleNotificationExpansion(notification.id)} // Toggle expanded state
+                    onPress={() =>
+                      toggleNotificationExpansion(notification?.id)
+                    } // Toggle expanded state
                     style={styles.dropdownIconContainer}
                   >
                     <Text style={styles.dropdownArrow}>
@@ -218,12 +222,12 @@ const HomeTab = () => {
                     </Text>
                   </TouchableOpacity>
                   <Pressable
-                    onPress={() => handleAcceptInvite(notification.id)}
+                    onPress={() => handleAcceptInvite(notification?.id)}
                   >
                     <Image source={tick} style={styles.actionIcon} />
                   </Pressable>
                   <Pressable
-                    onPress={() => handleRejectInvite(notification.id)}
+                    onPress={() => handleRejectInvite(notification?.id)}
                   >
                     <Image source={cross} style={styles.actionIcon} />
                   </Pressable>
@@ -242,25 +246,25 @@ const HomeTab = () => {
           showsHorizontalScrollIndicator={false}
           style={styles.eventsList}
         >
-          {[...events.created, ...events.attending].map((event) => (
+          {[...events.created, ...events.attending].map((event, idx) => (
             <TouchableOpacity
-              key={event.id}
+              key={idx}
               style={styles.eventItem}
               onPress={() => {
                 router.push({
                   pathname: "event-details",
-                  params: { id: event.id },
+                  params: { id: event?.id, page: "home" },
                 });
               }}
             >
               <Image
                 source={{
                   uri:
-                    event.photo || "https://www.openday.unsw.edu.au/share.jpg",
+                    event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
                 }}
                 style={styles.eventImage}
               />
-              <Text style={styles.eventName}>{event.name}</Text>
+              <Text style={styles.eventName}>{event?.name}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
