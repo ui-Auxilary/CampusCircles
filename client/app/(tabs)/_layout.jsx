@@ -43,6 +43,9 @@ export default function TabLayout() {
               case "friendFilter":
                 title = "Add Friend";
                 break;
+              case "eventFilter":
+                title = "Find Events";
+                break;
               case "otherProfile":
                 title = "Profile";
                 break;
@@ -56,78 +59,65 @@ export default function TabLayout() {
                 showAddFriendButton={showAddFriendButton}
                 showSettings={showSettings}
                 onAddFriend={() => {
-                  console.log(
-                    "Navigating to addFriends screen using router.push"
-                  );
+                  console.log("Navigating to addFriends screen using router.push");
                   router.push("/addFriends");
                 }}
               />
             );
           },
           tabBarStyle: styles.tabBarStyle,
-        })}
-      >
+        })}>
         <Tabs.Screen
-          name='index'
+          name="index"
           options={{
             tabBarLabelStyle: styles.tabLabelStyle,
             title: "Home",
-            tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name='home-outline' color={color} />
-            ),
+            tabBarIcon: ({ color }) => <Ionicons size={28} name="home-outline" color={color} />,
           }}
         />
         <Tabs.Screen
-          name='events'
+          name="events"
           options={{
             tabBarLabelStyle: styles.tabLabelStyle,
             title: "Events",
-            tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name='location-outline' color={color} />
-            ),
+            tabBarIcon: ({ color }) => <Ionicons size={28} name="location-outline" color={color} />,
           }}
         />
         <Tabs.Screen
-          name='create'
+          name="create"
           options={{
             tabBarLabelStyle: styles.tabLabelStyle,
             title: "Create",
             tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.createButton,
-                  focused && styles.createButtonFocused,
-                ]}
-              >
-                <Ionicons size={32} name='add' color='#fff' />
+              <View style={[styles.createButton, focused && styles.createButtonFocused]}>
+                <Ionicons size={32} name="add" color="#fff" />
               </View>
             ),
           }}
         />
         <Tabs.Screen
-          name='friends'
+          name="friends"
           options={{
             tabBarLabelStyle: styles.tabLabelStyle,
             title: "Friends",
-            tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name='people-outline' color={color} />
-            ),
+            tabBarIcon: ({ color }) => <Ionicons size={28} name="people-outline" color={color} />,
           }}
         />
         <Tabs.Screen
-          name='profile'
+          name="profile"
           options={{
             tabBarLabelStyle: styles.tabLabelStyle,
             title: "Profile",
             tabBarIcon: ({ color }) => (
-              <Ionicons size={28} name='person-circle-outline' color={color} />
+              <Ionicons size={28} name="person-circle-outline" color={color} />
             ),
           }}
         />
         {/* Remove the extra "header" screen definition */}
-        <Tabs.Screen name='addFriends' options={{ href: null }} />
-        <Tabs.Screen name='otherProfile' options={{ href: null }} />
-        <Tabs.Screen name='friendFilter' options={{ href: null }} />
+        <Tabs.Screen name="addFriends" options={{ href: null }} />
+        <Tabs.Screen name="otherProfile" options={{ href: null }} />
+        <Tabs.Screen name="friendFilter" options={{ href: null }} />
+        <Tabs.Screen name="eventFilter" options={{ href: null }} />
       </Tabs>
     </View>
   );
