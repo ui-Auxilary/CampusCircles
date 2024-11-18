@@ -64,19 +64,8 @@ const CreateTab = () => {
     time: new Date(),
     description: "",
     public: true,
-    tag: {
-      connectOrCreate: {
-        where: {
-          name: eventType,
-        },
-        create: {
-          name: eventType,
-        },
-      },
-    },
-    eventAttendees: {},
+    eventAttendees: [], // Use an empty array to match the schema
     society: false,
-    invitations: {},
     creator: {
       connect: {
         id: userId,
@@ -121,19 +110,6 @@ const CreateTab = () => {
 
   const handleInputChange = (field, value) => {
     setEvent((prevEvent) => ({ ...prevEvent, [field]: value }));
-  };
-
-  const getTag = () => {
-    switch (eventType) {
-      case "Study":
-        return styles.containerStudy;
-      case "Eat":
-        return styles.containerEat;
-      case "Other":
-        return styles.containerOther;
-      default:
-        return styles.containerHang;
-    }
   };
 
   const handleImagePick = async () => {
@@ -201,10 +177,6 @@ const CreateTab = () => {
     setTimePickerVisibility(false);
   };
 
-  const toggleTag = (tag) => {
-    setEventType(tag);
-  };
-
   const togglePrivacy = () => {
     setEvent({ ...event, public: !event.public });
   };
@@ -268,12 +240,23 @@ const CreateTab = () => {
       return;
     }
 
-    let postData = {
-      ...event,
+    const postData = {
+      name: event.name,
+      photo: event.photo,
+      lat: event.lat,
+      long: event.long,
+      category: eventType,
       date: event.date.toISOString(),
       time: event.time.toISOString(),
-      category: eventType,
+      description: event.description,
+      public: event.public,
+      society: event.society,
+      location: event.location,
+      creator: {
+        connect: { id: userId },
+      },
     };
+
     Haptics.selectionAsync();
     console.log("POSTING", postData);
     await axios
@@ -310,7 +293,7 @@ const CreateTab = () => {
   /////////////////////////////////////////////////////////////////////////////
 
   return (
-    <ScrollView style={getTag()}>
+    <ScrollView style={styles.containerHang}>
       <View style={[styles.container]}>
         <View style={[styles.typeContainer, styles.shadow]}>
           <Pressable
@@ -318,7 +301,7 @@ const CreateTab = () => {
               styles.typeButtonFirst,
               eventType === "Hang" && styles.typeButtonFirstInverted,
             ]}
-            onPress={() => toggleTag("Hang")}
+            onPress={() => setEventType("Hang")}
           >
             <Text
               style={[
@@ -334,7 +317,7 @@ const CreateTab = () => {
               styles.typeButton,
               eventType === "Study" && styles.typeButtonInverted,
             ]}
-            onPress={() => toggleTag("Study")}
+            onPress={() => setEventType("Study")}
           >
             <Text
               style={[
@@ -350,7 +333,7 @@ const CreateTab = () => {
               styles.typeButton,
               eventType === "Eat" && styles.typeButtonInverted,
             ]}
-            onPress={() => toggleTag("Eat")}
+            onPress={() => setEventType("Eat")}
           >
             <Text
               style={[
@@ -366,7 +349,7 @@ const CreateTab = () => {
               styles.typeButtonLast,
               eventType === "Other" && styles.typeButtonLastInverted,
             ]}
-            onPress={() => toggleTag("Other")}
+            onPress={() => setEventType("Other")}
           >
             <Text
               style={[

@@ -63,19 +63,8 @@ const EditEvent = () => {
     time: new Date(),
     description: "",
     public: true,
-    tag: {
-      connectOrCreate: {
-        where: {
-          name: eventType,
-        },
-        create: {
-          name: eventType,
-        },
-      },
-    },
-    eventAttendees: {},
+    eventAttendees: [],
     society: false,
-    invitations: {},
     creator: {
       connect: {
         id: userId,
@@ -105,17 +94,9 @@ const EditEvent = () => {
           date: fetchedEvent.date ? new Date(fetchedEvent.date) : new Date(),
           time: fetchedEvent.time ? new Date(fetchedEvent.time) : new Date(),
           description: fetchedEvent.description || "",
-          public:
-            fetchedEvent.public !== undefined ? fetchedEvent.public : true,
-          tag: fetchedEvent.tag || {
-            connectOrCreate: {
-              where: { name: "" },
-              create: { name: "" },
-            },
-          },
-          eventAttendees: fetchedEvent.eventAttendees || {},
+          public: fetchedEvent.public !== undefined ? fetchedEvent.public : true,
           society: fetchedEvent.society || false,
-          invitations: fetchedEvent.invitations || {},
+          eventAttendees: fetchedEvent.eventAttendees || [],
           creator: {
             connect: {
               id: fetchedEvent.creator?.id || "",
