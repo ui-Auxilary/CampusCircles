@@ -92,3 +92,88 @@ export const getEventsToday = async (req, res) => {
     data: events,
   });
 };
+
+export const joinEvent = async (req, res) => {
+  try {
+    const { eventId, userId } = req.body;
+
+    // Check if the user is already in the attendees list
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: { eventAttendees: true },
+    });
+
+    if (event.eventAttendees.includes(userId)) {
+      return res.status(400).json({
+        status: false,
+        message: "User has already joined this event",
+      });
+    }
+
+    // Add the user to the attendees list if not already present
+    const updatedEvent = await prisma.event.update({
+      where: { id: eventId },
+      data: {
+        eventAttendees: {
+          push: userId,
+        },
+      },
+    });
+
+    res.status(200).json({
+      status: true,
+      message: "User joined event successfully",
+      data: updatedEvent,
+    });
+  } catch (e) {
+    console.error("Server error when user joining event:", e);
+    res.status(500).json({
+      status: false,
+      message: "Server error: could not join event",
+    });
+  }
+};
+
+export const leaveEvent = async (req, res) => {
+  try {
+    const { eventId, userId } = req.body;
+
+    // Check if the user is part of the event attendees
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      select: { eventAttendees: true },
+    });
+
+    if (!event.eventAttendees.includes(userId)) {
+      return res.status(400).json({
+        status: false,
+        message: "User is not part of this event",
+      });
+    }
+
+    // Update the event to remove the user from attendees
+    const updatedAttendees = event.eventAttendees.filter(
+      (attendeeId) => attendeeId !== userId
+    );
+
+    await prisma.event.update({
+      where: { id: eventId },
+      data: {
+        eventAttendees: {
+          set: updatedAttendees,
+        },
+      },
+    });
+
+    res.status(200).json({
+      status: true,
+      message: "User left the event successfully",
+    });
+  } catch (e) {
+    console.error("Server error when leaving event:", e);
+    res.status(500).json({
+      status: false,
+      message: "Server error: could not leave event",
+    });
+  }
+};

@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  ScrollView,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams, router } from "expo-router";
-
+import { getUserData } from "@/hooks/userContext";
 import {
   Lexend_300Regular,
   Lexend_400Regular,
@@ -21,13 +19,12 @@ import {
 } from "@expo-google-fonts/lexend";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
-import { Link } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { useFocusEffect } from "@react-navigation/native";
 
 const EventDetails = () => {
   const {
-    // title,
     date,
     name,
     time,
@@ -43,7 +40,6 @@ const EventDetails = () => {
   } = useLocalSearchParams();
 
   const [eventData, setEventData] = useState({
-    // title,
     date,
     name,
     time,
@@ -56,26 +52,68 @@ const EventDetails = () => {
     creatorId,
   });
 
-  useEffect(() => {
-    console.log("Got id fetching event", id);
-
-    if (id) {
-      axios
-        .get(`${BASE_URL}/events/get/${id}`)
-        .then(({ data }) => {
-          console.log("EVENT DATA", data);
-          setEventData(data.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
-  }, [id]);
+  const { userId } = getUserData();
 
   const [joined, setJoined] = useState(false);
 
-  const setJoinLeave = () => {
-    setJoined(!joined);
+  const fetchEventData = async () => {
+    try {
+      if (id) {
+        const response = await axios.get(`${BASE_URL}/events/get/${id}`);
+        console.log("EVENT DATA", response.data);
+        setEventData(response.data.data);
+      }
+    } catch (e) {
+      console.log("Error fetching event data:", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchEventData();
+  }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkUserJoined = async () => {
+        try {
+          if (id) {
+            const response = await axios.get(`${BASE_URL}/events/get/${id}`);
+            const event = response.data.data;
+
+            setJoined(event.eventAttendees?.includes(userId) ?? false);
+          }
+        } catch (e) {
+          console.error("Error checking if user has joined event:", e);
+        }
+      };
+
+      if (id && userId) {
+        checkUserJoined();
+      }
+    }, [id, userId])
+  );
+
+  const handleJoinLeave = async () => {
+    try {
+      if (!joined) {
+        console.log("Joining event with ID:", id);
+        await axios.post(`${BASE_URL}/events/join`, {
+          eventId: id,
+          userId: userId,
+        });
+        setJoined(true);
+      } else {
+        console.log("Leaving event with ID:", id);
+        await axios.post(`${BASE_URL}/events/leave`, {
+          eventId: id,
+          userId: userId,
+        });
+        setJoined(false);
+      }
+    } catch (e) {
+      console.error("Error joining/leaving event:", e);
+    }
+    fetchEventData();
   };
 
   return (
@@ -189,7 +227,7 @@ const EventDetails = () => {
       {/* switch between join and leave button */}
       <TouchableOpacity
         style={joined ? styles.leaveButton : styles.joinButton}
-        onPress={setJoinLeave}
+        onPress={handleJoinLeave}
       >
         <Text style={joined ? styles.leaveButtonText : styles.joinButtonText}>
           {joined ? "Leave Event" : "Join now!"}
