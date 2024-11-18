@@ -97,27 +97,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#EEEEEE",
   },
-  profileHeader: {
-    height: 100,
-    backgroundColor: "#FFFFFF",
-    width: "100%",
-    padding: 20,
-    top: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 40,
-  },
-  logo: {
-    position: "absolute",
-    top: 35,
-    left: 15,
-    zIndex: 2,
-  },
-  headerTitle: {
-    fontSize: 24,
-    color: "#333",
-    fontFamily: "Lexend_500Medium",
-  },
   createContainer: {
     flex: 1,
     flexDirection: "column",

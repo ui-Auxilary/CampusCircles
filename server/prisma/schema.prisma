@@ -51,6 +51,7 @@ model Event {
   location        String
   lat             String
   long            String
+  category        String
   date            DateTime
   time            DateTime
   photo           String

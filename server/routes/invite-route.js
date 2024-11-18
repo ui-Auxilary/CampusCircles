@@ -1,9 +1,9 @@
-// import { Router } from "express";
-// // import {} from "../controllers.invite.js"; /////////// do this
+import { Router } from "express";
+import { acceptInvite, rejectInvite } from "../controllers/invite.js"; // Correct path and file name
 
 // const inviteRoute = Router();
 
-// eventRoute.put("/:id/accept", acceptInvite);
-// eventRoute.put("/:id/reject", rejectInvite);
+inviteRoute.put("/:id/accept", acceptInvite);
+inviteRoute.put("/:id/reject", rejectInvite);
 
 // export default inviteRoute;

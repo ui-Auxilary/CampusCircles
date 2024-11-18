@@ -10,7 +10,6 @@ import {
   View,
 } from "react-native";
 import Right from "../assets/chev-right.svg";
-import Logo from "../assets/logo2.svg";
 
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
@@ -125,10 +124,6 @@ const CreateProfile = () => {
   };
   return (
     <View style={styles.container}>
-      <Logo style={styles.logo} width={50} height={50} />
-      <View style={styles.profileHeader}>
-        <Text style={styles.headerTitle}>Create Profile</Text>
-      </View>
       <View style={styles.profileImgContainer}>
         {params.picture ? (
           <Image style={styles.profileImg} src={params.picture} />
@@ -309,20 +304,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#EEEEEE",
   },
-  profileHeader: {
-    height: 100,
-    backgroundColor: "#FFFFFF",
-    width: "100%",
-    padding: 20,
-    top: 0,
-    alignItems: "center",
-    paddingTop: 40,
-  },
-  headerTitle: {
-    color: "#454545",
-    fontSize: 28,
-    fontFamily: "Lexend_700Bold",
-  },
   inputBlock: {
     marginTop: 5,
   },
@@ -377,12 +358,6 @@ const styles = StyleSheet.create({
   registerText: {
     color: "#FFFFFF",
     fontSize: 16,
-    zIndex: 2,
-  },
-  logo: {
-    position: "absolute",
-    top: 35,
-    left: 15,
     zIndex: 2,
   },
   createContainer: {

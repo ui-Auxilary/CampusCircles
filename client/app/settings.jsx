@@ -136,27 +136,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
   },
-  profileHeader: {
-    height: 100,
-    backgroundColor: "#FFFFFF",
-    width: "100%",
-    padding: 20,
-    top: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 40,
-  },
-  logo: {
-    position: "absolute",
-    top: 35,
-    left: 15,
-    zIndex: 2,
-  },
-  headerTitle: {
-    fontSize: 24,
-    color: "#333",
-    fontFamily: "Lexend_500Medium",
-  },
   backBtn: {
     padding: 10,
     backgroundColor: "#3A72FF",

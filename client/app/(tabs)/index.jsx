@@ -1,6 +1,3 @@
-// need to replace dummy data
-// maybe add pfp to notification list items
-
 import {
   View,
   Text,
@@ -11,27 +8,40 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocalSearchParams, router } from "expo-router";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
-import { useIsFocused } from "@react-navigation/native";
 
 import * as Haptics from "expo-haptics";
 
 import tick from "../../assets/images/tick.png";
 import cross from "../../assets/images/cross.png";
-import { useFocusEffect } from "@react-navigation/native";
 
 const HomeTab = () => {
-  const isFocused = useIsFocused();
   const { setUserId, hasHaptic } = getUserData();
   const params = useLocalSearchParams();
   const [notifications, setNotifications] = useState([]);
   const [events, setEvents] = useState({ created: [], attending: [] });
+  const [expandedNotifications, setExpandedNotifications] = useState({}); // Track expanded state for all notifications
+  const [username, setUsername] = useState("");
+  const { userId } = getUserData();
+  const [userData, setUserData] = useState({});
 
-  const dummyNotifs = [
+  useEffect(() => {
+    if (userId) {
+      // Fetch request
+      axios
+        .get(`${BASE_URL}/users/${userId}`)
+        .then(({ data }) => {
+          setUserData(data.data);
+        })
+        .catch((e) => console.log(e));
+    }
+  }, []);
+
+  const dumb = [
     {
       id: "1",
       inviter: { name: "John Doe" },
@@ -42,30 +52,39 @@ const HomeTab = () => {
       inviter: { name: "Jane Smith" },
       event: { name: "Eat Sesh" },
     },
+    {
+      id: "3",
+      inviter: { name: "LonglonglonglonglongLonglonglonglonglong" },
+      event: { name: "long long long long long long long long long long long" },
+    },
+    {
+      id: "4",
+      inviter: { name: "Short" },
+      event: { name: "s" },
+    },
+    {
+      id: "5",
+      inviter: { name: "Filler" },
+      event: { name: "filler" },
+    },
+    {
+      id: "6",
+      inviter: { name: "Scroll" },
+      event: { name: "scroll" },
+    },
   ];
 
-  useFocusEffect(
-    useCallback(() => {
-      if (params.id) {
-        console.log("Home ID", params);
-        setUserId(params.id);
-        fetchUserNotifications(params.id);
-        fetchUserEvents(params.id);
-      }
-    }, [params.id])
-  );
-
   useEffect(() => {
-    // delete this when dummy data out of use
-    setNotifications(dummyNotifs);
+    setNotifications(dumb);
 
-    if (isFocused) {
-      if (params.id) {
-        fetchUserNotifications(params.id);
-        fetchUserEvents(params.id);
-      }
+    if (params.id) {
+      console.log("Home ID", params);
+      setUsername(params.name);
+      setUserId(params.id);
+      fetchUserNotifications(params.id);
+      fetchUserEvents(params.id);
     }
-  }, [isFocused, params.id]);
+  }, [params.id]);
 
   const fetchUserNotifications = async (userId) => {
     try {
@@ -147,32 +166,71 @@ const HomeTab = () => {
     }
   };
 
+  const toggleNotificationExpansion = (id) => {
+    setExpandedNotifications((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   return (
     <View style={styles.homepage}>
       <View style={styles.titleContainer}>
-        <Text style={[styles.text, styles.titleText]}>Welcome, USER</Text>
+        <Text style={[styles.text, styles.titleText]}>
+          Welcome, {userData.name}
+        </Text>
       </View>
 
       {/* Notifications Section */}
       <View style={styles.notifications}>
         <Text style={styles.sectionTitle}>Notifications</Text>
-        <ScrollView style={styles.notificationsList}>
-          {notifications.map((notification) => (
-            <View key={notification.id} style={styles.notificationItem}>
-              <Text style={styles.notificationText}>
-                {notification.inviter.name} invited you to{" "}
-                <Text style={styles.eventName}>{notification.event.name}</Text>
-              </Text>
-              <View style={styles.notificationActions}>
-                <Pressable onPress={() => handleAcceptInvite(notification.id)}>
-                  <Image source={tick} style={styles.actionIcon} />
-                </Pressable>
-                <Pressable onPress={() => handleRejectInvite(notification.id)}>
-                  <Image source={cross} style={styles.actionIcon} />
-                </Pressable>
+        <ScrollView
+          style={styles.notificationsList}
+          contentContainerStyle={{ paddingBottom: 10, flexGrow: 1 }}
+        >
+          {notifications.map((notification) => {
+            const isExpanded = expandedNotifications[notification.id] || false;
+
+            return (
+              <View key={notification.id} style={styles.notificationItem}>
+                <View style={styles.notificationTextContainer}>
+                  {/* Notification Text */}
+                  <Text
+                    style={styles.notificationText}
+                    numberOfLines={isExpanded ? null : 1} // Expand if isExpanded is true
+                    ellipsizeMode='tail'
+                  >
+                    {notification.inviter.name} invited you to{" "}
+                    <Text style={styles.eventName}>
+                      {notification.event.name}
+                    </Text>
+                  </Text>
+                </View>
+                {/* Action Buttons */}
+                <View style={styles.notificationActions}>
+                  {/* Dropdown Arrow */}
+                  <TouchableOpacity
+                    onPress={() => toggleNotificationExpansion(notification.id)} // Toggle expanded state
+                    style={styles.dropdownIconContainer}
+                  >
+                    <Text style={styles.dropdownArrow}>
+                      {isExpanded ? "▲" : "▼"} {/* Change arrow direction */}
+                    </Text>
+                  </TouchableOpacity>
+                  <Pressable
+                    onPress={() => handleAcceptInvite(notification.id)}
+                  >
+                    <Image source={tick} style={styles.actionIcon} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => handleRejectInvite(notification.id)}
+                  >
+                    <Image source={cross} style={styles.actionIcon} />
+                  </Pressable>
+                </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </ScrollView>
       </View>
 
@@ -250,26 +308,34 @@ const styles = StyleSheet.create({
   },
   notificationItem: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "center",
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#DDDDDD",
   },
+  notificationTextContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
   notificationText: {
     fontSize: 16,
     color: "#454545",
+    flexShrink: 1,
   },
   eventName: {
     fontWeight: "bold",
-    flex: 1,
-    width: "100%",
-    position: "absolute",
-    bottom: 0,
-    height: 50,
-    padding: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
+    color: "#333333",
+  },
+  dropdownIconContainer: {
+    marginLeft: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dropdownArrow: {
+    fontSize: 18,
+    color: "#454545",
   },
   notificationActions: {
     flexDirection: "row",

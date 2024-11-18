@@ -326,6 +326,9 @@ export const getNonFriends = async (req, res) => {
         photo: true,
         degree: true,
         studyYear: true,
+        interests: true,
+        courses: true,
+        languages: true,
       },
     });
 
