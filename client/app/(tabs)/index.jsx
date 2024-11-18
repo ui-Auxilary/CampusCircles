@@ -46,43 +46,8 @@ const HomeTab = () => {
     }
   }, []);
 
-  const dumb = [
-    {
-      id: "1",
-      inviter: { name: "John Doe" },
-      event: { name: "Study Time" },
-    },
-    {
-      id: "2",
-      inviter: { name: "Jane Smith" },
-      event: { name: "Eat Sesh" },
-    },
-    {
-      id: "3",
-      inviter: { name: "LonglonglonglonglongLonglonglonglonglong" },
-      event: { name: "long long long long long long long long long long long" },
-    },
-    {
-      id: "4",
-      inviter: { name: "Short" },
-      event: { name: "s" },
-    },
-    {
-      id: "5",
-      inviter: { name: "Filler" },
-      event: { name: "filler" },
-    },
-    {
-      id: "6",
-      inviter: { name: "Scroll" },
-      event: { name: "scroll" },
-    },
-  ];
-
   useFocusEffect(
     useCallback(() => {
-      setNotifications(dumb);
-      console.log("POST", setUserId);
       if (userId) {
         console.log("Home ID", params);
         setUsername(params.name);

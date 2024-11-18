@@ -62,9 +62,11 @@ const EventDetails = () => {
     }
   };
 
-  useEffect(() => {
-    fetchEventData();
-  }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchEventData();
+    }, [id])
+  );
 
   useFocusEffect(
     useCallback(() => {
