@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams, router } from "expo-router";
 import { getUserData } from "@/hooks/userContext";
@@ -71,7 +78,7 @@ const EventDetails = () => {
   const fetchEventData = async () => {
     try {
       if (id) {
-        const response = await axios.get(`${BASE_URL}/events/get/${id}`);
+        const response = await axios.get(`${BASE_URL}/events/event/${id}`);
         console.log("EVENT DATA", response.data);
 
         setEventData(response.data.data);
@@ -84,7 +91,10 @@ const EventDetails = () => {
   useEffect(() => {
     const fetchAttendeeDetails = async () => {
       try {
-        if (!eventData.eventAttendees || eventData.eventAttendees.length === 0) {
+        if (
+          !eventData.eventAttendees ||
+          eventData.eventAttendees.length === 0
+        ) {
           console.warn("No attendees to fetch.");
           setEventData((prev) => ({
             ...prev,
@@ -96,7 +106,9 @@ const EventDetails = () => {
         const attendeeDetails = await Promise.all(
           eventData.eventAttendees.map(async (userId) => {
             try {
-              const response = await axios.get(`${BASE_URL}/users/${userId}`);
+              const response = await axios.get(
+                `${BASE_URL}/users/get/${userId}`
+              );
               return response.data.data;
             } catch (error) {
               console.warn(`User not found for ID: ${userId}`, error);
@@ -107,7 +119,9 @@ const EventDetails = () => {
 
         setEventData((prev) => ({
           ...prev,
-          attendeeDetails: attendeeDetails.filter((attendee) => attendee !== null),
+          attendeeDetails: attendeeDetails.filter(
+            (attendee) => attendee !== null
+          ),
         }));
       } catch (error) {
         console.error("Error fetching attendee details:", error);
@@ -130,7 +144,7 @@ const EventDetails = () => {
       const checkUserJoined = async () => {
         try {
           if (id) {
-            const response = await axios.get(`${BASE_URL}/events/get/${id}`);
+            const response = await axios.get(`${BASE_URL}/events/event/${id}`);
             const event = response.data.data;
 
             setJoined(event.eventAttendees?.includes(userId) ?? false);
@@ -190,19 +204,23 @@ const EventDetails = () => {
         headerImage={
           <Image
             source={{
-              uri: eventData.photo ? eventData.photo : "https://www.openday.unsw.edu.au/share.jpg",
+              uri: eventData.photo
+                ? eventData.photo
+                : "https://www.openday.unsw.edu.au/share.jpg",
             }}
             style={styles.eventImage}
           />
         }
-        headerBackgroundColor={""}>
+        headerBackgroundColor={""}
+      >
         <TouchableOpacity
           style={styles.linkContainer}
           onPress={() =>
             page === "create" || page === "home"
               ? router.push("/(tabs)")
               : router.push("/(tabs)/events")
-          }>
+          }
+        >
           <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
           <Text style={styles.backLink}>Go Back</Text>
         </TouchableOpacity>
@@ -213,8 +231,11 @@ const EventDetails = () => {
 
             {userId === eventData.creatorId && (
               <TouchableOpacity
-                onPress={() => router.push({ pathname: "/event-edit", params: { id } })}
-                style={styles.editEventButton}>
+                onPress={() =>
+                  router.push({ pathname: "/event-edit", params: { id } })
+                }
+                style={styles.editEventButton}
+              >
                 <Text style={styles.editEventText}>Edit Event</Text>
               </TouchableOpacity>
             )}
@@ -222,11 +243,19 @@ const EventDetails = () => {
 
           <Text style={styles.description}>{eventData.description}</Text>
           <View style={styles.detailsContainer}>
-            <Image source={require("../assets/images/date.png")} style={styles.icon} />
-            <Text style={styles.detailsText}>{`${formattedDate} at ${formattedTime}`}</Text>
+            <Image
+              source={require("../assets/images/date.png")}
+              style={styles.icon}
+            />
+            <Text
+              style={styles.detailsText}
+            >{`${formattedDate} at ${formattedTime}`}</Text>
           </View>
           <View style={styles.detailsContainer}>
-            <Image source={require("../assets/images/location.png")} style={styles.icon} />
+            <Image
+              source={require("../assets/images/location.png")}
+              style={styles.icon}
+            />
             <Text style={styles.detailsText}>{eventData.location}</Text>
           </View>
         </View>
@@ -237,9 +266,13 @@ const EventDetails = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.attendeesList}>
+            contentContainerStyle={styles.attendeesList}
+          >
             <TouchableOpacity
-              onPress={() => router.push({ pathname: "/event-invite", params: { id } })}>
+              onPress={() =>
+                router.push({ pathname: "/event-invite", params: { id } })
+              }
+            >
               <Image
                 source={require("../assets/images/invite-friend.png")}
                 style={styles.attendeeImage}
@@ -248,7 +281,11 @@ const EventDetails = () => {
             {eventData.attendeeDetails?.map((attendee, index) => (
               <Image
                 key={index}
-                source={{ uri: attendee.photo || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg" }}
+                source={{
+                  uri:
+                    attendee.photo ||
+                    "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
+                }}
                 style={styles.attendeeImage}
               />
             ))}
@@ -263,14 +300,16 @@ const EventDetails = () => {
 
             latitudeDelta: 0.00922,
             longitudeDelta: 0.00421,
-          }}>
+          }}
+        >
           <Marker
             coordinate={{
               latitude: parseFloat(eventData.lat),
               longitude: parseFloat(eventData.long),
             }}
             name={eventData.name}
-            description={eventData.location}>
+            description={eventData.location}
+          >
             {/* have the category icons as markers */}
             <View>
               <Image
@@ -288,7 +327,8 @@ const EventDetails = () => {
       {/* switch between join and leave button */}
       <TouchableOpacity
         style={joined ? styles.leaveButton : styles.joinButton}
-        onPress={handleJoinLeave}>
+        onPress={handleJoinLeave}
+      >
         <Text style={joined ? styles.leaveButtonText : styles.joinButtonText}>
           {joined ? "Leave Event" : "Join now!"}
         </Text>

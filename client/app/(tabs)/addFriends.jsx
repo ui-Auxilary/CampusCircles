@@ -37,7 +37,7 @@ const UserList = () => {
     useCallback(() => {
       const fetchNonFriends = async () => {
         try {
-          const url = `${BASE_URL}/users/${userId}/non-friends`;
+          const url = `${BASE_URL}/users/non-friends/${userId}`;
           console.log("Fetching non-friends from:", url);
           const response = await axios.get(url);
           setNonFriends(response.data.data);
@@ -58,7 +58,7 @@ const UserList = () => {
 
   const handleAddFriend = async (friendId) => {
     try {
-      const url = `${BASE_URL}/users/${userId}/add-friend`;
+      const url = `${BASE_URL}/users/add-friend/${userId}`;
       const response = await axios.post(url, { friendId });
 
       if (response.data.status) {
@@ -109,22 +109,22 @@ const UserList = () => {
           onPress={() => navigation.navigate("friends")}
           style={styles.backButtonContainer}
         >
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name='arrow-back' size={24} color='black' />
           <Text style={styles.backButton}> Back</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.searchContainer}>
         <View style={styles.searchBarContainer}>
           <Ionicons
-            name="search"
+            name='search'
             size={20}
-            color="#888"
+            color='#888'
             style={styles.searchIcon}
           />
           <TextInput
             style={styles.searchBar}
-            placeholder="Search users by name..."
-            placeholderTextColor="#888"
+            placeholder='Search users by name...'
+            placeholderTextColor='#888'
             value={search}
             onChangeText={(text) => setSearch(text)}
           />
@@ -133,15 +133,13 @@ const UserList = () => {
           style={styles.filterButton}
           onPress={() => navigation.navigate("friendFilter")}
         >
-          <Ionicons name="funnel-outline" size={20} color="#fff" />
+          <Ionicons name='funnel-outline' size={20} color='#fff' />
           <Text style={styles.filterText}>Filter</Text>
         </TouchableOpacity>
       </View>
 
       {/* Users Count */}
-      <Text style={styles.userCount}>
-        Other Users ({filteredUsers.length})
-      </Text>
+      <Text style={styles.userCount}>Other Users ({filteredUsers.length})</Text>
 
       <ScrollView>
         {filteredUsers.map((user) => (
@@ -172,7 +170,7 @@ const UserList = () => {
               style={styles.addButton}
               onPress={(e) => handleAddFriend(user.id, e)}
             >
-              <Ionicons name="person-add" size={24} color="#3b82f6" />
+              <Ionicons name='person-add' size={24} color='#3b82f6' />
             </TouchableOpacity>
           </TouchableOpacity>
         ))}

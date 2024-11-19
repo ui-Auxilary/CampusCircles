@@ -25,7 +25,7 @@ const ProfileTab = () => {
       if (userId) {
         // Fetch request
         axios
-          .get(`${BASE_URL}/users/${userId}`)
+          .get(`${BASE_URL}/users/get/${userId}`)
           .then(({ data }) => {
             setUserData(data.data);
           })

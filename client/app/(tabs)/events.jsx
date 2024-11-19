@@ -155,12 +155,6 @@ export default function EventTab() {
     useCallback(() => {
       const fetchEvents = async () => {
         try {
-          console.log(
-            "FETCH LINK",
-            `${BASE_URL}/events/get/${
-              fetchToday || !filters ? "today" : "upcoming"
-            }`
-          );
           const { data } = await axios.get(
             `${BASE_URL}/events/get/${
               fetchToday || !filters ? "today" : "upcoming"

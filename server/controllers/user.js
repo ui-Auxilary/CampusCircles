@@ -166,16 +166,6 @@ export const getUser = async (req, res) => {
   });
 };
 
-export const getUsers = async (req, res) => {
-  const users = await prisma.user.findMany();
-
-  res.json({
-    status: true,
-    message: "Users fetched successfully",
-    data: users,
-  });
-};
-
 export const updateUser = async (req, res) => {
   console.log("ID", req.params.id);
   let userData = req.body;
@@ -525,7 +515,7 @@ export const getUserEvents = async (req, res) => {
     // Fetch events where the user is an attendee
     const userEvents = await prisma.event.findMany({
       where: {
-        eventAttendees: { has: userId }
+        eventAttendees: { has: userId },
       },
       orderBy: { date: "asc" },
     });

@@ -24,7 +24,7 @@ const FriendsList = () => {
     useCallback(() => {
       const fetchFriends = async () => {
         try {
-          const url = `${BASE_URL}/users/${userId}/friends`;
+          const url = `${BASE_URL}/users/friends/${userId}`;
           console.log("Fetching friends from:", url);
           const response = await axios.get(url);
           setFriends(response.data.data);
@@ -52,15 +52,15 @@ const FriendsList = () => {
       {/* Search bar */}
       <View style={styles.searchContainer}>
         <Ionicons
-          name="search"
+          name='search'
           size={20}
-          color="#888"
+          color='#888'
           style={styles.searchIcon}
         />
         <TextInput
           style={styles.searchBar}
-          placeholder="Search friends by name or username..."
-          placeholderTextColor="#888"
+          placeholder='Search friends by name or username...'
+          placeholderTextColor='#888'
           value={search}
           onChangeText={(text) => setSearch(text)}
         />
@@ -92,9 +92,9 @@ const FriendsList = () => {
             <View style={styles.details}>
               <Text style={styles.name}>{friend.name}</Text>
               <View style={styles.separator} />
-              <Text style={styles.info}>{`${friend.studyYear || "Unknown Year"} | ${
-                friend.degree || "Unknown Degree"
-              }`}</Text>
+              <Text style={styles.info}>{`${
+                friend.studyYear || "Unknown Year"
+              } | ${friend.degree || "Unknown Degree"}`}</Text>
             </View>
           </TouchableOpacity>
         ))}

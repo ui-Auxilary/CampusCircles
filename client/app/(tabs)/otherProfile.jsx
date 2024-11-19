@@ -27,7 +27,7 @@ const OtherProfile = () => {
     useCallback(() => {
       const fetchData = async () => {
         try {
-          const response = await axios.get(`${BASE_URL}/users/${userId}`);
+          const response = await axios.get(`${BASE_URL}/users/get/${userId}`);
           const { data } = response.data;
           setUserData(data);
           setIsFriend(data.friendIds?.includes(currentUserId) ?? false);
@@ -53,7 +53,7 @@ const OtherProfile = () => {
   const handleAddFriend = async () => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/users/${currentUserId}/add-friend`,
+        `${BASE_URL}/users/add-friend/${currentUserId}`,
         {
           friendId: userId,
         }
@@ -81,7 +81,7 @@ const OtherProfile = () => {
   const handleRemoveFriend = async () => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/users/${currentUserId}/remove-friend`,
+        `${BASE_URL}/users/remove-friend/${currentUserId}`,
         {
           friendId: userId,
         }

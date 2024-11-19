@@ -40,6 +40,7 @@ const Login = () => {
       }
     }
 
+    console.log("POSTING TO", BASE_URL);
     await axios
       .post(`${BASE_URL}/users/login`, loginData)
       .then(({ data }) => {
