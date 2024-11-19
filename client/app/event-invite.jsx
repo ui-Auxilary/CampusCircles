@@ -95,7 +95,7 @@ const EventInvite = () => {
         setInvitations((prev) => prev.filter((inv) => inv.id !== invitation.id));
       }
     } catch (error) {
-      console.error("Error toggling invitation:", error);
+      Alert.alert("This user has already been invited to this event by another user");
     }
   };
 
@@ -149,7 +149,9 @@ const EventInvite = () => {
               <View style={styles.imageContainer}>
                 <Image
                   source={{
-                    uri: friend.photo || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
+                    uri:
+                      friend.photo ||
+                      "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
                   }}
                   style={styles.image}
                 />
