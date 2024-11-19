@@ -24,7 +24,7 @@ import axios from "axios";
 // imported components
 import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+
 // imported assets
 import pic from "../../assets/images/Image.png";
 import unchecked from "../../assets/images/unchecked.png";
@@ -53,10 +53,24 @@ const CreateTab = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [displayTime, setDisplayTime] = useState();
 
+  // Helper functions
   const getTimeNow = () => {
     let d = new Date(Date.now());
     d.setTime(d.getTime() - d.getTimezoneOffset() * 60 * 1000);
     return d;
+  };
+
+  const getTag = () => {
+    switch (eventType) {
+      case "Study":
+        return styles.containerStudy;
+      case "Eat":
+        return styles.containerEat;
+      case "Other":
+        return styles.containerOther;
+      default:
+        return styles.containerHang;
+    }
   };
 
   const defaultEventData = {
@@ -100,7 +114,6 @@ const CreateTab = () => {
   };
 
   useEffect(() => {
-    checkPermissions();
     const unsubscribe = navigation.addListener("focus", () => {
       resetForm();
     });
@@ -288,7 +301,7 @@ const CreateTab = () => {
   /////////////////////////////////////////////////////////////////////////////
 
   return (
-    <ScrollView style={styles.containerHang}>
+    <ScrollView style={getTag()}>
       <View style={[styles.container]}>
         <View style={[styles.typeContainer, styles.shadow]}>
           <Pressable

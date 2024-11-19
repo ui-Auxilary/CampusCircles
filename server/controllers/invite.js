@@ -4,7 +4,11 @@ export const sendInvitation = async (req, res) => {
   try {
     const { eventId, inviteeId, inviterId } = req.body;
 
-    console.log("Received request to send invitation:", { eventId, inviteeId, inviterId });
+    console.log("Received request to send invitation:", {
+      eventId,
+      inviteeId,
+      inviterId,
+    });
 
     // Check if the invitation already exists
     const existingInvitation = await prisma.invitation.findFirst({
