@@ -21,6 +21,9 @@ import React, { useState, useEffect } from "react";
 import { router, useNavigation } from "expo-router";
 import axios from "axios";
 
+// helper
+import { uploadImage } from "@/helper/uploadImage";
+
 // imported components
 import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
@@ -138,14 +141,22 @@ const CreateTab = () => {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images", "videos"],
-      allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
+      base64: true,
     });
 
-    if (!result.canceled) {
-      setEvent((prev) => ({ ...prev, photo: result.assets[0].uri }));
-      setImage(result.assets[0].uri);
+    if (result && !result.canceled) {
+      const base64Image = result.assets ? result.assets[0].base64 : "";
+
+      try {
+        const response = await uploadImage(userId, {
+          photo: base64Image,
+        });
+        setEvent((prev) => ({ ...prev, photo: response.data.data }));
+        setImage(result.assets[0].uri);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
   };
 

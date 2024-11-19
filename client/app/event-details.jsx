@@ -1,16 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams, router } from "expo-router";
 import { getUserData } from "@/hooks/userContext";
-import {
-  Lexend_300Regular,
-  Lexend_400Regular,
-  Lexend_500Medium,
-  Lexend_600SemiBold,
-  Lexend_700Bold,
-  useFonts,
-} from "@expo-google-fonts/lexend";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -53,20 +45,28 @@ const EventDetails = () => {
   const [formattedTime, setFormattedTime] = useState("");
 
   useEffect(() => {
-    if (time) {
-      const parsedDate = new Date(time);
+    if (eventData.time) {
+      const parsedDate = new Date(eventData.time);
 
-      setFormattedDate(parsedDate.toLocaleDateString());
+      if (!isNaN(parsedDate)) {
+        setFormattedDate(
+          parsedDate.toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+          })
+        );
 
-      setFormattedTime(
-        parsedDate.toLocaleTimeString(undefined, {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        })
-      );
+        setFormattedTime(
+          parsedDate.toLocaleTimeString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+        );
+      }
     }
-  }, [time]);
+  }, [eventData.time]);
 
   const fetchEventData = async () => {
     try {
@@ -74,9 +74,43 @@ const EventDetails = () => {
         const response = await axios.get(`${BASE_URL}/events/get/${id}`);
         console.log("EVENT DATA", response.data);
         setEventData(response.data.data);
+
+        fetchAttendeeDetails();
       }
     } catch (e) {
       console.log("Error fetching event data:", e);
+    }
+  };
+
+  const fetchAttendeeDetails = async () => {
+    try {
+      if (!eventData.eventAttendees || eventData.eventAttendees.length === 0) {
+        console.warn("No attendees to fetch.");
+        setEventData((prev) => ({
+          ...prev,
+          attendeeDetails: [],
+        }));
+        return;
+      }
+
+      const attendeeDetails = await Promise.all(
+        eventData.eventAttendees.map(async (userId) => {
+          try {
+            const response = await axios.get(`${BASE_URL}/users/${userId}`);
+            return response.data.data;
+          } catch (error) {
+            console.warn(`User not found for ID: ${userId}`, error);
+            return null;
+          }
+        })
+      );
+
+      setEventData((prev) => ({
+        ...prev,
+        attendeeDetails: attendeeDetails.filter((attendee) => attendee !== null),
+      }));
+    } catch (error) {
+      console.error("Error fetching attendee details:", error);
     }
   };
 
@@ -195,8 +229,10 @@ const EventDetails = () => {
         {/* attendees */}
         <View style={styles.attendeesContainer}>
           <Text style={styles.attendeesTitle}>Attendees</Text>
-          <View style={styles.attendeesList}>
-            {/* invite friend icon */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.attendeesList}>
             <TouchableOpacity
               onPress={() => router.push({ pathname: "/event-invite", params: { id } })}>
               <Image
@@ -204,15 +240,14 @@ const EventDetails = () => {
                 style={styles.attendeeImage}
               />
             </TouchableOpacity>
-
-            {eventData.attendees?.map((attendee, index) => (
+            {eventData.attendeeDetails?.map((attendee, index) => (
               <Image
                 key={index}
-                source={{ uri: attendee.user.photo }}
+                source={{ uri: attendee.photo || "https://via.placeholder.com/50" }}
                 style={styles.attendeeImage}
               />
             ))}
-          </View>
+          </ScrollView>
         </View>
 
         <MapView
@@ -380,7 +415,7 @@ const styles = StyleSheet.create({
     fontFamily: "Lexend_700Bold",
   },
   attendeesContainer: {
-    marginBottom: 2,
+    marginBottom: 16,
   },
   attendeesTitle: {
     fontSize: 17,
@@ -388,12 +423,16 @@ const styles = StyleSheet.create({
     fontFamily: "Lexend_700Bold",
     color: "#2a2a2a",
   },
+  attendeesList: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 5,
+  },
   attendeeImage: {
     width: 50,
     height: 50,
-    borderRadius: 20,
-    marginRight: 10,
-    marginBottom: 10,
+    borderRadius: 25,
+    marginHorizontal: 5,
   },
   customMarker: {
     width: 42,
