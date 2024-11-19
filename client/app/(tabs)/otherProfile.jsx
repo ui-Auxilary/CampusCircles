@@ -13,28 +13,53 @@ import axios from "axios";
 import TagRow from "@/components/TagRow/TagRow";
 import LanguageRow from "@/components/LanguageRow/LanguageRow";
 import * as Haptics from "expo-haptics";
-import { useFocusEffect, useRoute } from "@react-navigation/native";
+import { useFocusEffect, useRoute, useNavigation } from "@react-navigation/native";
 import { getUserData } from "@/hooks/userContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const OtherProfile = () => {
   const route = useRoute();
   const { userId: currentUserId, hasHaptic } = getUserData();
   const { userId } = route.params;
+  const navigation = useNavigation();
   const [userData, setUserData] = useState({});
   const [isFriend, setIsFriend] = useState(false);
+  const [events, setEvents] = useState([]);
+
+  const fetchUserEvents = async (userId) => {
+    try {
+      const { data } = await axios.get(`${BASE_URL}/users/${userId}/events`);
+      setEvents(data.data || []);
+    } catch (e) {
+      hasHaptic &&
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Error", "Could not fetch events");
+    }
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/users/${userId}`);
+      if (response.data) {
+        setUserData(response.data.data);
+        setIsFriend(response.data.data.friendIds?.includes(currentUserId) ?? false);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
         try {
-          const response = await axios.get(`${BASE_URL}/users/${userId}`);
-          const { data } = response.data;
-          setUserData(data);
-          setIsFriend(data.friendIds?.includes(currentUserId) ?? false);
+          const userResponse = await axios.get(`${BASE_URL}/users/${userId}`);
+          setUserData(userResponse.data.data);
+          setIsFriend(userResponse.data.data.friendIds?.includes(currentUserId) ?? false);
+          fetchUserEvents(userId);
         } catch (error) {
-          {
-            hasHaptic &&
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          if (hasHaptic) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
           }
           console.error("Error fetching user data:", error);
         }
@@ -46,6 +71,7 @@ const OtherProfile = () => {
 
       return () => {
         setUserData({});
+        setEvents([]);
       };
     }, [userId, currentUserId])
   );
@@ -61,6 +87,7 @@ const OtherProfile = () => {
 
       if (response.data.status) {
         setIsFriend(true);
+        fetchUserData();
       } else {
         {
           hasHaptic &&
@@ -89,6 +116,7 @@ const OtherProfile = () => {
 
       if (response.data.status) {
         setIsFriend(false);
+        fetchUserData();
       } else {
         {
           hasHaptic &&
@@ -102,12 +130,17 @@ const OtherProfile = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("Userdata", userData);
-  }, [userData]);
-
   return (
     <ScrollView style={styles.profileContainer}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("friends")}
+          style={styles.backButtonContainer}
+        >
+          <Ionicons name="arrow-back" size={24} color="black" />
+          <Text style={styles.backButton}> Back</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.userContainer}>
         <View style={styles.userDetailsWrapper}>
           <Image
@@ -145,7 +178,7 @@ const OtherProfile = () => {
           </View>
           <View>
             <Text style={styles.metricText}>
-              {userData.eventsAttend ? userData.eventsAttend.length : 0}
+              {events.length}
             </Text>
             <Text style={styles.metricSpan}>Events</Text>
           </View>
@@ -171,14 +204,18 @@ const OtherProfile = () => {
       </View>
       <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Interests</Text>
-        {userData.interests && userData.interests.length > 0 && (
+        {userData.interests && userData.interests.length > 0 ? (
           <TagRow tags={userData.interests} />
+        ) : (
+          <Text style={styles.noDataText}>No interests</Text>
         )}
       </View>
       <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Courses I'm doing</Text>
-        {userData.courses && userData.courses.length > 0 && (
+        {userData.courses && userData.courses.length > 0 ? (
           <TagRow tags={userData.courses} />
+        ) : (
+          <Text style={styles.noDataText}>No courses</Text>
         )}
       </View>
       <View style={styles.overscroll} />
@@ -216,6 +253,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#EEEEEE",
+  },
+  header: {
+    marginLeft: 10,
+    marginTop: 10,
+  },
+  backButtonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  backButton: {
+    fontSize: 16,
+    color: "#000",
   },
   profileHeader: {
     height: 100,
@@ -435,5 +484,12 @@ const styles = StyleSheet.create({
     color: "#ff0000",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  noDataText: {
+    fontFamily: 'Lexend_500Medium',
+    fontSize: 14,
+    color: '#8E8E93',
+    textAlign: 'center',
+    marginTop: 10,
   },
 });
