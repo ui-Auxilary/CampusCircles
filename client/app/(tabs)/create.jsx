@@ -25,7 +25,6 @@ import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-
 // imported assets
 import pic from "../../assets/images/Image.png";
 import unchecked from "../../assets/images/unchecked.png";
@@ -35,6 +34,7 @@ import { getUserData } from "@/hooks/userContext";
 
 // UNSW Locations
 import UNSW_LOCATIONS from "../../data/locations.json";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -51,8 +51,13 @@ const CreateTab = () => {
   const [locationQuery, setLocationQuery] = useState("");
   const [locationResults, setLocationResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [displayTime, setDisplayTime] = useState();
+
+  const getTimeNow = () => {
+    let d = new Date(Date.now());
+    d.setTime(d.getTime() - d.getTimezoneOffset() * 60 * 1000);
+    return d;
+  };
 
   const defaultEventData = {
     name: "",
@@ -61,7 +66,7 @@ const CreateTab = () => {
     long: "",
     category: "",
     date: new Date(),
-    time: new Date(),
+    time: getTimeNow(),
     description: "",
     public: true,
     eventAttendees: [], // Use an empty array to match the schema
@@ -94,13 +99,13 @@ const CreateTab = () => {
     }
   };
 
-  // useEffect(() => {
-  //   checkPermissions();
-  //   const unsubscribe = navigation.addListener("focus", () => {
-  //     resetForm();
-  //   });
-  //   return unsubscribe;
-  // }, [navigation]);
+  useEffect(() => {
+    checkPermissions();
+    const unsubscribe = navigation.addListener("focus", () => {
+      resetForm();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     setEvent({ ...event, ["creator"]: { connect: { id: userId } } });
@@ -119,7 +124,7 @@ const CreateTab = () => {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images", "videos"],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
@@ -154,27 +159,6 @@ const CreateTab = () => {
       location: location.name,
     }));
     setShowSuggestions(false);
-  };
-
-  const formatDate = (date) => {
-    return date.toLocaleDateString("en-GB");
-  };
-
-  const formatTime = (time) => {
-    return time.toLocaleTimeString("en-GB", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const handleConfirmDate = (selectedDate) => {
-    setEvent((prev) => ({ ...prev, date: selectedDate }));
-    setDatePickerVisibility(false);
-  };
-
-  const handleConfirmTime = (selectedTime) => {
-    setEvent((prev) => ({ ...prev, time: selectedTime }));
-    setTimePickerVisibility(false);
   };
 
   const togglePrivacy = () => {
@@ -258,8 +242,17 @@ const CreateTab = () => {
       },
     };
 
+    // Format event/date
+    let date = postData.date.split("T")[0];
+    let time = postData.time.split("T")[1];
+
+    let formatDateTime = `${date}T${time}`;
+
+    postData["date"] = formatDateTime;
+    postData["time"] = formatDateTime;
+
     Haptics.selectionAsync();
-    console.log("POSTING", postData);
+
     await axios
       .post(`${BASE_URL}/events/create`, postData)
       .then(({ data }) => {
@@ -426,37 +419,42 @@ const CreateTab = () => {
 
         <View style={styles.horiz}>
           {/* Date Field */}
-          <View style={styles.detailContainer}>
+          <View style={styles.dateContainer}>
             <Text style={styles.label}>Date</Text>
-            <Pressable
-              onPress={() => setDatePickerVisibility(true)}
-              style={styles.field}
-            >
-              <Text style={styles.dateTimeText}>{formatDate(event.date)}</Text>
+            <Pressable style={[styles.dateField, { padding: 0 }]}>
+              <RNDateTimePicker
+                style={{ flex: 1, width: 100 }}
+                mode='date'
+                value={
+                  event.date ||
+                  new Date(
+                    Date.now() - Date.now().getTimezoneOffset() * 60 * 1000
+                  )
+                }
+                onChange={(_, d) => setEvent({ ...event, date: d })}
+              />
             </Pressable>
-            <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode='date'
-              onConfirm={handleConfirmDate}
-              onCancel={() => setDatePickerVisibility(false)}
-            />
           </View>
 
           {/* Time Field */}
-          <View style={styles.detailContainer}>
+          <View style={styles.dateContainer}>
             <Text style={styles.label}>Time</Text>
-            <Pressable
-              onPress={() => setTimePickerVisibility(true)}
-              style={styles.field}
-            >
-              <Text style={styles.dateTimeText}>{formatTime(event.time)}</Text>
+            <Pressable style={[styles.dateField, { padding: 0 }]}>
+              <RNDateTimePicker
+                style={{ flex: 1, width: 100 }}
+                mode='time'
+                value={displayTime || new Date()}
+                onChange={(_, d) => {
+                  let today = new Date(
+                    d.getTime() - d.getTimezoneOffset() * 60 * 1000
+                  );
+
+                  console.log("TIME", today, event.time);
+                  setEvent({ ...event, time: today });
+                  setDisplayTime(d);
+                }}
+              />
             </Pressable>
-            <DateTimePickerModal
-              isVisible={isTimePickerVisible}
-              mode='time'
-              onConfirm={handleConfirmTime}
-              onCancel={() => setTimePickerVisibility(false)}
-            />
           </View>
         </View>
 
@@ -754,6 +752,17 @@ const styles = StyleSheet.create({
   },
   footerArea: {
     marginTop: 100,
+  },
+  dateContainer: {
+    flex: 1,
+  },
+  dateField: {
+    width: "100%",
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 
