@@ -95,7 +95,7 @@ const EventInvite = () => {
         setInvitations((prev) => prev.filter((inv) => inv.id !== invitation.id));
       }
     } catch (error) {
-      console.error("Error toggling invitation:", error);
+      Alert.alert("This user has already been invited to this event by another user");
     }
   };
 
@@ -149,7 +149,9 @@ const EventInvite = () => {
               <View style={styles.imageContainer}>
                 <Image
                   source={{
-                    uri: friend.photo || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
+                    uri:
+                      friend.photo ||
+                      "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
                   }}
                   style={styles.image}
                 />
@@ -169,15 +171,15 @@ const EventInvite = () => {
               ) : status === "rejected" ? (
                 <Image
                   source={require("../assets/images/rejected.png")}
-                  style={styles.attendingIcon}
+                  style={styles.PendingIcon}
                 />
               ) : status === "pending" ? (
                 <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
-                  <Ionicons name="remove-circle-outline" size={30} color="#FF3B30" />
+                  <Ionicons name="remove-circle-outline" size={40} color="#FF3B40" />
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
-                  <Ionicons name="add-circle-outline" size={30} color="#116DFF" />
+                  <Ionicons name="add-circle-outline" size={40} color="#116DFF" />
                 </TouchableOpacity>
               )}
             </TouchableOpacity>
@@ -287,8 +289,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   attendingIcon: {
-    width: 27,
-    height: 27,
+    width: 37,
+    height: 37,
     marginRight: 12,
+  },
+  PendingIcon: {
+    width: 45,
+    height: 45,
+    marginRight: 8,
   },
 });
