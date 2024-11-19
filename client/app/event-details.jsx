@@ -47,7 +47,6 @@ const EventDetails = () => {
   });
 
   const { userId } = getUserData();
-
   const [joined, setJoined] = useState(false);
 
   const fetchEventData = async () => {
@@ -112,6 +111,21 @@ const EventDetails = () => {
     fetchEventData();
   };
 
+  const getMarker = (category) => {
+    console.log("Marker", category);
+    switch (category) {
+      case "Hang":
+        return require("../assets/images/hang_m.png");
+      case "Study":
+        return require("../assets/images/study_m.png");
+      case "Eat":
+        return require("../assets/images/food_m.png");
+      case "Other":
+        return require("../assets/images/other_m.png");
+      default:
+        return require("../assets/images/society_m.png");
+    }
+  };
   return (
     <View style={styles.container}>
       <ParallaxScrollView
@@ -164,7 +178,6 @@ const EventDetails = () => {
           <Text style={styles.attendeesTitle}>Attendees</Text>
           <View style={styles.attendeesList}>
             {/* invite friend icon */}
-
             <TouchableOpacity
               onPress={() => router.push({ pathname: "/event-invite", params: { id } })}>
               <Image
@@ -176,7 +189,6 @@ const EventDetails = () => {
             {eventData.attendees?.map((attendee, index) => (
               <Image
                 key={index}
-                // not sure if it's .user.photo
                 source={{ uri: attendee.user.photo }}
                 style={styles.attendeeImage}
               />
@@ -187,22 +199,31 @@ const EventDetails = () => {
         <MapView
           style={styles.map}
           initialRegion={{
-            // change this
-            // latitude: latitude,
-            // longitude: longitude,
-            latitude: -33.91719,
-            longitude: 151.233033,
+            latitude: parseFloat(eventData.lat) || -33.91719,
+            longitude: parseFloat(eventData.long) || 151.233033,
 
             latitudeDelta: 0.00922,
             longitudeDelta: 0.00421,
           }}>
           <Marker
-            // change this too
-            // coordinate={{ latitude: latitude, longitude: longitude }}
-            coordinate={{ latitude: -33.91719, longitude: 151.233033 }}
+            coordinate={{
+              latitude: parseFloat(eventData.lat),
+              longitude: parseFloat(eventData.long),
+            }}
             name={eventData.name}
-            description={eventData.location}
-          />
+            description={eventData.location}>
+            {/* have the category icons as markers */}
+            <View>
+              <Image
+                source={
+                  eventData.category
+                    ? getMarker(eventData.category)
+                    : require("../assets/images/other_m.png")
+                }
+                style={styles.customMarker}
+              />
+            </View>
+          </Marker>
         </MapView>
       </ParallaxScrollView>
       {/* switch between join and leave button */}
@@ -247,11 +268,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Lexend_700Bold",
     color: "#2a2a2a",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   editEventButton: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
     top: -10,
     right: -5,
   },
@@ -269,7 +290,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 5,
+    paddingVertical: 3,
     marginBottom: 8,
   },
   detailsText: {
@@ -282,12 +303,12 @@ const styles = StyleSheet.create({
     height: 45,
   },
   map: {
-    width: "90%",
+    width: "100%",
     height: 200,
     alignSelf: "center",
     marginBottom: 20,
     borderRadius: 8,
-    marginTop: 10,
+    marginTop: 8,
   },
   linkContainer: {
     position: "absolute",
@@ -339,11 +360,10 @@ const styles = StyleSheet.create({
     fontFamily: "Lexend_700Bold",
   },
   attendeesContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
+    marginBottom: 2,
   },
   attendeesTitle: {
-    fontSize: 20,
+    fontSize: 17,
     marginBottom: 12,
     fontFamily: "Lexend_700Bold",
     color: "#2a2a2a",
@@ -354,5 +374,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
     marginBottom: 10,
+  },
+  customMarker: {
+    width: 42,
+    height: 50,
   },
 });
