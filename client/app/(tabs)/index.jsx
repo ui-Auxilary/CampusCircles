@@ -9,12 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  Link,
-  useLocalSearchParams,
-  router,
-  useFocusEffect,
-} from "expo-router";
+import { Link, useLocalSearchParams, router, useFocusEffect } from "expo-router";
 import axios from "axios";
 import { BASE_URL } from "@/constants/api";
 import { getUserData } from "@/hooks/userContext";
@@ -28,7 +23,7 @@ const HomeTab = () => {
   const params = useLocalSearchParams();
   const [notifications, setNotifications] = useState([]);
   const [events, setEvents] = useState([]);
-  const [expandedNotifications, setExpandedNotifications] = useState({}); // Track expanded state for all notifications
+  const [expandedNotifications, setExpandedNotifications] = useState({});
   const [username, setUsername] = useState("");
   const { userId } = getUserData();
   const [userData, setUserData] = useState({});
@@ -66,8 +61,7 @@ const HomeTab = () => {
       setNotifications(notifs.data.data);
     } catch (e) {
       {
-        hasHaptic &&
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        hasHaptic && Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
       console.log("Error fetching notifications:", e);
       Alert.alert("Error", "Could not fetch notifications");
@@ -80,8 +74,7 @@ const HomeTab = () => {
       console.log("Fetched Events:", data.data);
       setEvents(data.data || []);
     } catch (e) {
-      hasHaptic &&
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      hasHaptic && Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       console.log("Error fetching events:", e);
       Alert.alert("Error", "Could not fetch events");
     }
@@ -96,16 +89,14 @@ const HomeTab = () => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif?.id !== invitationId)
       );
-      hasHaptic &&
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      hasHaptic && Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       if (status === "accepted") {
         await fetchUserEvents(userId);
       }
       Alert.alert(`Success, Invitation ${status}!`);
     } catch (error) {
       {
-        hasHaptic &&
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        hasHaptic && Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
       Alert.alert("Error", "Could not update invitation status.");
     }
@@ -121,9 +112,7 @@ const HomeTab = () => {
   return (
     <View style={styles.homepage}>
       <View style={styles.titleContainer}>
-        <Text style={[styles.text, styles.titleText]}>
-          Welcome, {userData?.name}
-        </Text>
+        <Text style={[styles.text, styles.titleText]}>Welcome, {userData?.name}</Text>
       </View>
 
       {/* Notifications Section */}
@@ -131,12 +120,9 @@ const HomeTab = () => {
         <Text style={styles.sectionTitle}>Notifications</Text>
         <View style={styles.notificationsList}>
           {notifications && notifications.length > 0 ? (
-            <ScrollView
-              contentContainerStyle={{ paddingBottom: 10, flexGrow: 1 }}
-            >
+            <ScrollView contentContainerStyle={{ paddingBottom: 10, flexGrow: 1 }}>
               {notifications.map((notification) => {
-                const isExpanded =
-                  expandedNotifications[notification?.id] || false;
+                const isExpanded = expandedNotifications[notification?.id] || false;
 
                 return (
                   <View key={notification?.id} style={styles.notificationItem}>
@@ -158,48 +144,24 @@ const HomeTab = () => {
                       <Text
                         style={styles.notificationText}
                         numberOfLines={isExpanded ? null : 1}
-                        ellipsizeMode='tail'
-                      >
+                        ellipsizeMode="tail">
                         {notification.inviter.name} invited you to{" "}
-                        <Text style={styles.eventName}>
-                          {notification.event?.name}
-                        </Text>
+                        <Text style={styles.eventName}>{notification.event?.name}</Text>
                       </Text>
                     </View>
                     {/* Action Buttons */}
                     <View style={styles.notificationActions}>
                       {/* Dropdown Arrow */}
                       <TouchableOpacity
-                        onPress={() =>
-                          toggleNotificationExpansion(notification?.id)
-                        } // Toggle expanded state
-                        style={styles.dropdownIconContainer}
-                      >
-                        <Text style={styles.dropdownArrow}>
-                          {isExpanded ? "▲" : "▼"}
-                        </Text>
+                        onPress={() => toggleNotificationExpansion(notification?.id)}
+                        style={styles.dropdownIconContainer}>
+                        <Text style={styles.dropdownArrow}>{isExpanded ? "▲" : "▼"}</Text>
                       </TouchableOpacity>
-                      <Pressable
-                        onPress={() =>
-                          handleInvite(notification?.id, "accepted")
-                        }
-                      >
-                        <Ionicons
-                          name={"checkmark-circle"}
-                          size={48}
-                          color={"#E7E1A6"}
-                        />
+                      <Pressable onPress={() => handleInvite(notification?.id, "accepted")}>
+                        <Ionicons name={"checkmark-circle"} size={48} color={"#E7E1A6"} />
                       </Pressable>
-                      <Pressable
-                        onPress={() =>
-                          handleInvite(notification?.id, "rejected")
-                        }
-                      >
-                        <Ionicons
-                          name={"close-circle"}
-                          size={48}
-                          color={"#CA3E41"}
-                        />
+                      <Pressable onPress={() => handleInvite(notification?.id, "rejected")}>
+                        <Ionicons name={"close-circle"} size={48} color={"#CA3E41"} />
                       </Pressable>
                     </View>
                   </View>
@@ -208,9 +170,7 @@ const HomeTab = () => {
             </ScrollView>
           ) : (
             <View style={styles.noNotiContainer}>
-              <Text style={styles.noNotiText}>
-                You don’t have any invites yet.
-              </Text>
+              <Text style={styles.noNotiText}>You don’t have any invites yet.</Text>
             </View>
           )}
         </View>
@@ -220,11 +180,7 @@ const HomeTab = () => {
       <View style={styles.events}>
         <Text style={styles.sectionTitle}>Your Events</Text>
         {events && events.length > 0 ? (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.eventsList}
-          >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.eventsList}>
             {events.map((event, idx) => (
               <TouchableOpacity
                 key={idx}
@@ -234,16 +190,14 @@ const HomeTab = () => {
                     pathname: "event-details",
                     params: { id: event?.id, page: "home" },
                   });
-                }}
-              >
-              <Image
-                source={{
-                  uri:
-                    event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
-                }}
-                style={styles.eventImage}
-              />
-              <Text style={styles.eventTitle}>{event?.name}</Text>
+                }}>
+                <Image
+                  source={{
+                    uri: event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
+                  }}
+                  style={styles.eventImage}
+                />
+                <Text style={styles.eventTitle}>{event?.name}</Text>
                 <Text style={styles.eventName}>{event?.name}</Text>
               </TouchableOpacity>
             ))}
@@ -251,8 +205,7 @@ const HomeTab = () => {
         ) : (
           <View style={styles.noEventsContainer}>
             <Text style={styles.noEventsText}>
-              You don't have any events yet.{"\n"}Why not join one in the Events
-              tab?
+              You don't have any events yet.{"\n"}Why not join one in the Events tab?
             </Text>
           </View>
         )}
