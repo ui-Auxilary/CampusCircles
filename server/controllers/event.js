@@ -152,9 +152,7 @@ export const leaveEvent = async (req, res) => {
     }
 
     // Update the event to remove the user from attendees
-    const updatedAttendees = event.eventAttendees.filter(
-      (attendeeId) => attendeeId !== userId
-    );
+    const updatedAttendees = event.eventAttendees.filter((attendeeId) => attendeeId !== userId);
 
     await prisma.event.update({
       where: { id: eventId },
