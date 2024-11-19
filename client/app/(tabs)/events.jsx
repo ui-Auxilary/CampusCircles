@@ -19,6 +19,7 @@ import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
 const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
@@ -26,14 +27,13 @@ const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 export default function EventTab() {
   const actionSheetRef = useRef(null);
   const route = useRoute();
+  const router = useRouter();
 
   const [searchText, setSearchText] = useState("");
   const [events, setEvents] = useState([]);
   const [selectedTime, setSelectedTime] = useState("Anytime");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [TimePickerVisibility, setTimePickerVisibility] = useState(false);
-
-  const [icon, setIcon] = useState(require("../../assets/images/food.png"));
 
   const collapseActionSheet = () => {
     if (actionSheetRef.current) {
@@ -49,6 +49,8 @@ export default function EventTab() {
         return require("../../assets/images/study.png");
       case "Eat":
         return require("../../assets/images/food.png");
+      case "Other":
+        return require("../../assets/images/other_m.png");
       default:
         return require("../../assets/images/other.png");
     }
@@ -63,6 +65,8 @@ export default function EventTab() {
         return require("../../assets/images/study_m.png");
       case "Eat":
         return require("../../assets/images/food_m.png");
+      case "Other":
+        return require("../../assets/images/other_m.png");
       default:
         return require("../../assets/images/society_m.png");
     }
@@ -218,12 +222,25 @@ export default function EventTab() {
                     longitude: parseFloat(long),
                   }}
                   title={name}
-                  description={description}>
+                  description={description}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/event-details",
+                      params: {
+                        id: id,
+                        location: description,
+                        latitude: lat,
+                        longitude: long,
+                        name: name,
+                        time: description,
+                      },
+                    })
+                  }>
                   <View>
                     <Image
                       style={styles.customMarker}
                       source={
-                        category ? getMarker(category) : require("../../assets/images/study_m.png")
+                        category ? getMarker(category) : require("../../assets/images/other_m.png")
                       }
                     />
                   </View>
@@ -251,11 +268,11 @@ export default function EventTab() {
 
       {/* quick filters */}
       <ScrollView horizontal={true} style={styles.filterContainer}>
-        {/* Time filter */}
+        {/* time filter */}
         <TouchableOpacity
           style={[styles.quickFilterButtons, styles.selectedFilter]}
           onPress={openTimePicker}>
-          <Text style={[styles.filterText, styles.selectedFilterText]}>{selectedTime}</Text>
+          <Text style={[styles.filterText, styles.selectedFilterText]}>Today's Times</Text>
         </TouchableOpacity>
 
         {/* category filters */}

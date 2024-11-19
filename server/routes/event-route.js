@@ -7,6 +7,7 @@ import {
   updateEvent,
   joinEvent,
   leaveEvent,
+  deleteEvent,
 } from "../controllers/event.js";
 
 const eventRoute = Router();
@@ -18,5 +19,6 @@ eventRoute.post("/create", createEvent);
 eventRoute.put("/update/:id", updateEvent);
 eventRoute.post("/join", joinEvent);
 eventRoute.post("/leave", leaveEvent);
+eventRoute.delete("/delete/:id", deleteEvent);
 
 export default eventRoute;

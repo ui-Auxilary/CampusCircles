@@ -32,6 +32,7 @@ import { getUserData } from "@/hooks/userContext";
 
 // UNSW Locations
 import UNSW_LOCATIONS from "../data/locations.json";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -50,8 +51,14 @@ const EditEvent = () => {
   const [locationQuery, setLocationQuery] = useState("");
   const [locationResults, setLocationResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [displayTime, setDisplayTime] = useState();
+
+  // Helper functions
+  const getTimeNow = () => {
+    let d = new Date(Date.now());
+    d.setTime(d.getTime() - d.getTimezoneOffset() * 60 * 1000);
+    return d;
+  };
 
   const defaultEventData = {
     name: "",
@@ -60,11 +67,22 @@ const EditEvent = () => {
     long: "",
     category: "",
     date: new Date(),
-    time: new Date(),
+    time: getTimeNow(),
     description: "",
     public: true,
-    eventAttendees: [],
+    tag: {
+      connectOrCreate: {
+        where: {
+          name: eventType,
+        },
+        create: {
+          name: eventType,
+        },
+      },
+    },
+    eventAttendees: {},
     society: false,
+    invitations: {},
     creator: {
       connect: {
         id: userId,
@@ -94,9 +112,17 @@ const EditEvent = () => {
           date: fetchedEvent.date ? new Date(fetchedEvent.date) : new Date(),
           time: fetchedEvent.time ? new Date(fetchedEvent.time) : new Date(),
           description: fetchedEvent.description || "",
-          public: fetchedEvent.public !== undefined ? fetchedEvent.public : true,
+          public:
+            fetchedEvent.public !== undefined ? fetchedEvent.public : true,
+          tag: fetchedEvent.tag || {
+            connectOrCreate: {
+              where: { name: "" },
+              create: { name: "" },
+            },
+          },
+          eventAttendees: fetchedEvent.eventAttendees || {},
           society: fetchedEvent.society || false,
-          eventAttendees: fetchedEvent.eventAttendees || [],
+          invitations: fetchedEvent.invitations || {},
           creator: {
             connect: {
               id: fetchedEvent.creator?.id || "",
@@ -130,7 +156,6 @@ const EditEvent = () => {
   };
 
   useEffect(() => {
-    checkPermissions();
     const unsubscribe = navigation.addListener("focus", () => {
       resetForm();
     });
@@ -293,6 +318,15 @@ const EditEvent = () => {
       society: event.society,
     };
 
+    // Format event/date
+    let date = updatedData.date.split("T")[0];
+    let time = updatedData.time.split("T")[1];
+
+    let formatDateTime = `${date}T${time}`;
+
+    updatedData["date"] = formatDateTime;
+    updatedData["time"] = formatDateTime;
+
     // Debugging log
     console.log("Updating event with data:", updatedData);
 
@@ -308,33 +342,29 @@ const EditEvent = () => {
     }
   };
 
-  // const handleCreate = async () => {
-  //   if (!validateForm()) {
-  //     return;
-  //   }
-
-  //   let postData = {
-  //     ...event,
-  //     date: event.date.toISOString(),
-  //     time: event.time.toISOString(),
-  //   };
-
-  //   console.log("POSTING", postData);
-  //   await axios
-  //     .post(`${BASE_URL}/events/create`, postData)
-  //     .then(({ data }) => {
-  //       let createdEvent = data.data;
-  //       if (createdEvent && createdEvent.id) {
-  //         router.push({
-  //           pathname: "event-details",
-  //           params: { id: createdEvent.id },
-  //         });
-  //       }
-  //     })
-  //     .catch((e) => {
-  //       console.log(e);
-  //     });
-  // };
+  const handleDelete = async () => {
+    Alert.alert(
+      "Delete Event",
+      "Are you sure you want to delete this event? This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await axios.delete(`${BASE_URL}/events/delete/${id}`);
+              Alert.alert("Event Deleted", "The event has been deleted.");
+              router.push("/(tabs)");
+            } catch (error) {
+              console.error("Could not delete event:", error);
+              Alert.alert("Error", "An error has occured, event not deleted");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const resetForm = () => {
     setEvent({ ...defaultEventData });
@@ -465,37 +495,42 @@ const EditEvent = () => {
 
         <View style={styles.horiz}>
           {/* Date Field */}
-          <View style={styles.detailContainer}>
+          <View style={styles.dateContainer}>
             <Text style={styles.label}>Date</Text>
-            <Pressable
-              onPress={() => setDatePickerVisibility(true)}
-              style={styles.field}
-            >
-              <Text style={styles.dateTimeText}>{formatDate(event.date)}</Text>
+            <Pressable style={[styles.dateField, { padding: 0 }]}>
+              <RNDateTimePicker
+                style={{ flex: 1, width: 100 }}
+                mode='date'
+                value={
+                  event.date ||
+                  new Date(
+                    Date.now() - Date.now().getTimezoneOffset() * 60 * 1000
+                  )
+                }
+                onChange={(_, d) => setEvent({ ...event, date: d })}
+              />
             </Pressable>
-            <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode='date'
-              onConfirm={handleConfirmDate}
-              onCancel={() => setDatePickerVisibility(false)}
-            />
           </View>
 
           {/* Time Field */}
-          <View style={styles.detailContainer}>
+          <View style={styles.dateContainer}>
             <Text style={styles.label}>Time</Text>
-            <Pressable
-              onPress={() => setTimePickerVisibility(true)}
-              style={styles.field}
-            >
-              <Text style={styles.dateTimeText}>{formatTime(event.time)}</Text>
+            <Pressable style={[styles.dateField, { padding: 0 }]}>
+              <RNDateTimePicker
+                style={{ flex: 1, width: 100 }}
+                mode='time'
+                value={displayTime || new Date()}
+                onChange={(_, d) => {
+                  let today = new Date(
+                    d.getTime() - d.getTimezoneOffset() * 60 * 1000
+                  );
+
+                  console.log("TIME", today, event.time);
+                  setEvent({ ...event, time: today });
+                  setDisplayTime(d);
+                }}
+              />
             </Pressable>
-            <DateTimePickerModal
-              isVisible={isTimePickerVisible}
-              mode='time'
-              onConfirm={handleConfirmTime}
-              onCancel={() => setTimePickerVisibility(false)}
-            />
           </View>
         </View>
 
@@ -570,6 +605,16 @@ const EditEvent = () => {
         </View>
       </View>
       <View style={styles.footerArea} />
+
+      {/* delete button */}
+      <View style={styles.deleteButtonContainer}>
+        <Pressable
+          onPress={handleDelete}
+          style={[styles.deleteButton, styles.shadow]}
+        >
+          <Text style={styles.deleteButtonText}>Delete Event</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 };
@@ -795,7 +840,40 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
   },
   footerArea: {
-    marginTop: 100,
+    marginTop: 2,
+  },
+  deleteButtonContainer: {
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  deleteButton: {
+    backgroundColor: "#BF5E5E",
+    padding: 15,
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    width: "70%",
+    alignSelf: "center",
+    marginBottom: 35,
+    bottom: 42,
+  },
+  deleteButtonText: {
+    color: "#FFFFFF",
+    fontSize: 19,
+    fontFamily: "Lexend_700Bold",
+  },
+  dateContainer: {
+    flex: 1,
+  },
+  dateField: {
+    width: "100%",
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

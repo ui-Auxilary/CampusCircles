@@ -23,6 +23,7 @@ import * as Haptics from "expo-haptics";
 
 import tick from "../../assets/images/tick.png";
 import cross from "../../assets/images/cross.png";
+import { Ionicons } from "@expo/vector-icons";
 
 const HomeTab = () => {
   const { setUserId, hasHaptic } = getUserData();
@@ -46,43 +47,8 @@ const HomeTab = () => {
     }
   }, []);
 
-  const dumb = [
-    {
-      id: "1",
-      inviter: { name: "John Doe" },
-      event: { name: "Study Time" },
-    },
-    {
-      id: "2",
-      inviter: { name: "Jane Smith" },
-      event: { name: "Eat Sesh" },
-    },
-    {
-      id: "3",
-      inviter: { name: "LonglonglonglonglongLonglonglonglonglong" },
-      event: { name: "long long long long long long long long long long long" },
-    },
-    {
-      id: "4",
-      inviter: { name: "Short" },
-      event: { name: "s" },
-    },
-    {
-      id: "5",
-      inviter: { name: "Filler" },
-      event: { name: "filler" },
-    },
-    {
-      id: "6",
-      inviter: { name: "Scroll" },
-      event: { name: "scroll" },
-    },
-  ];
-
   useFocusEffect(
     useCallback(() => {
-      setNotifications(dumb);
-      console.log("POST", setUserId);
       if (userId) {
         console.log("Home ID", params);
         setUsername(params.name);
@@ -97,6 +63,8 @@ const HomeTab = () => {
       const notifs = await axios
         .get(`${BASE_URL}/users/${userId}/notifications`)
         .catch((e) => console.log(e));
+
+      console.log("NOTIFS", notifs.data.data);
       setNotifications(notifs.data.data);
     } catch (e) {
       {
@@ -126,45 +94,26 @@ const HomeTab = () => {
     }
   };
 
-  const handleAcceptInvite = async (notificationId) => {
+  const handleInvite = async (invitationId, status) => {
     try {
-      await axios.put(`${BASE_URL}/invite/${notificationId}/accept`);
+      await axios.put(`${BASE_URL}/invitations/update-status`, {
+        invitationId,
+        status,
+      });
       setNotifications((prevNotifications) =>
-        prevNotifications.filter((notif) => notif?.id !== notificationId)
+        prevNotifications.filter((notif) => notif?.id !== invitationId)
       );
       {
         hasHaptic &&
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Succeess);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      Alert.alert("Success", "Invitation accepted!");
+      Alert.alert(`Success, Invitation ${status}!`);
     } catch (error) {
       {
         hasHaptic &&
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
-      console.error("Error accepting invite:", error);
-      Alert.alert("Error", "Failed to accept the invitation.");
-    }
-  };
-
-  const handleRejectInvite = async (notificationId) => {
-    try {
-      await axios.put(`${BASE_URL}/invite/${notificationId}/reject`);
-      setNotifications((prevNotifications) =>
-        prevNotifications.filter((notif) => notif?.id !== notificationId)
-      );
-      {
-        hasHaptic &&
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Succeess);
-      }
-      Alert.alert("Success", "Invitation rejected!");
-    } catch (error) {
-      {
-        hasHaptic &&
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
-      console.error("Error rejecting invite:", error);
-      Alert.alert("Error", "Failed to reject the invitation.");
+      Alert.alert("Error", "Could not update invitation status.");
     }
   };
 
@@ -197,6 +146,19 @@ const HomeTab = () => {
               <View key={notification?.id} style={styles.notificationItem}>
                 <View style={styles.notificationTextContainer}>
                   {/* Notification Text */}
+                  <Image
+                    source={
+                      notification.inviter.photo || {
+                        uri: "https://www.gravatar.com/avatar/?d=identicon",
+                      }
+                    }
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 50,
+                      marginRight: 10,
+                    }}
+                  />
                   <Text
                     style={styles.notificationText}
                     numberOfLines={isExpanded ? null : 1} // Expand if isExpanded is true
@@ -222,14 +184,22 @@ const HomeTab = () => {
                     </Text>
                   </TouchableOpacity>
                   <Pressable
-                    onPress={() => handleAcceptInvite(notification?.id)}
+                    onPress={() => handleInvite(notification?.id, "accepted")}
                   >
-                    <Image source={tick} style={styles.actionIcon} />
+                    <Ionicons
+                      name={"checkmark-circle"}
+                      size={48}
+                      color={"#E7E1A6"}
+                    />
                   </Pressable>
                   <Pressable
-                    onPress={() => handleRejectInvite(notification?.id)}
+                    onPress={() => handleInvite(notification?.id, "rejected")}
                   >
-                    <Image source={cross} style={styles.actionIcon} />
+                    <Ionicons
+                      name={"close-circle"}
+                      size={48}
+                      color={"#CA3E41"}
+                    />
                   </Pressable>
                 </View>
               </View>

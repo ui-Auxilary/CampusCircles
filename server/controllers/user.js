@@ -73,7 +73,6 @@ export const createUser = async (req, res) => {
     showPronoun: true,
     allowNotif: true,
     hasHaptic: true,
-    eventsAttend: {},
     eventsCreated: {},
     invReceived: {},
     invSent: {},
@@ -95,6 +94,7 @@ export const createUser = async (req, res) => {
       data: user.id,
     });
   } catch (e) {
+    console.log("Error", e);
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       if (e.code === "P2002") {
         res.status(400).json({
@@ -214,7 +214,6 @@ export const updateUser = async (req, res) => {
       showPronoun: userData.showPronoun,
       allowNotif: userData.allowNotif,
       hasHaptic: userData.hasHaptic,
-      eventsAttend: userData.eventsAttend || undefined,
       eventsCreated: userData.eventsCreated || undefined,
       invReceived: userData.invReceived || undefined,
       invSent: userData.invSent || undefined,
