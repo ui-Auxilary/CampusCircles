@@ -248,7 +248,11 @@ const EventDetails = () => {
             {eventData.attendeeDetails?.map((attendee, index) => (
               <Image
                 key={index}
-                source={{ uri: attendee.photo || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg" }}
+                source={{
+                  uri:
+                    attendee.photo ||
+                    "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
+                }}
                 style={styles.attendeeImage}
               />
             ))}
@@ -351,6 +355,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 3,
     marginBottom: 8,
+    marginRight: 12,
   },
   detailsText: {
     fontSize: 18,
