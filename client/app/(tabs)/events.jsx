@@ -19,6 +19,7 @@ import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
 const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
@@ -102,6 +103,7 @@ const events2 = [
 export default function EventTab() {
   const actionSheetRef = useRef(null);
   const route = useRoute();
+  const router = useRouter();
 
   const [searchText, setSearchText] = useState("");
   const [events, setEvents] = useState([]);
@@ -223,7 +225,20 @@ export default function EventTab() {
                     longitude: parseFloat(long),
                   }}
                   title={name}
-                  description={description}>
+                  description={description}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/event-details",
+                      params: {
+                        id: id,
+                        location: description,
+                        latitude: lat,
+                        longitude: long,
+                        name: name,
+                        time: description,
+                      },
+                    })
+                  }>
                   <View>
                     <Image
                       style={styles.customMarker}
