@@ -149,7 +149,7 @@ const HomeTab = () => {
                   <Image
                     source={
                       notification.inviter.photo || {
-                        uri: "https://www.gravatar.com/avatar/?d=identicon",
+                        uri: "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
                       }
                     }
                     style={{

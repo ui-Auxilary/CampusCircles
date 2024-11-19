@@ -155,7 +155,7 @@ const UserList = () => {
                 source={{
                   uri: user.photo
                     ? user.photo
-                    : "https://www.gravatar.com/avatar/?d=identicon",
+                    : "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
                 }}
                 style={styles.image}
               />
