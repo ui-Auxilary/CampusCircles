@@ -376,6 +376,17 @@ const styles = StyleSheet.create({
     fontFamily: "Lexend_500Medium",
     textAlign: "center",
     lineHeight: 22,
+  eventTitle: {
+    position: "absolute",
+    bottom: 0,
+    padding: 16,
+    width: "100%",
+    color: "#FFFFFF",
+    fontFamily: "Lexend_500Medium",
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    fontSize: 18,
+    backgroundColor: "#2b2323a2",
   },
 });
 
