@@ -157,7 +157,7 @@ const EventInvite = () => {
             <View style={styles.imageContainer}>
               <Image
                 source={{
-                  uri: friend.photo || "https://www.gravatar.com/avatar/?d=identicon",
+                  uri: friend.photo || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
                 }}
                 style={styles.image}
               />

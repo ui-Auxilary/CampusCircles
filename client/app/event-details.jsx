@@ -73,46 +73,51 @@ const EventDetails = () => {
       if (id) {
         const response = await axios.get(`${BASE_URL}/events/get/${id}`);
         console.log("EVENT DATA", response.data);
-        setEventData(response.data.data);
 
-        fetchAttendeeDetails();
+        setEventData(response.data.data);
       }
     } catch (e) {
-      console.log("Error fetching event data:", e);
+      console.error("Error fetching event data:", e);
     }
   };
 
-  const fetchAttendeeDetails = async () => {
-    try {
-      if (!eventData.eventAttendees || eventData.eventAttendees.length === 0) {
-        console.warn("No attendees to fetch.");
+  useEffect(() => {
+    const fetchAttendeeDetails = async () => {
+      try {
+        if (!eventData.eventAttendees || eventData.eventAttendees.length === 0) {
+          console.warn("No attendees to fetch.");
+          setEventData((prev) => ({
+            ...prev,
+            attendeeDetails: [],
+          }));
+          return;
+        }
+
+        const attendeeDetails = await Promise.all(
+          eventData.eventAttendees.map(async (userId) => {
+            try {
+              const response = await axios.get(`${BASE_URL}/users/${userId}`);
+              return response.data.data;
+            } catch (error) {
+              console.warn(`User not found for ID: ${userId}`, error);
+              return null;
+            }
+          })
+        );
+
         setEventData((prev) => ({
           ...prev,
-          attendeeDetails: [],
+          attendeeDetails: attendeeDetails.filter((attendee) => attendee !== null),
         }));
-        return;
+      } catch (error) {
+        console.error("Error fetching attendee details:", error);
       }
+    };
 
-      const attendeeDetails = await Promise.all(
-        eventData.eventAttendees.map(async (userId) => {
-          try {
-            const response = await axios.get(`${BASE_URL}/users/${userId}`);
-            return response.data.data;
-          } catch (error) {
-            console.warn(`User not found for ID: ${userId}`, error);
-            return null;
-          }
-        })
-      );
-
-      setEventData((prev) => ({
-        ...prev,
-        attendeeDetails: attendeeDetails.filter((attendee) => attendee !== null),
-      }));
-    } catch (error) {
-      console.error("Error fetching attendee details:", error);
+    if (eventData.eventAttendees) {
+      fetchAttendeeDetails();
     }
-  };
+  }, [eventData.eventAttendees]);
 
   useFocusEffect(
     useCallback(() => {
@@ -243,7 +248,7 @@ const EventDetails = () => {
             {eventData.attendeeDetails?.map((attendee, index) => (
               <Image
                 key={index}
-                source={{ uri: attendee.photo || "https://via.placeholder.com/50" }}
+                source={{ uri: attendee.photo || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg" }}
                 style={styles.attendeeImage}
               />
             ))}
