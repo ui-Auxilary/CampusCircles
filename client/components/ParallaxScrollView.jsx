@@ -8,7 +8,7 @@ import Animated, {
 
 import { ThemedView } from "@/components/ThemedView";
 
-const HEADER_HEIGHT = 230;
+const HEADER_HEIGHT = 200;
 
 export default function ParallaxScrollView({
   children,
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 230,
+    height: 200,
     overflow: "hidden",
   },
   content: {
