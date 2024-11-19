@@ -152,9 +152,7 @@ export const leaveEvent = async (req, res) => {
     }
 
     // Update the event to remove the user from attendees
-    const updatedAttendees = event.eventAttendees.filter(
-      (attendeeId) => attendeeId !== userId
-    );
+    const updatedAttendees = event.eventAttendees.filter((attendeeId) => attendeeId !== userId);
 
     await prisma.event.update({
       where: { id: eventId },
@@ -174,6 +172,40 @@ export const leaveEvent = async (req, res) => {
     res.status(500).json({
       status: false,
       message: "Server error: could not leave event",
+    });
+  }
+};
+
+export const deleteEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if the event exists
+    const event = await prisma.event.findUnique({
+      where: { id },
+    });
+
+    if (!event) {
+      return res.status(400).json({
+        status: false,
+        message: "Event could not be found",
+      });
+    }
+
+    // Delete event
+    await prisma.event.delete({
+      where: { id },
+    });
+
+    res.status(200).json({
+      status: true,
+      message: "Event deleted successfully",
+    });
+  } catch (e) {
+    console.error("Server error when deleting event:", e);
+    res.status(500).json({
+      status: false,
+      message: "Server error: could not delete event",
     });
   }
 };
