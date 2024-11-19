@@ -117,29 +117,23 @@ export const updateInvitationStatus = async (req, res) => {
 
 
 export const getInvitationsForEvent = async (req, res) => {
+  console.log("Received request for invitations with eventId:", req.params.eventId);
   try {
-    const { eventId } = req.params;
-
     const invitations = await prisma.invitation.findMany({
-      where: {
-        eventId,
-      },
-      include: {
-        invitee: true,
-        inviter: true,
-      },
+      where: { eventId: req.params.eventId },
+      include: { invitee: true, inviter: true },
     });
-
     res.status(200).json({
       status: true,
       message: "Invitations fetched successfully",
       data: invitations,
     });
   } catch (e) {
-    console.error("Server error when fetching invitations:", e);
+    console.error("Error fetching invitations:", e);
     res.status(500).json({
       status: false,
       message: "Server error: could not fetch invitations",
     });
   }
 };
+
