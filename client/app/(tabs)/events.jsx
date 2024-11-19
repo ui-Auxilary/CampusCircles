@@ -88,21 +88,19 @@ export default function EventTab() {
   }
 
   const filterEvents = (events, filters) => {
-    if (!filters) return events;
-  
     return events.filter((event) => {
-      // Category Filter
-      const categoryMatch =
-        !filters.selectedCategory || filters.selectedCategory === "All Categories"
-          ? true
-          : event.category === filters.selectedCategory;
-  
-      // Time Filter
+      // Convert event date and filter date to UTC, and extract the date part only
+      const eventDateString = event.date ? new Date(event.date).toISOString().substring(0, 10) : null;
+      const filterDateString = filters.selectedDate ? new Date(filters.selectedDate).toISOString().substring(0, 10) : null;
+
+      const categoryMatch = !filters.selectedCategory || filters.selectedCategory === "All Categories"
+        ? true
+        : event.category === filters.selectedCategory;
+
       let timeCategory = "";
       if (event.time) {
-        const eventDate = new Date(event.time?.$date || event.time);
-        const hours = eventDate.getHours();
-  
+        const eventDate = new Date(event.time);
+        const hours = eventDate.getUTCHours();
         if (hours >= 6 && hours < 12) {
           timeCategory = "Morning";
         } else if (hours >= 12 && hours < 14) {
@@ -113,29 +111,13 @@ export default function EventTab() {
           timeCategory = "Night";
         }
       }
-  
-      const timeMatch =
-        !filters.selectedTime || filters.selectedTime === "Anytime"
-          ? true
-          : filters.selectedTime === timeCategory;
-  
-      // Date Filter
-      const eventDate = new Date(event.date?.$date || event.date);
-      const filterDate = new Date(filters.selectedDate);
-  
-      // console.log("Event Date:", eventDate.toDateString());
-      // console.log("Filter Date:", filterDate.toDateString());
-      // Set both dates to midnight (ignore time)
-      eventDate.setHours(0, 0, 0, 0);
-      filterDate.setHours(0, 0, 0, 0);
-  
-      const dateMatch = filters.selectedDate
-        ? eventDate.getTime() === filterDate.getTime()
-        : true;
 
-      // console.log("Category Match:", categoryMatch);
-      // console.log("Time Match:", timeMatch);
-      // console.log("Date Match:", dateMatch);
+      const timeMatch = !filters.selectedTime || filters.selectedTime === "Anytime"
+        ? true
+        : filters.selectedTime === timeCategory;
+
+      const dateMatch = !filterDateString || eventDateString === filterDateString;
+
       return categoryMatch && timeMatch && dateMatch;
     });
   };

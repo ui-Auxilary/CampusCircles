@@ -80,10 +80,26 @@ export const updateInvitationStatus = async (req, res) => {
   try {
     const { invitationId, status } = req.body;
 
+    // Update the invitation status
     const updatedInvitation = await prisma.invitation.update({
       where: { id: invitationId },
       data: { status },
+      include: { event: true },
     });
+
+    if (status === "accepted") {
+      const inviteeId = updatedInvitation.inviteeId;
+      const eventId = updatedInvitation.eventId;
+
+      await prisma.event.update({
+        where: { id: eventId },
+        data: {
+          eventAttendees: {
+            push: inviteeId,
+          },
+        },
+      });
+    }
 
     res.status(200).json({
       status: true,
@@ -98,6 +114,7 @@ export const updateInvitationStatus = async (req, res) => {
     });
   }
 };
+
 
 export const getInvitationsForEvent = async (req, res) => {
   try {

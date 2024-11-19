@@ -522,34 +522,21 @@ export const getUserEvents = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    // get events user created in order of creation
-    const eventsCreated = await prisma.event.findMany({
-      where: { creatorId: userId },
-      orderBy: { createdAt: "desc" },
-    });
-
-    // get events user attending in order of most upcoming dates
-    const eventsAttending = await prisma.event.findMany({
+    // Fetch events where the user is an attendee
+    const userEvents = await prisma.event.findMany({
       where: {
-        eventAttendees: {
-          has: userId,
-        },
+        eventAttendees: { has: userId }
       },
       orderBy: { date: "asc" },
     });
 
-    console.log("CREATED", eventsCreated, "ATTEND", eventsAttending);
-    // extract only event object from eventsAttending
     res.json({
       status: true,
       message: "User events fetched successfully",
-      data: {
-        created: eventsCreated,
-        attending: eventsAttending.map((attendee) => attendee.event),
-      },
+      data: userEvents,
     });
   } catch (e) {
-    console.error(e);
+    console.error("Error fetching user events:", e);
     res.status(500).json({
       status: false,
       message: "Server error",

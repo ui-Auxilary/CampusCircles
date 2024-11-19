@@ -78,7 +78,7 @@ const EventFilter = () => {
       {/* Categories */}
       <Text style={styles.sectionTitle}>Category</Text>
       <View style={styles.tagRow}>
-        {["Hangout", "Study", "Eat", "Society", "Other"].map((category) => (
+        {["Hang", "Study", "Eat", "Society", "Other"].map((category) => (
           <TouchableOpacity
             key={category}
             onPress={() =>

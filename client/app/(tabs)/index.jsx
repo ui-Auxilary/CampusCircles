@@ -21,15 +21,13 @@ import { getUserData } from "@/hooks/userContext";
 
 import * as Haptics from "expo-haptics";
 
-import tick from "../../assets/images/tick.png";
-import cross from "../../assets/images/cross.png";
 import { Ionicons } from "@expo/vector-icons";
 
 const HomeTab = () => {
   const { setUserId, hasHaptic } = getUserData();
   const params = useLocalSearchParams();
   const [notifications, setNotifications] = useState([]);
-  const [events, setEvents] = useState({ created: [], attending: [] });
+  const [events, setEvents] = useState([]);
   const [expandedNotifications, setExpandedNotifications] = useState({}); // Track expanded state for all notifications
   const [username, setUsername] = useState("");
   const { userId } = getUserData();
@@ -78,17 +76,12 @@ const HomeTab = () => {
 
   const fetchUserEvents = async (userId) => {
     try {
-      const events = await axios
-        .get(`${BASE_URL}/users/${userId}/events`)
-        .then(({ data }) => {
-          setEvents(data.data);
-        })
-        .catch((e) => console.log(e));
+      const { data } = await axios.get(`${BASE_URL}/users/${userId}/events`);
+      console.log("Fetched Events:", data.data);
+      setEvents(data.data || []);
     } catch (e) {
-      {
-        hasHaptic &&
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
+      hasHaptic &&
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       console.log("Error fetching events:", e);
       Alert.alert("Error", "Could not fetch events");
     }
@@ -103,10 +96,11 @@ const HomeTab = () => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif?.id !== invitationId)
       );
-      {
-        hasHaptic &&
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
+      hasHaptic &&
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (status === "accepted") {
+        await fetchUserEvents(userId);
+     }
       Alert.alert(`Success, Invitation ${status}!`);
     } catch (error) {
       {
@@ -148,9 +142,7 @@ const HomeTab = () => {
                   {/* Notification Text */}
                   <Image
                     source={
-                      notification.inviter.photo || {
-                        uri: "https://www.gravatar.com/avatar/?d=identicon",
-                      }
+                      { uri: notification.inviter.photo ||  "https://www.gravatar.com/avatar/?d=identicon" }
                     }
                     style={{
                       width: 48,
@@ -211,33 +203,41 @@ const HomeTab = () => {
       {/* Events Section */}
       <View style={styles.events}>
         <Text style={styles.sectionTitle}>Your Events</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.eventsList}
-        >
-          {[...events.created, ...events.attending].map((event, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={styles.eventItem}
-              onPress={() => {
-                router.push({
-                  pathname: "event-details",
-                  params: { id: event?.id, page: "home" },
-                });
-              }}
-            >
-              <Image
-                source={{
-                  uri:
-                    event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
+        {events && events.length > 0 ? (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.eventsList}
+          >
+            {events.map((event, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={styles.eventItem}
+                onPress={() => {
+                  router.push({
+                    pathname: "event-details",
+                    params: { id: event?.id, page: "home" },
+                  });
                 }}
-                style={styles.eventImage}
-              />
-              <Text style={styles.eventName}>{event?.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              >
+                <Image
+                  source={{
+                    uri:
+                      event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
+                  }}
+                  style={styles.eventImage}
+                />
+                <Text style={styles.eventName}>{event?.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        ) : (
+        <View style={styles.noEventsContainer}>
+            <Text style={styles.noEventsText}>
+              You don’t have any events yet.{"\n"}Why not join one in the Events tab?
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -333,6 +333,18 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 10,
     marginBottom: 5,
+  },
+  noEventsContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+  },
+  noEventsText: {
+    fontSize: 16,
+    color: "#6B7280", // Muted gray color
+    fontFamily: "Lexend_500Medium",
+    textAlign: "center",
+    lineHeight: 22,
   },
 });
 
