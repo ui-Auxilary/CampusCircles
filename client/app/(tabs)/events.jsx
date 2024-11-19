@@ -24,82 +24,6 @@ import { useRouter } from "expo-router";
 const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
 const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 
-// placeholder data
-const events2 = [
-  {
-    id: "1",
-    name: "Lunch @ the Quad",
-    time: "Today: 12-1pm",
-    location: "Quad",
-    // latitude: -33.91719,
-    // longitude: 151.233033,
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/food.png"),
-    description: "Description!!!",
-    attendees: ["001", "002"],
-  },
-  {
-    id: "2",
-    name: "Board games!",
-    time: "Today: 4-5:30pm",
-    location: "Village Green",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/hang.png"),
-    attendees: ["001", "002", "003"],
-  },
-  {
-    id: "3",
-    name: "Study session",
-    time: "Today: 3-5pm",
-    location: "SEB Basement",
-    description:
-      "Description !!! wowowowo w oweiriowe ioweriwoer ow ieriwo rweio rwioruwiru wiro weioru wioru woeiru weioruweioru wiorthdfsiogh sdfgihfds ihgdsiogh sdiofgh iosdfgh ",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/study.png"),
-    attendees: ["001", "002"],
-  },
-  {
-    id: "4",
-    name: "CSE Soc AGM",
-    time: "Today: 6pm",
-    location: "Ainsworth",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/society.png"),
-    attendees: ["001", "002", "003"],
-  },
-  {
-    id: "5",
-    name: "Other event",
-    time: "Today: 8pm",
-    location: "ASB",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/other.png"),
-    attendees: ["001", "003"],
-  },
-  {
-    id: "6",
-    name: "Other event",
-    time: "Today: 8pm",
-    location: "ASB",
-    description: "Description !!!",
-    icon: require("../../assets/images/other.png"),
-    attendees: ["001", "003"],
-  },
-  {
-    id: "7",
-    name: "Other event",
-    time: "Today: 8pm",
-    location: "ASB",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/other.png"),
-    attendees: ["001", "003"],
-  },
-];
-
 export default function EventTab() {
   const actionSheetRef = useRef(null);
   const route = useRoute();
@@ -110,8 +34,6 @@ export default function EventTab() {
   const [selectedTime, setSelectedTime] = useState("Anytime");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [TimePickerVisibility, setTimePickerVisibility] = useState(false);
-
-  const [icon, setIcon] = useState(require("../../assets/images/food.png"));
 
   const collapseActionSheet = () => {
     if (actionSheetRef.current) {
@@ -135,7 +57,6 @@ export default function EventTab() {
   };
 
   const getMarker = (category) => {
-    console.log("Marker", category);
     switch (category) {
       case "Hang":
         return require("../../assets/images/hang_m.png");
@@ -167,8 +88,16 @@ export default function EventTab() {
           setEvents(data.data);
         })
         .catch((e) => console.log(e));
+
+      return () => {
+        setEvents([]);
+      };
     }, [])
   );
+
+  useEffect(() => {
+    console.log("LOADING", events);
+  }, []);
 
   const openTimePicker = () => setTimePickerVisibility(true);
   const closeTimePicker = () => setTimePickerVisibility(false);
