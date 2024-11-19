@@ -4,6 +4,7 @@ import {
   getEvent,
   getEvents,
   getEventsToday,
+  getEventsUpcoming,
   updateEvent,
   joinEvent,
   leaveEvent,
@@ -14,6 +15,7 @@ const eventRoute = Router();
 
 eventRoute.get("/get", getEvents);
 eventRoute.get("/get/today", getEventsToday);
+eventRoute.get("/get/upcoming", getEventsUpcoming);
 eventRoute.get("/get/:id", getEvent);
 eventRoute.post("/create", createEvent);
 eventRoute.put("/update/:id", updateEvent);

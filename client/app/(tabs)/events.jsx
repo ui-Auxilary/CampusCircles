@@ -21,7 +21,14 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 
-const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
+const categories = [
+  "All Categories",
+  "Hang",
+  "Study",
+  "Eat",
+  "Society",
+  "Other",
+];
 const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 
 export default function EventTab() {
@@ -34,6 +41,8 @@ export default function EventTab() {
   const [selectedTime, setSelectedTime] = useState("Anytime");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [TimePickerVisibility, setTimePickerVisibility] = useState(false);
+  const [textFilter, setTextFilter] = useState({});
+  const [fetchToday, setFetchToday] = useState(route.params ? false : true);
 
   const collapseActionSheet = () => {
     if (actionSheetRef.current) {
@@ -57,7 +66,6 @@ export default function EventTab() {
   };
 
   const getMarker = (category) => {
-    // console.log("Marker", category);
     switch (category) {
       case "Hang":
         return require("../../assets/images/hang_m.png");
@@ -72,12 +80,6 @@ export default function EventTab() {
     }
   };
 
-  useEffect(() => {
-    if (route.params?.openEventsList && actionSheetRef.current) {
-      actionSheetRef.current.setModalVisible(true);
-    }
-  }, [route.params]);
-
   let { filters } = route.params || {};
 
   if (filters && filters.selectedDate) {
@@ -87,19 +89,41 @@ export default function EventTab() {
     };
   }
 
+  const handleSearchFilter = (text) => {
+    setSearchText(text);
+    if (text) {
+      setTextFilter({ text });
+    } else {
+      setTextFilter(fetchToday ? { selectedDate: new Date(Date.now()) } : null);
+    }
+  };
+
+  useEffect(() => {
+    if (route.params?.openEventsList && actionSheetRef.current) {
+      actionSheetRef.current.setModalVisible(true);
+    }
+  }, [route.params]);
+
   const filterEvents = (events, filters) => {
     return events.filter((event) => {
       // Convert event date and filter date to UTC, and extract the date part only
-      const eventDateString = event.date ? new Date(event.date).toISOString().substring(0, 10) : null;
-      const filterDateString = filters.selectedDate ? new Date(filters.selectedDate).toISOString().substring(0, 10) : null;
+      const eventDateString = event.date
+        ? new Date(event.date).toISOString().substring(0, 10)
+        : null;
+      const filterDateString = filters.selectedDate
+        ? new Date(filters.selectedDate).toISOString().substring(0, 10)
+        : null;
 
-      const categoryMatch = !filters.selectedCategory || filters.selectedCategory === "All Categories"
-        ? true
-        : event.category === filters.selectedCategory;
+      const categoryMatch =
+        !filters.selectedCategory ||
+        filters.selectedCategory === "All Categories"
+          ? true
+          : event.category === filters.selectedCategory;
 
       let timeCategory = "";
       if (event.time) {
         const eventDate = new Date(event.time);
+
         const hours = eventDate.getUTCHours();
         if (hours >= 6 && hours < 12) {
           timeCategory = "Morning";
@@ -112,13 +136,18 @@ export default function EventTab() {
         }
       }
 
-      const timeMatch = !filters.selectedTime || filters.selectedTime === "Anytime"
-        ? true
-        : filters.selectedTime === timeCategory;
+      const textMatch =
+        !filters.text || (event.name && event.name.includes(filters.text));
 
-      const dateMatch = !filterDateString || eventDateString === filterDateString;
+      const timeMatch =
+        !filters.selectedTime || filters.selectedTime === "Anytime"
+          ? true
+          : filters.selectedTime === timeCategory;
 
-      return categoryMatch && timeMatch && dateMatch;
+      const dateMatch =
+        !filterDateString || eventDateString === filterDateString;
+
+      return categoryMatch && timeMatch && dateMatch && textMatch;
     });
   };
 
@@ -126,26 +155,50 @@ export default function EventTab() {
     useCallback(() => {
       const fetchEvents = async () => {
         try {
-          const { data } = await axios.get(`${BASE_URL}/events/get/today`);
+          console.log(
+            "FETCH LINK",
+            `${BASE_URL}/events/get/${
+              fetchToday || !filters ? "today" : "upcoming"
+            }`
+          );
+          const { data } = await axios.get(
+            `${BASE_URL}/events/get/${
+              fetchToday || !filters ? "today" : "upcoming"
+            }`
+          );
           let fetchedEvents = data.data;
-
           // Apply filters if any
-          if (filters) {
-            fetchedEvents = filterEvents(fetchedEvents, filters);
+          if (filters || textFilter) {
+            fetchedEvents = filterEvents(fetchedEvents, {
+              ...filters,
+              ...textFilter,
+            });
+          } else {
+            setFetchToday(true);
           }
 
-          setEvents(fetchedEvents);
+          setEvents([...fetchedEvents]);
         } catch (e) {
           console.log("Error fetching events:", e);
         }
       };
 
       fetchEvents();
-    }, [filters])
+    }, [filters, textFilter])
   );
 
   const openTimePicker = () => setTimePickerVisibility(true);
   const closeTimePicker = () => setTimePickerVisibility(false);
+
+  const formatDate = (date) => {
+    if (date) {
+      let [strDate, time] = date.split("T");
+      time = time.split(".")[0];
+
+      return [strDate, " ", time];
+    }
+    return;
+  };
 
   const renderEventItem = ({ item }) => (
     <Link
@@ -164,18 +217,21 @@ export default function EventTab() {
         },
       }}
       asChild
-      onPress={collapseActionSheet}>
+      onPress={collapseActionSheet}
+    >
       <TouchableOpacity style={styles.eventItem}>
         <View style={styles.eventContent}>
           <Image
             source={
-              item.category ? getIcon(item.category) : require("../../assets/images/hang.png")
+              item.category
+                ? getIcon(item.category)
+                : require("../../assets/images/hang.png")
             }
             style={styles.eventIcon}
           />
           <View>
             <Text style={styles.eventTitle}>{item.name}</Text>
-            <Text style={styles.eventDetails}>{item.time}</Text>
+            <Text style={styles.eventDetails}>{formatDate(item.time)}</Text>
             <Text style={styles.eventDetails}>{item.location}</Text>
           </View>
         </View>
@@ -188,47 +244,50 @@ export default function EventTab() {
       {/* Map Container */}
       <View style={styles.mapContainer}>
         <MapView
+          key={events.length}
           initialRegion={{
             latitude: -33.91719,
             longitude: 151.233033,
             latitudeDelta: 0.0088,
             longitudeDelta: 0.0091,
           }}
-          style={styles.map}>
-          {events.length > 0
-            ? events.map(({ id, lat, long, description, name, category }, idx) => (
-                <Marker
-                  key={idx}
-                  coordinate={{
-                    latitude: parseFloat(lat),
-                    longitude: parseFloat(long),
-                  }}
-                  title={name}
-                  description={description}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/event-details",
-                      params: {
-                        id: id,
-                        location: description,
-                        latitude: lat,
-                        longitude: long,
-                        name: name,
-                        time: description,
-                      },
-                    })
-                  }>
-                  <View>
-                    <Image
-                      style={styles.customMarker}
-                      source={
-                        category ? getMarker(category) : require("../../assets/images/other_m.png")
-                      }
-                    />
-                  </View>
-                </Marker>
-              ))
-            : null}
+          style={styles.map}
+        >
+          {events.map(({ id, lat, long, description, name, category }, idx) => (
+            <Marker
+              key={idx}
+              coordinate={{
+                latitude: parseFloat(lat),
+                longitude: parseFloat(long),
+              }}
+              title={name}
+              description={description}
+              onPress={() =>
+                router.push({
+                  pathname: "/event-details",
+                  params: {
+                    id: id,
+                    location: description,
+                    latitude: lat,
+                    longitude: long,
+                    name: name,
+                    time: description,
+                  },
+                })
+              }
+            >
+              <View>
+                <Image
+                  style={styles.customMarker}
+                  source={
+                    category
+                      ? getMarker(category)
+                      : require("../../assets/images/other_m.png")
+                  }
+                />
+              </View>
+            </Marker>
+          ))}
         </MapView>
       </View>
 
@@ -236,14 +295,16 @@ export default function EventTab() {
       <View style={styles.searchbarContainer}>
         <TextInput
           style={styles.searchbar}
-          placeholder="Search events"
+          placeholder='Search events'
           value={searchText}
-          onChangeText={(text) => setSearchText(text)}
+          onChangeText={(text) => {
+            handleSearchFilter(text);
+          }}
         />
         {/* full events filter */}
-        <Link href="/eventFilter" asChild>
+        <Link href='/eventFilter' asChild>
           <TouchableOpacity style={styles.filterIcon}>
-            <Ionicons name="filter-circle-outline" size={30} color="#4285F4" />
+            <Ionicons name='filter-circle-outline' size={30} color='#4285F4' />
           </TouchableOpacity>
         </Link>
       </View>
@@ -253,8 +314,11 @@ export default function EventTab() {
         {/* time filter */}
         <TouchableOpacity
           style={[styles.quickFilterButtons, styles.selectedFilter]}
-          onPress={openTimePicker}>
-          <Text style={[styles.filterText, styles.selectedFilterText]}>Today's Times</Text>
+          onPress={openTimePicker}
+        >
+          <Text style={[styles.filterText, styles.selectedFilterText]}>
+            Today's Times
+          </Text>
         </TouchableOpacity>
 
         {/* category filters */}
@@ -265,12 +329,19 @@ export default function EventTab() {
               styles.quickFilterButtons,
               selectedCategory === category ? styles.selectedFilter : null,
             ]}
-            onPress={() => setSelectedCategory(category)}>
+            onPress={() => {
+              setSelectedCategory(category);
+              setTextFilter({ selectedCategory: category });
+            }}
+          >
             <Text
               style={[
                 styles.filterText,
-                selectedCategory === category ? styles.selectedFilterText : null,
-              ]}>
+                selectedCategory === category
+                  ? styles.selectedFilterText
+                  : null,
+              ]}
+            >
               {category}
             </Text>
           </TouchableOpacity>
@@ -280,24 +351,32 @@ export default function EventTab() {
         <Modal
           transparent={true}
           visible={TimePickerVisibility}
-          animationType="slide"
-          onRequestClose={closeTimePicker}>
+          animationType='slide'
+          onRequestClose={closeTimePicker}
+        >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Select Time Period</Text>
               {timeOptions.map((option) => (
                 <TouchableOpacity
                   key={option}
-                  style={[styles.modalOption, option === selectedTime && styles.selectedFilter]}
+                  style={[
+                    styles.modalOption,
+                    option === selectedTime && styles.selectedFilter,
+                  ]}
                   onPress={() => {
                     setSelectedTime(option);
+                    console.log("OPTION", option);
+                    setTextFilter({ selectedTime: option });
                     closeTimePicker();
-                  }}>
+                  }}
+                >
                   <Text
                     style={[
                       styles.modalOptionText,
                       option === selectedTime && styles.selectedFilterText,
-                    ]}>
+                    ]}
+                  >
                     {option}
                   </Text>
                 </TouchableOpacity>
@@ -314,7 +393,8 @@ export default function EventTab() {
           if (actionSheetRef.current) {
             actionSheetRef.current.setModalVisible(true);
           }
-        }}>
+        }}
+      >
         <Text style={styles.openSheetButtonText}>Events List</Text>
       </TouchableOpacity>
 
@@ -331,11 +411,16 @@ export default function EventTab() {
             />
           ) : (
             <View style={styles.noResultsContainer}>
-              <Text style={styles.noResultsText}>Oh no! There are no results matching your filter :(</Text>
-              <Link href="/eventFilter" asChild
+              <Text style={styles.noResultsText}>
+                Oh no! There are no results matching your filter :(
+              </Text>
+              <Link
+                href='/eventFilter'
+                asChild
                 onPress={() => {
                   collapseActionSheet();
-                }}>
+                }}
+              >
                 <TouchableOpacity style={styles.returnButton}>
                   <Text style={styles.returnButtonText}>Return to Filters</Text>
                 </TouchableOpacity>

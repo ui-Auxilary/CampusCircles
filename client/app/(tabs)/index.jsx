@@ -100,7 +100,7 @@ const HomeTab = () => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       if (status === "accepted") {
         await fetchUserEvents(userId);
-     }
+      }
       Alert.alert(`Success, Invitation ${status}!`);
     } catch (error) {
       {
@@ -141,9 +141,11 @@ const HomeTab = () => {
                 <View style={styles.notificationTextContainer}>
                   {/* Notification Text */}
                   <Image
-                    source={
-                      { uri: notification.inviter.photo ||  "https://www.gravatar.com/avatar/?d=identicon" }
-                    }
+                    source={{
+                      uri:
+                        notification.inviter.photo ||
+                        "https://www.gravatar.com/avatar/?d=identicon",
+                    }}
                     style={{
                       width: 48,
                       height: 48,
@@ -223,7 +225,8 @@ const HomeTab = () => {
                 <Image
                   source={{
                     uri:
-                      event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
+                      event?.photo ||
+                      "https://www.openday.unsw.edu.au/share.jpg",
                   }}
                   style={styles.eventImage}
                 />
@@ -232,9 +235,10 @@ const HomeTab = () => {
             ))}
           </ScrollView>
         ) : (
-        <View style={styles.noEventsContainer}>
+          <View style={styles.noEventsContainer}>
             <Text style={styles.noEventsText}>
-              You don’t have any events yet.{"\n"}Why not join one in the Events tab?
+              You don't have any events yet.{"\n"}Why not join one in the Events
+              tab?
             </Text>
           </View>
         )}
@@ -299,7 +303,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   eventName: {
-    fontWeight: "bold",
+    position: "absolute",
     color: "#333333",
   },
   dropdownIconContainer: {

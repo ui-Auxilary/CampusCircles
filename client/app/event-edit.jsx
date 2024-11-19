@@ -507,7 +507,13 @@ const EditEvent = () => {
                     Date.now() - Date.now().getTimezoneOffset() * 60 * 1000
                   )
                 }
-                onChange={(_, d) => setEvent({ ...event, date: d })}
+                onChange={(_, d) => {
+                  let today = new Date(
+                    d.getTime() - d.getTimezoneOffset() * 60 * 1000
+                  );
+
+                  setEvent({ ...event, date: today });
+                }}
               />
             </Pressable>
           </View>
@@ -525,7 +531,6 @@ const EditEvent = () => {
                     d.getTime() - d.getTimezoneOffset() * 60 * 1000
                   );
 
-                  console.log("TIME", today, event.time);
                   setEvent({ ...event, time: today });
                   setDisplayTime(d);
                 }}
