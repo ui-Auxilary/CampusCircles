@@ -12,75 +12,73 @@ const Wizard = () => {
     {
       src: require("../assets/wizard/Wizard1.png"),
       dialogue: `Hey guys, there's a newbie!\n\nMy friends and I'll give you a tour of CampusCircles!`,
-      top: 200,
+      top: 280,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard2.png"),
       dialogue:
         "Great! First stop is the Homepage.\nThis is where you can see your\n upcoming events.",
-      top: 400,
+      top: 470,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard3.png"),
-      dialogue:
-        "Event invites show as notifications\nthat you can accept or decline.",
-      top: 200,
+      dialogue: "Event invites show as notifications\nthat you can accept or decline.",
+      top: 260,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard4.png"),
       dialogue:
         "Next up is Events. This is where you\ncan find and discover public “events”\nhappening around on Campus.",
-      top: 250,
+      top: 260,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard5.png"),
-      dialogue:
-        "Events are colour-coded by categories\nwhich you can filter by.",
-      top: 50,
+      dialogue: "Events are colour-coded by categories\nwhich you can filter by.",
+      top: 80,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard6.png"),
       dialogue:
         "The map view only shows events that\nare on 'Today'. Searching gives a List\nView with more events!",
-      top: 200,
+      top: 260,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard7.png"),
       dialogue: `Event you're looking for doesn't exist?\nNo problem! Under the create tab, you\ncan use our provided tags.`,
-      top: 300,
+      top: 320,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard8.png"),
       dialogue:
         "It's time to get social and expand your\nnetwork. We can add friends with icon in\nthe top-right corner",
-      top: 350,
+      top: 385,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard9.png"),
       dialogue:
         "This provides us with a list of active\nusers! You can find and search for\npeople that align with your interests!",
-      top: 250,
+      top: 340,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard10.png"),
-      dialogue: `Back on the first Circle page.\nFriends that you add will appear here!`,
-      top: 250,
+      dialogue: `Back on the Friends page.\nFriends that you add will appear here!`,
+      top: 300,
       left: 30,
     },
     {
       src: require("../assets/wizard/Wizard11.png"),
       dialogue:
         "Last stop of the day!\n\nThe profile is where you can show off\nyour interests and be yourself!",
-      top: 200,
+      top: 230,
       left: 30,
     },
   ];
@@ -111,10 +109,7 @@ const Wizard = () => {
     <View style={styles.container}>
       {renderComponent()}
 
-      <Image
-        style={styles.wizardImg}
-        source={wizardPages[pageNum]?.src || ""}
-      />
+      <Image style={styles.wizardImg} source={wizardPages[pageNum]?.src || ""} />
     </View>
   );
 };
