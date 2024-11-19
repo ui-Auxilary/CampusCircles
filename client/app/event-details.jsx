@@ -49,6 +49,25 @@ const EventDetails = () => {
   const { userId } = getUserData();
   const [joined, setJoined] = useState(false);
 
+  const [formattedDate, setFormattedDate] = useState("");
+  const [formattedTime, setFormattedTime] = useState("");
+
+  useEffect(() => {
+    if (time) {
+      const parsedDate = new Date(time);
+
+      setFormattedDate(parsedDate.toLocaleDateString());
+
+      setFormattedTime(
+        parsedDate.toLocaleTimeString(undefined, {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      );
+    }
+  }, [time]);
+
   const fetchEventData = async () => {
     try {
       if (id) {
@@ -165,7 +184,7 @@ const EventDetails = () => {
           <Text style={styles.description}>{eventData.description}</Text>
           <View style={styles.detailsContainer}>
             <Image source={require("../assets/images/date.png")} style={styles.icon} />
-            <Text style={styles.detailsText}>{eventData.time}</Text>
+            <Text style={styles.detailsText}>{`${formattedDate} at ${formattedTime}`}</Text>
           </View>
           <View style={styles.detailsContainer}>
             <Image source={require("../assets/images/location.png")} style={styles.icon} />
@@ -189,7 +208,6 @@ const EventDetails = () => {
             {eventData.attendees?.map((attendee, index) => (
               <Image
                 key={index}
-                // source={require("../assets/images/invite-friend.png")}
                 source={{ uri: attendee.user.photo }}
                 style={styles.attendeeImage}
               />
@@ -297,6 +315,7 @@ const styles = StyleSheet.create({
   detailsText: {
     fontSize: 18,
     marginLeft: 15,
+    marginRight: 15,
     fontFamily: "Lexend_400Regular",
   },
   icon: {
