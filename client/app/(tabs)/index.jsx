@@ -234,7 +234,7 @@ const HomeTab = () => {
                 }}
                 style={styles.eventImage}
               />
-              <Text style={styles.eventName}>{event?.name}</Text>
+              <Text style={styles.eventTitle}>{event?.name}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -333,6 +333,18 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 10,
     marginBottom: 5,
+  },
+  eventTitle: {
+    position: "absolute",
+    bottom: 0,
+    padding: 16,
+    width: "100%",
+    color: "#FFFFFF",
+    fontFamily: "Lexend_500Medium",
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    fontSize: 18,
+    backgroundColor: "#2b2323a2",
   },
 });
 
