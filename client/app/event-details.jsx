@@ -189,6 +189,7 @@ const EventDetails = () => {
             {eventData.attendees?.map((attendee, index) => (
               <Image
                 key={index}
+                // source={require("../assets/images/invite-friend.png")}
                 source={{ uri: attendee.user.photo }}
                 style={styles.attendeeImage}
               />

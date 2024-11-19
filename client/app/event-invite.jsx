@@ -18,19 +18,8 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const EventInvite = () => {
   const navigation = useNavigation();
-  const {
-    date,
-    name,
-    time,
-    location,
-    description,
-    lat,
-    long,
-    photo,
-    attendees,
-    creatorId,
-    id,
-  } = useLocalSearchParams();
+  const { date, name, time, location, description, lat, long, photo, attendees, creatorId, id } =
+    useLocalSearchParams();
 
   const [eventData, setEventData] = useState({
     date,
@@ -184,6 +173,12 @@ const EventInvite = () => {
               // If already attending
               <Image
                 source={require("../assets/images/attending.png")}
+                style={styles.attendingIcon}
+              />
+            ) : friend.rejected ? (
+              // If invite rejected
+              <Image
+                source={require("../assets/images/rejected.png")}
                 style={styles.attendingIcon}
               />
             ) : invitedFriends[friend.id] ? (
