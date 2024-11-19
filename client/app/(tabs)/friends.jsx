@@ -49,21 +49,29 @@ const FriendsList = () => {
 
   return (
     <View style={styles.container}>
+      {/* Search bar */}
       <View style={styles.searchContainer}>
         <Ionicons
-          name='search'
+          name="search"
           size={20}
-          color='#888'
+          color="#888"
           style={styles.searchIcon}
         />
         <TextInput
           style={styles.searchBar}
-          placeholder='Search friends by name or username...'
-          placeholderTextColor='#888'
+          placeholder="Search friends by name or username..."
+          placeholderTextColor="#888"
           value={search}
           onChangeText={(text) => setSearch(text)}
         />
       </View>
+
+      {/* Friends count */}
+      <Text style={styles.friendCount}>
+        Your friends ({filteredFriends.length})
+      </Text>
+
+      {/* Friends list */}
       <ScrollView>
         {filteredFriends.map((friend) => (
           <TouchableOpacity
@@ -76,7 +84,7 @@ const FriendsList = () => {
                 source={{
                   uri: friend.photo
                     ? friend.photo
-                    : "https://www.gravatar.com/avatar/?d=identicon",
+                    : "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
                 }}
                 style={styles.image}
               />
@@ -116,6 +124,14 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     fontSize: 16,
     color: "#000",
+  },
+  friendCount: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 15,
+    marginLeft: 15,
+    color: "#333",
+    fontFamily: "Lexend_700Bold",
   },
   friendCard: {
     flexDirection: "row",

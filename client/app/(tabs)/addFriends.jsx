@@ -83,7 +83,7 @@ const UserList = () => {
     }
   };
 
-  // filter for people
+  // Filter users
   const filteredUsers = nonFriends.filter((user) => {
     const userMatch = user.name.toLowerCase().includes(search.toLowerCase());
     const courseMatch = course
@@ -109,22 +109,22 @@ const UserList = () => {
           onPress={() => navigation.navigate("friends")}
           style={styles.backButtonContainer}
         >
-          <Ionicons name='arrow-back' size={24} color='black' />
+          <Ionicons name="arrow-back" size={24} color="black" />
           <Text style={styles.backButton}> Back</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.searchContainer}>
         <View style={styles.searchBarContainer}>
           <Ionicons
-            name='search'
+            name="search"
             size={20}
-            color='#888'
+            color="#888"
             style={styles.searchIcon}
           />
           <TextInput
             style={styles.searchBar}
-            placeholder='Search users by name...'
-            placeholderTextColor='#888'
+            placeholder="Search users by name..."
+            placeholderTextColor="#888"
             value={search}
             onChangeText={(text) => setSearch(text)}
           />
@@ -133,10 +133,16 @@ const UserList = () => {
           style={styles.filterButton}
           onPress={() => navigation.navigate("friendFilter")}
         >
-          <Ionicons name='funnel-outline' size={20} color='#fff' />
+          <Ionicons name="funnel-outline" size={20} color="#fff" />
           <Text style={styles.filterText}>Filter</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Users Count */}
+      <Text style={styles.userCount}>
+        Other Users ({filteredUsers.length})
+      </Text>
+
       <ScrollView>
         {filteredUsers.map((user) => (
           <TouchableOpacity
@@ -149,7 +155,7 @@ const UserList = () => {
                 source={{
                   uri: user.photo
                     ? user.photo
-                    : "https://www.gravatar.com/avatar/?d=identicon",
+                    : "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
                 }}
                 style={styles.image}
               />
@@ -166,7 +172,7 @@ const UserList = () => {
               style={styles.addButton}
               onPress={(e) => handleAddFriend(user.id, e)}
             >
-              <Ionicons name='person-add' size={24} color='#3b82f6' />
+              <Ionicons name="person-add" size={24} color="#3b82f6" />
             </TouchableOpacity>
           </TouchableOpacity>
         ))}
@@ -229,6 +235,14 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
     marginTop: 2,
+  },
+  userCount: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 15,
+    marginLeft: 15,
+    color: "#333",
+    fontFamily: "Lexend_700Bold",
   },
   friendCard: {
     flexDirection: "row",

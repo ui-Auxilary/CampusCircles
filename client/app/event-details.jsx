@@ -1,16 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { ScrollView, View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { useLocalSearchParams, router } from "expo-router";
 import { getUserData } from "@/hooks/userContext";
-import {
-  Lexend_300Regular,
-  Lexend_400Regular,
-  Lexend_500Medium,
-  Lexend_600SemiBold,
-  Lexend_700Bold,
-  useFonts,
-} from "@expo-google-fonts/lexend";
 import { BASE_URL } from "@/constants/api";
 import axios from "axios";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -49,17 +41,83 @@ const EventDetails = () => {
   const { userId } = getUserData();
   const [joined, setJoined] = useState(false);
 
+  const [formattedDate, setFormattedDate] = useState("");
+  const [formattedTime, setFormattedTime] = useState("");
+
+  useEffect(() => {
+    if (eventData.time) {
+      const parsedDate = new Date(eventData.time);
+
+      if (!isNaN(parsedDate)) {
+        setFormattedDate(
+          parsedDate.toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+          })
+        );
+
+        setFormattedTime(
+          parsedDate.toLocaleTimeString(undefined, {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+        );
+      }
+    }
+  }, [eventData.time]);
+
   const fetchEventData = async () => {
     try {
       if (id) {
         const response = await axios.get(`${BASE_URL}/events/get/${id}`);
         console.log("EVENT DATA", response.data);
+
         setEventData(response.data.data);
       }
     } catch (e) {
-      console.log("Error fetching event data:", e);
+      console.error("Error fetching event data:", e);
     }
   };
+
+  useEffect(() => {
+    const fetchAttendeeDetails = async () => {
+      try {
+        if (!eventData.eventAttendees || eventData.eventAttendees.length === 0) {
+          console.warn("No attendees to fetch.");
+          setEventData((prev) => ({
+            ...prev,
+            attendeeDetails: [],
+          }));
+          return;
+        }
+
+        const attendeeDetails = await Promise.all(
+          eventData.eventAttendees.map(async (userId) => {
+            try {
+              const response = await axios.get(`${BASE_URL}/users/${userId}`);
+              return response.data.data;
+            } catch (error) {
+              console.warn(`User not found for ID: ${userId}`, error);
+              return null;
+            }
+          })
+        );
+
+        setEventData((prev) => ({
+          ...prev,
+          attendeeDetails: attendeeDetails.filter((attendee) => attendee !== null),
+        }));
+      } catch (error) {
+        console.error("Error fetching attendee details:", error);
+      }
+    };
+
+    if (eventData.eventAttendees) {
+      fetchAttendeeDetails();
+    }
+  }, [eventData.eventAttendees]);
 
   useFocusEffect(
     useCallback(() => {
@@ -165,7 +223,7 @@ const EventDetails = () => {
           <Text style={styles.description}>{eventData.description}</Text>
           <View style={styles.detailsContainer}>
             <Image source={require("../assets/images/date.png")} style={styles.icon} />
-            <Text style={styles.detailsText}>{eventData.time}</Text>
+            <Text style={styles.detailsText}>{`${formattedDate} at ${formattedTime}`}</Text>
           </View>
           <View style={styles.detailsContainer}>
             <Image source={require("../assets/images/location.png")} style={styles.icon} />
@@ -176,8 +234,10 @@ const EventDetails = () => {
         {/* attendees */}
         <View style={styles.attendeesContainer}>
           <Text style={styles.attendeesTitle}>Attendees</Text>
-          <View style={styles.attendeesList}>
-            {/* invite friend icon */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.attendeesList}>
             <TouchableOpacity
               onPress={() => router.push({ pathname: "/event-invite", params: { id } })}>
               <Image
@@ -185,15 +245,14 @@ const EventDetails = () => {
                 style={styles.attendeeImage}
               />
             </TouchableOpacity>
-
-            {eventData.attendees?.map((attendee, index) => (
+            {eventData.attendeeDetails?.map((attendee, index) => (
               <Image
                 key={index}
-                source={{ uri: attendee.user.photo }}
+                source={{ uri: attendee.photo || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg" }}
                 style={styles.attendeeImage}
               />
             ))}
-          </View>
+          </ScrollView>
         </View>
 
         <MapView
@@ -296,6 +355,7 @@ const styles = StyleSheet.create({
   detailsText: {
     fontSize: 18,
     marginLeft: 15,
+    marginRight: 15,
     fontFamily: "Lexend_400Regular",
   },
   icon: {
@@ -360,7 +420,7 @@ const styles = StyleSheet.create({
     fontFamily: "Lexend_700Bold",
   },
   attendeesContainer: {
-    marginBottom: 2,
+    marginBottom: 16,
   },
   attendeesTitle: {
     fontSize: 17,
@@ -368,12 +428,16 @@ const styles = StyleSheet.create({
     fontFamily: "Lexend_700Bold",
     color: "#2a2a2a",
   },
+  attendeesList: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 5,
+  },
   attendeeImage: {
     width: 50,
     height: 50,
-    borderRadius: 20,
-    marginRight: 10,
-    marginBottom: 10,
+    borderRadius: 25,
+    marginHorizontal: 5,
   },
   customMarker: {
     width: 42,
