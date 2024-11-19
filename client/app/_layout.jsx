@@ -75,6 +75,12 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
+          name='event-invite'
+          options={{
+            header: () => <Header title='Invite Friends' />,
+          }}
+        />
+        <Stack.Screen
           name='(tabs)'
           options={{
             headerShown: false,
