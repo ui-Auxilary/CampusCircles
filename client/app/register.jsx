@@ -199,14 +199,6 @@ const Register = () => {
             </Link>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.skipButton}
-          onPress={() => router.push("/create-profile")}
-        >
-          <Text style={{ color: "white", fontWeight: "bold" }}>
-            Skip register
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );
