@@ -127,6 +127,8 @@ export default function EventTab() {
         return require("../../assets/images/study.png");
       case "Eat":
         return require("../../assets/images/food.png");
+      case "Other":
+        return require("../../assets/images/other_m.png");
       default:
         return require("../../assets/images/other.png");
     }
@@ -141,6 +143,8 @@ export default function EventTab() {
         return require("../../assets/images/study_m.png");
       case "Eat":
         return require("../../assets/images/food_m.png");
+      case "Other":
+        return require("../../assets/images/other_m.png");
       default:
         return require("../../assets/images/society_m.png");
     }
@@ -243,7 +247,7 @@ export default function EventTab() {
                     <Image
                       style={styles.customMarker}
                       source={
-                        category ? getMarker(category) : require("../../assets/images/study_m.png")
+                        category ? getMarker(category) : require("../../assets/images/other_m.png")
                       }
                     />
                   </View>
@@ -511,7 +515,7 @@ const styles = StyleSheet.create({
     fontFamily: "Lexend_400Regular",
   },
   customMarker: {
-    width: 52,
-    height: 60,
+    width: 42,
+    height: 50,
   },
 });
