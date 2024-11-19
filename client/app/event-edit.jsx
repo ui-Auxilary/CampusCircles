@@ -32,6 +32,7 @@ import { getUserData } from "@/hooks/userContext";
 
 // UNSW Locations
 import UNSW_LOCATIONS from "../data/locations.json";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 ///////////////////////////////////////////////////////////////////////////////
 // APP ////////////////////////////////////////////////////////////////////////
@@ -50,8 +51,14 @@ const EditEvent = () => {
   const [locationQuery, setLocationQuery] = useState("");
   const [locationResults, setLocationResults] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [displayTime, setDisplayTime] = useState();
+
+  // Helper functions
+  const getTimeNow = () => {
+    let d = new Date(Date.now());
+    d.setTime(d.getTime() - d.getTimezoneOffset() * 60 * 1000);
+    return d;
+  };
 
   const defaultEventData = {
     name: "",
@@ -60,7 +67,7 @@ const EditEvent = () => {
     long: "",
     category: "",
     date: new Date(),
-    time: new Date(),
+    time: getTimeNow(),
     description: "",
     public: true,
     tag: {
@@ -105,7 +112,8 @@ const EditEvent = () => {
           date: fetchedEvent.date ? new Date(fetchedEvent.date) : new Date(),
           time: fetchedEvent.time ? new Date(fetchedEvent.time) : new Date(),
           description: fetchedEvent.description || "",
-          public: fetchedEvent.public !== undefined ? fetchedEvent.public : true,
+          public:
+            fetchedEvent.public !== undefined ? fetchedEvent.public : true,
           tag: fetchedEvent.tag || {
             connectOrCreate: {
               where: { name: "" },
@@ -148,7 +156,6 @@ const EditEvent = () => {
   };
 
   useEffect(() => {
-    checkPermissions();
     const unsubscribe = navigation.addListener("focus", () => {
       resetForm();
     });
@@ -276,12 +283,18 @@ const EditEvent = () => {
     }
 
     if (!validateDate(event.date)) {
-      Alert.alert("Invalid Date Format", "Please enter date in DD/MM/YYYY format.");
+      Alert.alert(
+        "Invalid Date Format",
+        "Please enter date in DD/MM/YYYY format."
+      );
       return false;
     }
 
     if (!validateTime(event.time.getTime())) {
-      Alert.alert("Invalid Time Format", "Please enter time in 24-hour HH:MM format.");
+      Alert.alert(
+        "Invalid Time Format",
+        "Please enter time in 24-hour HH:MM format."
+      );
       return false;
     }
 
@@ -305,11 +318,23 @@ const EditEvent = () => {
       society: event.society,
     };
 
+    // Format event/date
+    let date = updatedData.date.split("T")[0];
+    let time = updatedData.time.split("T")[1];
+
+    let formatDateTime = `${date}T${time}`;
+
+    updatedData["date"] = formatDateTime;
+    updatedData["time"] = formatDateTime;
+
     // Debugging log
     console.log("Updating event with data:", updatedData);
 
     try {
-      const response = await axios.put(`${BASE_URL}/events/update/${id}`, updatedData);
+      const response = await axios.put(
+        `${BASE_URL}/events/update/${id}`,
+        updatedData
+      );
       router.push({ pathname: "event-details", params: { id } });
     } catch (error) {
       console.error("Failed to update event:", error);
@@ -357,30 +382,66 @@ const EditEvent = () => {
       <View style={[styles.container]}>
         <View style={[styles.typeContainer, styles.shadow]}>
           <Pressable
-            style={[styles.typeButtonFirst, eventType === "Hang" && styles.typeButtonFirstInverted]}
-            onPress={() => toggleTag("Hang")}>
-            <Text style={[styles.typeText, eventType === "Hang" && styles.typeTextInverted]}>
+            style={[
+              styles.typeButtonFirst,
+              eventType === "Hang" && styles.typeButtonFirstInverted,
+            ]}
+            onPress={() => toggleTag("Hang")}
+          >
+            <Text
+              style={[
+                styles.typeText,
+                eventType === "Hang" && styles.typeTextInverted,
+              ]}
+            >
               Hang
             </Text>
           </Pressable>
           <Pressable
-            style={[styles.typeButton, eventType === "Study" && styles.typeButtonInverted]}
-            onPress={() => toggleTag("Study")}>
-            <Text style={[styles.typeText, eventType === "Study" && styles.typeTextInverted]}>
+            style={[
+              styles.typeButton,
+              eventType === "Study" && styles.typeButtonInverted,
+            ]}
+            onPress={() => toggleTag("Study")}
+          >
+            <Text
+              style={[
+                styles.typeText,
+                eventType === "Study" && styles.typeTextInverted,
+              ]}
+            >
               Study
             </Text>
           </Pressable>
           <Pressable
-            style={[styles.typeButton, eventType === "Eat" && styles.typeButtonInverted]}
-            onPress={() => toggleTag("Eat")}>
-            <Text style={[styles.typeText, eventType === "Eat" && styles.typeTextInverted]}>
+            style={[
+              styles.typeButton,
+              eventType === "Eat" && styles.typeButtonInverted,
+            ]}
+            onPress={() => toggleTag("Eat")}
+          >
+            <Text
+              style={[
+                styles.typeText,
+                eventType === "Eat" && styles.typeTextInverted,
+              ]}
+            >
               Eat
             </Text>
           </Pressable>
           <Pressable
-            style={[styles.typeButtonLast, eventType === "Other" && styles.typeButtonLastInverted]}
-            onPress={() => toggleTag("Other")}>
-            <Text style={[styles.typeText, eventType === "Other" && styles.typeTextInverted]}>
+            style={[
+              styles.typeButtonLast,
+              eventType === "Other" && styles.typeButtonLastInverted,
+            ]}
+            onPress={() => toggleTag("Other")}
+          >
+            <Text
+              style={[
+                styles.typeText,
+                eventType === "Other" && styles.typeTextInverted,
+              ]}
+            >
               Other
             </Text>
           </Pressable>
@@ -401,7 +462,7 @@ const EditEvent = () => {
               <Text style={styles.label}>Event Name</Text>
               <TextInput
                 style={[styles.field, { flex: 1 }]}
-                placeholder="Enter event name"
+                placeholder='Enter event name'
                 value={event.name}
                 onChangeText={(value) => handleInputChange("name", value)}
               />
@@ -411,7 +472,7 @@ const EditEvent = () => {
               <Text style={styles.label}>Location</Text>
               <TextInput
                 style={[styles.field, { flex: 1 }]}
-                placeholder="Search for location"
+                placeholder='Search for location'
                 value={locationQuery}
                 onChangeText={handleLocationChange}
               />
@@ -421,7 +482,8 @@ const EditEvent = () => {
                     <TouchableOpacity
                       key={idx}
                       onPress={() => selectLocation(location)}
-                      style={styles.locationItem}>
+                      style={styles.locationItem}
+                    >
                       <Text>{location.name}</Text>
                     </TouchableOpacity>
                   ))}
@@ -433,31 +495,42 @@ const EditEvent = () => {
 
         <View style={styles.horiz}>
           {/* Date Field */}
-          <View style={styles.detailContainer}>
+          <View style={styles.dateContainer}>
             <Text style={styles.label}>Date</Text>
-            <Pressable onPress={() => setDatePickerVisibility(true)} style={styles.field}>
-              <Text style={styles.dateTimeText}>{formatDate(event.date)}</Text>
+            <Pressable style={[styles.dateField, { padding: 0 }]}>
+              <RNDateTimePicker
+                style={{ flex: 1, width: 100 }}
+                mode='date'
+                value={
+                  event.date ||
+                  new Date(
+                    Date.now() - Date.now().getTimezoneOffset() * 60 * 1000
+                  )
+                }
+                onChange={(_, d) => setEvent({ ...event, date: d })}
+              />
             </Pressable>
-            <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode="date"
-              onConfirm={handleConfirmDate}
-              onCancel={() => setDatePickerVisibility(false)}
-            />
           </View>
 
           {/* Time Field */}
-          <View style={styles.detailContainer}>
+          <View style={styles.dateContainer}>
             <Text style={styles.label}>Time</Text>
-            <Pressable onPress={() => setTimePickerVisibility(true)} style={styles.field}>
-              <Text style={styles.dateTimeText}>{formatTime(event.time)}</Text>
+            <Pressable style={[styles.dateField, { padding: 0 }]}>
+              <RNDateTimePicker
+                style={{ flex: 1, width: 100 }}
+                mode='time'
+                value={displayTime || new Date()}
+                onChange={(_, d) => {
+                  let today = new Date(
+                    d.getTime() - d.getTimezoneOffset() * 60 * 1000
+                  );
+
+                  console.log("TIME", today, event.time);
+                  setEvent({ ...event, time: today });
+                  setDisplayTime(d);
+                }}
+              />
             </Pressable>
-            <DateTimePickerModal
-              isVisible={isTimePickerVisible}
-              mode="time"
-              onConfirm={handleConfirmTime}
-              onCancel={() => setTimePickerVisibility(false)}
-            />
           </View>
         </View>
 
@@ -466,11 +539,11 @@ const EditEvent = () => {
           <Text style={styles.label}>Description</Text>
           <TextInput
             style={styles.descriptionContainer}
-            placeholder="Describe the event details"
+            placeholder='Describe the event details'
             value={event.description}
             onChangeText={(value) => handleInputChange("description", value)}
             multiline
-            textAlignVertical="top"
+            textAlignVertical='top'
           />
         </View>
 
@@ -481,8 +554,14 @@ const EditEvent = () => {
               styles.privacyButtonLeft,
               event.public === true && styles.privacyButtonLeftInverted,
             ]}
-            onPress={togglePrivacy}>
-            <Text style={[styles.privacyText, event.public === true && styles.privacyTextInverted]}>
+            onPress={togglePrivacy}
+          >
+            <Text
+              style={[
+                styles.privacyText,
+                event.public === true && styles.privacyTextInverted,
+              ]}
+            >
               Public
             </Text>
           </Pressable>
@@ -491,9 +570,14 @@ const EditEvent = () => {
               styles.privacyButtonRight,
               event.public === false && styles.privacyButtonRightInverted,
             ]}
-            onPress={togglePrivacy}>
+            onPress={togglePrivacy}
+          >
             <Text
-              style={[styles.privacyText, event.public === false && styles.privacyTextInverted]}>
+              style={[
+                styles.privacyText,
+                event.public === false && styles.privacyTextInverted,
+              ]}
+            >
               Private
             </Text>
           </Pressable>
@@ -503,13 +587,19 @@ const EditEvent = () => {
           {/* Society Check */}
           <View style={{ flexDirection: "row", gap: 10, alignSelf: "center" }}>
             <Pressable onPress={toggleSociety}>
-              <Image source={event.society ? checked : unchecked} style={styles.iconImage} />
+              <Image
+                source={event.society ? checked : unchecked}
+                style={styles.iconImage}
+              />
             </Pressable>
             <Text style={styles.label}>Society</Text>
           </View>
 
           {/* Save Button */}
-          <Pressable onPress={handleUpdate} style={[styles.saveButton, styles.shadow]}>
+          <Pressable
+            onPress={handleUpdate}
+            style={[styles.saveButton, styles.shadow]}
+          >
             <Text style={styles.createText}>Save</Text>
           </Pressable>
         </View>
@@ -518,7 +608,10 @@ const EditEvent = () => {
 
       {/* delete button */}
       <View style={styles.deleteButtonContainer}>
-        <Pressable onPress={handleDelete} style={[styles.deleteButton, styles.shadow]}>
+        <Pressable
+          onPress={handleDelete}
+          style={[styles.deleteButton, styles.shadow]}
+        >
           <Text style={styles.deleteButtonText}>Delete Event</Text>
         </Pressable>
       </View>
@@ -770,6 +863,17 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 19,
     fontFamily: "Lexend_700Bold",
+  },
+  dateContainer: {
+    flex: 1,
+  },
+  dateField: {
+    width: "100%",
+    backgroundColor: "#FFF",
+    borderRadius: 10,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

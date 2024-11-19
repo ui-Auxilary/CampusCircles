@@ -62,6 +62,8 @@ const HomeTab = () => {
       const notifs = await axios
         .get(`${BASE_URL}/users/${userId}/notifications`)
         .catch((e) => console.log(e));
+
+      console.log("NOTIFS", notifs.data.data);
       setNotifications(notifs.data.data);
     } catch (e) {
       {
