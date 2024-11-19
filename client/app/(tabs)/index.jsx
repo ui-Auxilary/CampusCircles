@@ -236,14 +236,14 @@ const HomeTab = () => {
                   });
                 }}
               >
-                <Image
-                  source={{
-                    uri:
-                      event?.photo ||
-                      "https://www.openday.unsw.edu.au/share.jpg",
-                  }}
-                  style={styles.eventImage}
-                />
+              <Image
+                source={{
+                  uri:
+                    event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
+                }}
+                style={styles.eventImage}
+              />
+              <Text style={styles.eventTitle}>{event?.name}</Text>
                 <Text style={styles.eventName}>{event?.name}</Text>
               </TouchableOpacity>
             ))}
@@ -376,6 +376,7 @@ const styles = StyleSheet.create({
     fontFamily: "Lexend_500Medium",
     textAlign: "center",
     lineHeight: 22,
+  },
   eventTitle: {
     position: "absolute",
     bottom: 0,
