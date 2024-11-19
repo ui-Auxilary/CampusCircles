@@ -81,6 +81,12 @@ export default function Layout() {
           }}
         />
         <Stack.Screen
+          name='event-edit'
+          options={{
+            header: () => <Header title='Edit Event' />,
+          }}
+        />
+        <Stack.Screen
           name='(tabs)'
           options={{
             headerShown: false,
@@ -90,3 +96,4 @@ export default function Layout() {
     </UserProvider>
   );
 }
+

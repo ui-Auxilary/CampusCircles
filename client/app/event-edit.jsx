@@ -93,15 +93,14 @@ const EditEvent = () => {
   const [event, setEvent] = useState(defaultEventData);
 
   useEffect(() => {
-    console.log("ID", id);
     if (!id) return;
-
+  
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/events/event/${id}`);
+        const response = await axios.get(`${BASE_URL}/events/get/${id}`);
         const fetchedEvent = response.data.data;
         console.log("Fetched event");
-
+  
         setEvent({
           name: fetchedEvent.name || "",
           photo: fetchedEvent.photo || "",
@@ -124,18 +123,19 @@ const EditEvent = () => {
           invitations: fetchedEvent.invitations || {},
           creator: {
             connect: {
-              id: fetchedEvent.creator?.id || "",
+              id: fetchedEvent.creator?.id || userId,
             },
           },
         });
-
+  
+        setEventType(fetchedEvent.category || "Hang");
         setImage(fetchedEvent.photo || null);
         setLocationQuery(fetchedEvent.location || "");
       } catch (error) {
         console.error("Error fetching event data:", error);
       }
     };
-
+  
     fetchEvent();
   }, [id]);
 
