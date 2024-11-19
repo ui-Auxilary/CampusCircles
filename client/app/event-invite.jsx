@@ -18,49 +18,28 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const EventInvite = () => {
   const navigation = useNavigation();
-  const { date, name, time, location, description, lat, long, photo, attendees, creatorId, id } =
-    useLocalSearchParams();
+  const { userId } = getUserData();
+  const { id } = useLocalSearchParams();
 
-  const [eventData, setEventData] = useState({
-    date,
-    name,
-    time,
-    location,
-    description,
-    lat,
-    long,
-    photo,
-    attendees: attendees || [],
-    creatorId,
-  });
+  const [eventData, setEventData] = useState({});
+  const [friends, setFriends] = useState([]);
+  const [invitations, setInvitations] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    console.log("Got id fetching event", id);
-
     if (id) {
       axios
         .get(`${BASE_URL}/events/get/${id}`)
-        .then(({ data }) => {
-          console.log("EVENT DATA", data);
-          setEventData(data.data);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+        .then(({ data }) => setEventData(data.data))
+        .catch((error) => console.error("Error fetching event data:", error));
     }
   }, [id]);
-
-  const { userId } = getUserData();
-  const [search, setSearch] = useState("");
-  const [friends, setFriends] = useState([]);
 
   useFocusEffect(
     useCallback(() => {
       const fetchFriends = async () => {
         try {
-          const url = `${BASE_URL}/users/${userId}/friends`;
-          console.log("Fetching friends from:", url);
-          const response = await axios.get(url);
+          const response = await axios.get(`${BASE_URL}/users/${userId}/friends`);
           setFriends(response.data.data);
         } catch (error) {
           console.error("Error fetching friends:", error);
@@ -73,58 +52,68 @@ const EventInvite = () => {
     }, [userId])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      const fetchInvitations = async () => {
+        try {
+          console.log("Fetching invitations from URL:", `${BASE_URL}/invitations/event/${id}`);
+          const response = await axios.get(`${BASE_URL}/invitations/event/${id}`);
+          console.log("Fetched Invitations:", response.data);
+          setInvitations(response.data.data);
+        } catch (error) {
+          console.error("Error fetching invitations:", error);
+        }
+      };
+
+      if (id) {
+        fetchInvitations();
+      }
+    }, [id])
+  );
+
   const filteredFriends = friends.filter((friend) =>
     friend.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const [invitedFriends, setInvitedFriends] = useState({});
-
   const toggleInvite = async (friendId) => {
     try {
-      if (!id || !userId || !friendId) {
-        console.error("Missing required fields: eventId, inviterId, or inviteeId");
-        return;
-      }
+      const invitation = invitations.find((inv) => inv.inviteeId === friendId);
 
-      console.log("Event ID:", id);
-      console.log("Inviter ID:", userId);
-      console.log("Invitee ID:", friendId);
-
-      if (!invitedFriends[friendId]) {
-        console.log("Sending invitation to friend ID:", friendId);
+      if (!invitation) {
         // Send invitation
         const response = await axios.post(`${BASE_URL}/invitations/send`, {
           eventId: id,
           inviteeId: friendId,
           inviterId: userId,
         });
-        console.log("Invitation response:", response.data);
         if (response.data.status) {
-          const invitationId = response.data.data.id;
-          setInvitedFriends((prev) => ({
-            ...prev,
-            [friendId]: invitationId,
-          }));
+          setInvitations((prev) => [...prev, response.data.data]);
         }
       } else {
-        console.log("Unsending invitation for friend ID:", friendId);
-        const invitationId = invitedFriends[friendId];
-
-        const response = await axios.post(`${BASE_URL}/invitations/unsend`, {
-          invitationId: invitationId,
-        });
-        console.log("Invitation unsent for friend ID:", friendId);
-        if (response.data.status) {
-          setInvitedFriends((prev) => {
-            const updated = { ...prev };
-            delete updated[friendId];
-            return updated;
-          });
-        }
+        // Unsend invitation
+        await axios.post(`${BASE_URL}/invitations/unsend`, { invitationId: invitation.id });
+        setInvitations((prev) => prev.filter((inv) => inv.id !== invitation.id));
       }
     } catch (error) {
       console.error("Error toggling invitation:", error);
     }
+  };
+
+  const getFriendStatus = (friendId) => {
+    if (eventData.eventAttendees?.includes(friendId)) {
+      console.log(`Friend ID: ${friendId}, Status: accepted`);
+      return "accepted";
+    }
+
+    const invitation = invitations.find((inv) => inv.inviteeId === friendId);
+
+    if (invitation) {
+      console.log(`Friend ID: ${friendId}, Status: ${invitation.status}`);
+      return invitation.status;
+    }
+
+    console.log(`Friend ID: ${friendId}, Status: Not Invited`);
+    return "Not Invited";
   };
 
   return (
@@ -135,7 +124,7 @@ const EventInvite = () => {
       </TouchableOpacity>
       <Image
         source={{
-          uri: eventData.photo ? eventData.photo : "https://www.openday.unsw.edu.au/share.jpg",
+          uri: eventData.photo || "https://www.openday.unsw.edu.au/share.jpg",
         }}
         style={styles.eventImage}
       />
@@ -152,48 +141,48 @@ const EventInvite = () => {
         />
       </View>
       <ScrollView>
-        {filteredFriends.map((friend) => (
-          <TouchableOpacity key={friend.id} style={styles.friendCard}>
-            <View style={styles.imageContainer}>
-              <Image
-                source={{
-                  uri: friend.photo || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
-                }}
-                style={styles.image}
-              />
-            </View>
-            <View style={styles.details}>
-              <Text style={styles.name}>{friend.name}</Text>
-              <View style={styles.separator} />
-              <Text style={styles.info}>{`${friend.studyYear || "Unknown Year"} | ${
-                friend.degree || "Unknown Degree"
-              }`}</Text>
-            </View>
-            {friend.attending ? (
-              // If already attending
-              <Image
-                source={require("../assets/images/attending.png")}
-                style={styles.attendingIcon}
-              />
-            ) : friend.rejected ? (
-              // If invite rejected
-              <Image
-                source={require("../assets/images/rejected.png")}
-                style={styles.attendingIcon}
-              />
-            ) : invitedFriends[friend.id] ? (
-              // If invited by user
-              <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
-                <Ionicons name="remove-circle-outline" size={30} color="#FF3B30" />
-              </TouchableOpacity>
-            ) : (
-              // If neither
-              <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
-                <Ionicons name="add-circle-outline" size={30} color="#116DFF" />
-              </TouchableOpacity>
-            )}
-          </TouchableOpacity>
-        ))}
+        {filteredFriends.map((friend) => {
+          const status = getFriendStatus(friend.id);
+          console.log(`Friend ID: ${friend.id}, Name: ${friend.name}, Status: ${status}`);
+          return (
+            <TouchableOpacity key={friend.id} style={styles.friendCard}>
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{
+                    uri: friend.photo || "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
+                  }}
+                  style={styles.image}
+                />
+              </View>
+              <View style={styles.details}>
+                <Text style={styles.name}>{friend.name}</Text>
+                <View style={styles.separator} />
+                <Text style={styles.info}>{`${friend.studyYear || "Unknown Year"} | ${
+                  friend.degree || "Unknown Degree"
+                }`}</Text>
+              </View>
+              {status === "accepted" ? (
+                <Image
+                  source={require("../assets/images/attending.png")}
+                  style={styles.attendingIcon}
+                />
+              ) : status === "rejected" ? (
+                <Image
+                  source={require("../assets/images/rejected.png")}
+                  style={styles.attendingIcon}
+                />
+              ) : status === "pending" ? (
+                <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
+                  <Ionicons name="remove-circle-outline" size={30} color="#FF3B30" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
+                  <Ionicons name="add-circle-outline" size={30} color="#116DFF" />
+                </TouchableOpacity>
+              )}
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </View>
   );

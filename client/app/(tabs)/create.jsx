@@ -86,7 +86,7 @@ const CreateTab = () => {
     time: getTimeNow(),
     description: "",
     public: true,
-    eventAttendees: [], // Use an empty array to match the schema
+    eventAttendees: [userId],
     society: false,
     creator: {
       connect: {
@@ -259,6 +259,7 @@ const CreateTab = () => {
       time: event.time.toISOString(),
       description: event.description,
       public: event.public,
+      eventAttendees: [userId],
       society: event.society,
       location: event.location,
       creator: {
@@ -455,7 +456,13 @@ const CreateTab = () => {
                     Date.now() - Date.now().getTimezoneOffset() * 60 * 1000
                   )
                 }
-                onChange={(_, d) => setEvent({ ...event, date: d })}
+                onChange={(_, d) => {
+                  let today = new Date(
+                    d.getTime() - d.getTimezoneOffset() * 60 * 1000
+                  );
+
+                  setEvent({ ...event, date: today });
+                }}
               />
             </Pressable>
           </View>
@@ -473,7 +480,6 @@ const CreateTab = () => {
                     d.getTime() - d.getTimezoneOffset() * 60 * 1000
                   );
 
-                  console.log("TIME", today, event.time);
                   setEvent({ ...event, time: today });
                   setDisplayTime(d);
                 }}

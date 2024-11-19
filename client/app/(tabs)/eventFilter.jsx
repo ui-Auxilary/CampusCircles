@@ -10,7 +10,7 @@ const EventFilter = () => {
   const [initialFilters, setInitialFilters] = useState({});
   const [currentFilters, setCurrentFilters] = useState({
     selectedCategory: "",
-    selectedDate: new Date(),
+    selectedDate: null,
     selectedTime: "",
   });
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -18,21 +18,27 @@ const EventFilter = () => {
   useEffect(() => {
     if (isFocused) {
       if (Object.keys(initialFilters).length === 0) {
-        setCurrentFilters({ selectedCategory: "", selectedDate: new Date(), selectedTime: "" });
+        setCurrentFilters({ selectedCategory: "", selectedDate: null, selectedTime: "" });
       }
     }
   }, [isFocused]);
 
   const applyFilters = () => {
     setInitialFilters(currentFilters);
+    
+    const filtersToSend = {
+      ...currentFilters,
+      selectedDate: currentFilters.selectedDate ? currentFilters.selectedDate.toISOString() : null,
+    };
+  
     navigation.navigate("events", {
-      filters: currentFilters,
+      filters: filtersToSend,
       openEventsList: true,
     });
   };
 
   const clearFilters = () => {
-    setCurrentFilters({ selectedCategory: "", selectedDate: new Date(), selectedTime: "" });
+    setCurrentFilters({ selectedCategory: "", selectedDate: null, selectedTime: "" });
     setInitialFilters({});
   };
 
@@ -49,7 +55,7 @@ const EventFilter = () => {
   const buttonText = hasFiltersChanged() ? "Apply Filters" : "Clear Filters";
 
   const formatDate = (date) => {
-    return date.toLocaleDateString("en-GB");
+    return date ? date.toLocaleDateString("en-GB") : "Select Date";
   };
 
   const handleConfirmDate = (selectedDate) => {
@@ -72,7 +78,7 @@ const EventFilter = () => {
       {/* Categories */}
       <Text style={styles.sectionTitle}>Category</Text>
       <View style={styles.tagRow}>
-        {["Select All", "Hangout", "Study", "Eat", "Society", "Other"].map((category) => (
+        {["Hang", "Study", "Eat", "Society", "Other"].map((category) => (
           <TouchableOpacity
             key={category}
             onPress={() =>
@@ -113,7 +119,7 @@ const EventFilter = () => {
       {/* Time */}
       <Text style={styles.sectionTitle}>Time</Text>
       <View style={styles.tagRow}>
-        {["Select All", "Morning", "Midday", "Afternoon", "Night"].map((time) => (
+        {["Morning", "Midday", "Afternoon", "Night"].map((time) => (
           <TouchableOpacity
             key={time}
             onPress={() =>

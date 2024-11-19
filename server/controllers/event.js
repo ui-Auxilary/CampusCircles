@@ -70,8 +70,10 @@ export const getEvents = async (req, res) => {
 };
 
 export const getEventsToday = async (req, res) => {
-  let dateToday = new Date(Date.now()).toISOString();
-  let splitDate = dateToday.split("T")[0];
+  let tzoffset = new Date().getTimezoneOffset() * 60000;
+  let localISOTime = new Date(Date.now() - tzoffset).toISOString().slice(0, -1);
+
+  let splitDate = localISOTime.split("T")[0];
   let formatDate = `${splitDate}T00:00:00.000Z`;
   let formatRange = `${splitDate}T23:59:59.000Z`;
 
@@ -85,6 +87,28 @@ export const getEventsToday = async (req, res) => {
   });
 
   console.log("EVENTS", events);
+
+  res.json({
+    status: true,
+    message: "Events fetched successfully",
+    data: events,
+  });
+};
+
+export const getEventsUpcoming = async (req, res) => {
+  let tzoffset = new Date().getTimezoneOffset() * 60000;
+  let localISOTime = new Date(Date.now() - tzoffset).toISOString().slice(0, -1);
+
+  let splitDate = localISOTime.split("T")[0];
+  let formatDate = `${splitDate}T00:00:00.000Z`;
+
+  const events = await prisma.event.findMany({
+    where: {
+      date: {
+        gte: formatDate,
+      },
+    },
+  });
 
   res.json({
     status: true,
@@ -152,7 +176,9 @@ export const leaveEvent = async (req, res) => {
     }
 
     // Update the event to remove the user from attendees
-    const updatedAttendees = event.eventAttendees.filter((attendeeId) => attendeeId !== userId);
+    const updatedAttendees = event.eventAttendees.filter(
+      (attendeeId) => attendeeId !== userId
+    );
 
     await prisma.event.update({
       where: { id: eventId },

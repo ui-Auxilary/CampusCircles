@@ -21,15 +21,13 @@ import { getUserData } from "@/hooks/userContext";
 
 import * as Haptics from "expo-haptics";
 
-import tick from "../../assets/images/tick.png";
-import cross from "../../assets/images/cross.png";
 import { Ionicons } from "@expo/vector-icons";
 
 const HomeTab = () => {
   const { setUserId, hasHaptic } = getUserData();
   const params = useLocalSearchParams();
   const [notifications, setNotifications] = useState([]);
-  const [events, setEvents] = useState({ created: [], attending: [] });
+  const [events, setEvents] = useState([]);
   const [expandedNotifications, setExpandedNotifications] = useState({}); // Track expanded state for all notifications
   const [username, setUsername] = useState("");
   const { userId } = getUserData();
@@ -78,17 +76,12 @@ const HomeTab = () => {
 
   const fetchUserEvents = async (userId) => {
     try {
-      const events = await axios
-        .get(`${BASE_URL}/users/${userId}/events`)
-        .then(({ data }) => {
-          setEvents(data.data);
-        })
-        .catch((e) => console.log(e));
+      const { data } = await axios.get(`${BASE_URL}/users/${userId}/events`);
+      console.log("Fetched Events:", data.data);
+      setEvents(data.data || []);
     } catch (e) {
-      {
-        hasHaptic &&
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
+      hasHaptic &&
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       console.log("Error fetching events:", e);
       Alert.alert("Error", "Could not fetch events");
     }
@@ -103,9 +96,10 @@ const HomeTab = () => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif?.id !== invitationId)
       );
-      {
-        hasHaptic &&
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      hasHaptic &&
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (status === "accepted") {
+        await fetchUserEvents(userId);
       }
       Alert.alert(`Success, Invitation ${status}!`);
     } catch (error) {
@@ -135,109 +129,133 @@ const HomeTab = () => {
       {/* Notifications Section */}
       <View style={styles.notifications}>
         <Text style={styles.sectionTitle}>Notifications</Text>
-        <ScrollView
-          style={styles.notificationsList}
-          contentContainerStyle={{ paddingBottom: 10, flexGrow: 1 }}
-        >
-          {notifications.map((notification) => {
-            const isExpanded = expandedNotifications[notification?.id] || false;
+        <View style={styles.notificationsList}>
+          {notifications && notifications.length > 0 ? (
+            <ScrollView
+              contentContainerStyle={{ paddingBottom: 10, flexGrow: 1 }}
+            >
+              {notifications.map((notification) => {
+                const isExpanded =
+                  expandedNotifications[notification?.id] || false;
 
-            return (
-              <View key={notification?.id} style={styles.notificationItem}>
-                <View style={styles.notificationTextContainer}>
-                  {/* Notification Text */}
-                  <Image
-                    source={
-                      notification.inviter.photo || {
-                        uri: "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
-                      }
-                    }
-                    style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 50,
-                      marginRight: 10,
-                    }}
-                  />
-                  <Text
-                    style={styles.notificationText}
-                    numberOfLines={isExpanded ? null : 1} // Expand if isExpanded is true
-                    ellipsizeMode='tail'
-                  >
-                    {notification.inviter.name} invited you to{" "}
-                    <Text style={styles.eventName}>
-                      {notification.event?.name}
-                    </Text>
-                  </Text>
-                </View>
-                {/* Action Buttons */}
-                <View style={styles.notificationActions}>
-                  {/* Dropdown Arrow */}
-                  <TouchableOpacity
-                    onPress={() =>
-                      toggleNotificationExpansion(notification?.id)
-                    } // Toggle expanded state
-                    style={styles.dropdownIconContainer}
-                  >
-                    <Text style={styles.dropdownArrow}>
-                      {isExpanded ? "▲" : "▼"} {/* Change arrow direction */}
-                    </Text>
-                  </TouchableOpacity>
-                  <Pressable
-                    onPress={() => handleInvite(notification?.id, "accepted")}
-                  >
-                    <Ionicons
-                      name={"checkmark-circle"}
-                      size={48}
-                      color={"#E7E1A6"}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => handleInvite(notification?.id, "rejected")}
-                  >
-                    <Ionicons
-                      name={"close-circle"}
-                      size={48}
-                      color={"#CA3E41"}
-                    />
-                  </Pressable>
-                </View>
-              </View>
-            );
-          })}
-        </ScrollView>
+                return (
+                  <View key={notification?.id} style={styles.notificationItem}>
+                    <View style={styles.notificationTextContainer}>
+                      {/* Notification Text */}
+                      <Image
+                        source={{
+                          uri:
+                            notification.inviter.photo ||
+                            "https://www.gravatar.com/avatar/?d=identicon",
+                        }}
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: 50,
+                          marginRight: 10,
+                        }}
+                      />
+                      <Text
+                        style={styles.notificationText}
+                        numberOfLines={isExpanded ? null : 1}
+                        ellipsizeMode='tail'
+                      >
+                        {notification.inviter.name} invited you to{" "}
+                        <Text style={styles.eventName}>
+                          {notification.event?.name}
+                        </Text>
+                      </Text>
+                    </View>
+                    {/* Action Buttons */}
+                    <View style={styles.notificationActions}>
+                      {/* Dropdown Arrow */}
+                      <TouchableOpacity
+                        onPress={() =>
+                          toggleNotificationExpansion(notification?.id)
+                        } // Toggle expanded state
+                        style={styles.dropdownIconContainer}
+                      >
+                        <Text style={styles.dropdownArrow}>
+                          {isExpanded ? "▲" : "▼"}
+                        </Text>
+                      </TouchableOpacity>
+                      <Pressable
+                        onPress={() =>
+                          handleInvite(notification?.id, "accepted")
+                        }
+                      >
+                        <Ionicons
+                          name={"checkmark-circle"}
+                          size={48}
+                          color={"#E7E1A6"}
+                        />
+                      </Pressable>
+                      <Pressable
+                        onPress={() =>
+                          handleInvite(notification?.id, "rejected")
+                        }
+                      >
+                        <Ionicons
+                          name={"close-circle"}
+                          size={48}
+                          color={"#CA3E41"}
+                        />
+                      </Pressable>
+                    </View>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          ) : (
+            <View style={styles.noNotiContainer}>
+              <Text style={styles.noNotiText}>
+                You don’t have any invites yet.
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
 
       {/* Events Section */}
       <View style={styles.events}>
         <Text style={styles.sectionTitle}>Your Events</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.eventsList}
-        >
-          {[...events.created, ...events.attending].map((event, idx) => (
-            <TouchableOpacity
-              key={idx}
-              style={styles.eventItem}
-              onPress={() => {
-                router.push({
-                  pathname: "event-details",
-                  params: { id: event?.id, page: "home" },
-                });
-              }}
-            >
-              <Image
-                source={{
-                  uri:
-                    event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
+        {events && events.length > 0 ? (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.eventsList}
+          >
+            {events.map((event, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={styles.eventItem}
+                onPress={() => {
+                  router.push({
+                    pathname: "event-details",
+                    params: { id: event?.id, page: "home" },
+                  });
                 }}
-                style={styles.eventImage}
-              />
-              <Text style={styles.eventTitle}>{event?.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              >
+                <Image
+                  source={{
+                    uri:
+                      event?.photo ||
+                      "https://www.openday.unsw.edu.au/share.jpg",
+                  }}
+                  style={styles.eventImage}
+                />
+                <Text style={styles.eventName}>{event?.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        ) : (
+          <View style={styles.noEventsContainer}>
+            <Text style={styles.noEventsText}>
+              You don't have any events yet.{"\n"}Why not join one in the Events
+              tab?
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -276,6 +294,7 @@ const styles = StyleSheet.create({
     color: "#454545",
   },
   notificationsList: {
+    flex: 1,
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
     padding: 10,
@@ -299,7 +318,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   eventName: {
-    fontWeight: "bold",
+    position: "absolute",
     color: "#333333",
   },
   dropdownIconContainer: {
@@ -334,6 +353,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 5,
   },
+  noEventsContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+  },
+  noEventsText: {
+    fontSize: 16,
+    color: "#6B7280",
+    fontFamily: "Lexend_500Medium",
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  noNotiContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noNotiText: {
+    fontSize: 16,
+    color: "#6B7280",
+    fontFamily: "Lexend_500Medium",
+    textAlign: "center",
+    lineHeight: 22,
   eventTitle: {
     position: "absolute",
     bottom: 0,
