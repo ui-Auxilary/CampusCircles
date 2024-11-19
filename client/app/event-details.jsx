@@ -245,13 +245,12 @@ const styles = StyleSheet.create({
   },
   eventImage: {
     width: "100%",
-    height: 230,
+    height: 200,
     position: "sticky",
     resizeMode: "cover",
   },
   contentContainer: {
-    padding: 20,
-    paddingVertical: 40,
+    marginTop: 35,
   },
   titleContainer: {
     flexDirection: "row",
