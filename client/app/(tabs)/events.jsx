@@ -21,84 +21,15 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 
-const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
-const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
-
-// placeholder data
-const events2 = [
-  {
-    id: "1",
-    name: "Lunch @ the Quad",
-    time: "Today: 12-1pm",
-    location: "Quad",
-    // latitude: -33.91719,
-    // longitude: 151.233033,
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/food.png"),
-    description: "Description!!!",
-    attendees: ["001", "002"],
-  },
-  {
-    id: "2",
-    name: "Board games!",
-    time: "Today: 4-5:30pm",
-    location: "Village Green",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/hang.png"),
-    attendees: ["001", "002", "003"],
-  },
-  {
-    id: "3",
-    name: "Study session",
-    time: "Today: 3-5pm",
-    location: "SEB Basement",
-    description:
-      "Description !!! wowowowo w oweiriowe ioweriwoer ow ieriwo rweio rwioruwiru wiro weioru wioru woeiru weioruweioru wiorthdfsiogh sdfgihfds ihgdsiogh sdiofgh iosdfgh ",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/study.png"),
-    attendees: ["001", "002"],
-  },
-  {
-    id: "4",
-    name: "CSE Soc AGM",
-    time: "Today: 6pm",
-    location: "Ainsworth",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/society.png"),
-    attendees: ["001", "002", "003"],
-  },
-  {
-    id: "5",
-    name: "Other event",
-    time: "Today: 8pm",
-    location: "ASB",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/other.png"),
-    attendees: ["001", "003"],
-  },
-  {
-    id: "6",
-    name: "Other event",
-    time: "Today: 8pm",
-    location: "ASB",
-    description: "Description !!!",
-    icon: require("../../assets/images/other.png"),
-    attendees: ["001", "003"],
-  },
-  {
-    id: "7",
-    name: "Other event",
-    time: "Today: 8pm",
-    location: "ASB",
-    description: "Description !!!",
-    image: require("../../assets/images/event-image.png"),
-    icon: require("../../assets/images/other.png"),
-    attendees: ["001", "003"],
-  },
+const categories = [
+  "All Categories",
+  "Hang",
+  "Study",
+  "Eat",
+  "Society",
+  "Other",
 ];
+const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 
 export default function EventTab() {
   const actionSheetRef = useRef(null);
@@ -110,8 +41,6 @@ export default function EventTab() {
   const [selectedTime, setSelectedTime] = useState("Anytime");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [TimePickerVisibility, setTimePickerVisibility] = useState(false);
-
-  const [icon, setIcon] = useState(require("../../assets/images/food.png"));
 
   const collapseActionSheet = () => {
     if (actionSheetRef.current) {
@@ -133,7 +62,6 @@ export default function EventTab() {
   };
 
   const getMarker = (category) => {
-    console.log("Marker", category);
     switch (category) {
       case "Hang":
         return require("../../assets/images/hang_m.png");
@@ -163,8 +91,16 @@ export default function EventTab() {
           setEvents(data.data);
         })
         .catch((e) => console.log(e));
+
+      return () => {
+        setEvents([]);
+      };
     }, [])
   );
+
+  useEffect(() => {
+    console.log("LOADING", events);
+  }, []);
 
   const openTimePicker = () => setTimePickerVisibility(true);
   const closeTimePicker = () => setTimePickerVisibility(false);
@@ -186,12 +122,15 @@ export default function EventTab() {
         },
       }}
       asChild
-      onPress={collapseActionSheet}>
+      onPress={collapseActionSheet}
+    >
       <TouchableOpacity style={styles.eventItem}>
         <View style={styles.eventContent}>
           <Image
             source={
-              item.category ? getIcon(item.category) : require("../../assets/images/hang.png")
+              item.category
+                ? getIcon(item.category)
+                : require("../../assets/images/hang.png")
             }
             style={styles.eventIcon}
           />
@@ -215,40 +154,46 @@ export default function EventTab() {
             latitudeDelta: 0.0088,
             longitudeDelta: 0.0091,
           }}
-          style={styles.map}>
+          style={styles.map}
+        >
           {events
-            ? events.map(({ id, lat, long, description, name, category }, idx) => (
-                <Marker
-                  key={idx}
-                  coordinate={{
-                    latitude: parseFloat(lat),
-                    longitude: parseFloat(long),
-                  }}
-                  title={name}
-                  description={description}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/event-details",
-                      params: {
-                        id: id,
-                        location: description,
-                        latitude: lat,
-                        longitude: long,
-                        name: name,
-                        time: description,
-                      },
-                    })
-                  }>
-                  <View>
-                    <Image
-                      style={styles.customMarker}
-                      source={
-                        category ? getMarker(category) : require("../../assets/images/study_m.png")
-                      }
-                    />
-                  </View>
-                </Marker>
-              ))
+            ? events.map(
+                ({ id, lat, long, description, name, category }, idx) => (
+                  <Marker
+                    key={idx}
+                    coordinate={{
+                      latitude: parseFloat(lat),
+                      longitude: parseFloat(long),
+                    }}
+                    title={name}
+                    description={description}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/event-details",
+                        params: {
+                          id: id,
+                          location: description,
+                          latitude: lat,
+                          longitude: long,
+                          name: name,
+                          time: description,
+                        },
+                      })
+                    }
+                  >
+                    <View>
+                      <Image
+                        style={styles.customMarker}
+                        source={
+                          category
+                            ? getMarker(category)
+                            : require("../../assets/images/study_m.png")
+                        }
+                      />
+                    </View>
+                  </Marker>
+                )
+              )
             : null}
         </MapView>
       </View>
@@ -257,14 +202,14 @@ export default function EventTab() {
       <View style={styles.searchbarContainer}>
         <TextInput
           style={styles.searchbar}
-          placeholder="Search events"
+          placeholder='Search events'
           value={searchText}
           onChangeText={(text) => setSearchText(text)}
         />
         {/* full events filter */}
-        <Link href="/eventFilter" asChild>
+        <Link href='/eventFilter' asChild>
           <TouchableOpacity style={styles.filterIcon}>
-            <Ionicons name="filter-circle-outline" size={30} color="#4285F4" />
+            <Ionicons name='filter-circle-outline' size={30} color='#4285F4' />
           </TouchableOpacity>
         </Link>
       </View>
@@ -274,8 +219,11 @@ export default function EventTab() {
         {/* Time filter */}
         <TouchableOpacity
           style={[styles.quickFilterButtons, styles.selectedFilter]}
-          onPress={openTimePicker}>
-          <Text style={[styles.filterText, styles.selectedFilterText]}>{selectedTime}</Text>
+          onPress={openTimePicker}
+        >
+          <Text style={[styles.filterText, styles.selectedFilterText]}>
+            {selectedTime}
+          </Text>
         </TouchableOpacity>
 
         {/* category filters */}
@@ -286,12 +234,16 @@ export default function EventTab() {
               styles.quickFilterButtons,
               selectedCategory === category ? styles.selectedFilter : null,
             ]}
-            onPress={() => setSelectedCategory(category)}>
+            onPress={() => setSelectedCategory(category)}
+          >
             <Text
               style={[
                 styles.filterText,
-                selectedCategory === category ? styles.selectedFilterText : null,
-              ]}>
+                selectedCategory === category
+                  ? styles.selectedFilterText
+                  : null,
+              ]}
+            >
               {category}
             </Text>
           </TouchableOpacity>
@@ -301,24 +253,30 @@ export default function EventTab() {
         <Modal
           transparent={true}
           visible={TimePickerVisibility}
-          animationType="slide"
-          onRequestClose={closeTimePicker}>
+          animationType='slide'
+          onRequestClose={closeTimePicker}
+        >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Select Time Period</Text>
               {timeOptions.map((option) => (
                 <TouchableOpacity
                   key={option}
-                  style={[styles.modalOption, option === selectedTime && styles.selectedFilter]}
+                  style={[
+                    styles.modalOption,
+                    option === selectedTime && styles.selectedFilter,
+                  ]}
                   onPress={() => {
                     setSelectedTime(option);
                     closeTimePicker();
-                  }}>
+                  }}
+                >
                   <Text
                     style={[
                       styles.modalOptionText,
                       option === selectedTime && styles.selectedFilterText,
-                    ]}>
+                    ]}
+                  >
                     {option}
                   </Text>
                 </TouchableOpacity>
@@ -335,7 +293,8 @@ export default function EventTab() {
           if (actionSheetRef.current) {
             actionSheetRef.current.setModalVisible(true);
           }
-        }}>
+        }}
+      >
         <Text style={styles.openSheetButtonText}>Events List</Text>
       </TouchableOpacity>
 
