@@ -197,15 +197,14 @@ const EventInvite = () => {
                   style={styles.PendingIcon}
                 />
               ) : status === "pending" ? (
-<<<<<<< HEAD
                 <TouchableOpacity
                   onPress={() => toggleInvite(friend.id)}
                   style={styles.addButton}
                 >
                   <Ionicons
                     name='remove-circle-outline'
-                    size={30}
-                    color='#FF3B30'
+                    size={40}
+                    color='#FF3B40'
                   />
                 </TouchableOpacity>
               ) : (
@@ -215,17 +214,9 @@ const EventInvite = () => {
                 >
                   <Ionicons
                     name='add-circle-outline'
-                    size={30}
+                    size={40}
                     color='#116DFF'
                   />
-=======
-                <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
-                  <Ionicons name="remove-circle-outline" size={40} color="#FF3B40" />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
-                  <Ionicons name="add-circle-outline" size={40} color="#116DFF" />
->>>>>>> 05cff5e5a1972761b40bcada01e7f0edc042a86a
                 </TouchableOpacity>
               )}
             </TouchableOpacity>

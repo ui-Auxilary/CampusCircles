@@ -149,9 +149,6 @@ const UserList = () => {
               style={styles.friendCard}
               onPress={() => handleNavigateToProfile(user.id)}
             >
-<<<<<<< HEAD
-              <Ionicons name='person-add' size={24} color='#3b82f6' />
-=======
               <View style={styles.imageContainer}>
                 <Image
                   source={{
@@ -174,9 +171,8 @@ const UserList = () => {
                 style={styles.addButton}
                 onPress={() => handleAddFriend(user.id)}
               >
-                <Ionicons name="person-add" size={24} color="#3b82f6" />
+                <Ionicons name='person-add' size={24} color='#3b82f6' />
               </TouchableOpacity>
->>>>>>> 05cff5e5a1972761b40bcada01e7f0edc042a86a
             </TouchableOpacity>
           ))
         ) : (

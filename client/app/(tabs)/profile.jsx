@@ -35,20 +35,13 @@ const ProfileTab = () => {
   useFocusEffect(
     useCallback(() => {
       if (userId) {
-<<<<<<< HEAD
-        // Fetch request
         axios
           .get(`${BASE_URL}/users/get/${userId}`)
-          .then(({ data }) => {
-            setUserData(data.data);
-=======
-        axios.get(`${BASE_URL}/users/${userId}`)
-          .then(response => {
+          .then((response) => {
             setUserData(response.data.data);
->>>>>>> 05cff5e5a1972761b40bcada01e7f0edc042a86a
           })
-          .catch(error => {
-            console.error('Failed to fetch user data:', error);
+          .catch((error) => {
+            console.error("Failed to fetch user data:", error);
           });
 
         fetchUserEvents(userId);
@@ -108,9 +101,7 @@ const ProfileTab = () => {
             <Text style={styles.metricSpan}>Friends</Text>
           </View>
           <View>
-            <Text style={styles.metricText}>
-              {events.length}
-            </Text>
+            <Text style={styles.metricText}>{events.length}</Text>
             <Text style={styles.metricSpan}>Events</Text>
           </View>
         </View>
@@ -132,8 +123,8 @@ const ProfileTab = () => {
         >
           <Text style={styles.mbtiText}>{userData.mbti}</Text>
         </LinearGradient>
-        </View>
-        <View style={styles.profileSection}>
+      </View>
+      <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Interests</Text>
         {userData.interests && userData.interests.length > 0 ? (
           <TagRow tags={userData.interests} />
@@ -357,10 +348,10 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   noDataText: {
-    fontFamily: 'Lexend_500Medium',
+    fontFamily: "Lexend_500Medium",
     fontSize: 14,
-    color: '#8E8E93',
-    textAlign: 'center',
+    color: "#8E8E93",
+    textAlign: "center",
     marginTop: 10,
   },
 });
