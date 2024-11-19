@@ -19,19 +19,33 @@ import { router, useFocusEffect } from "expo-router";
 const ProfileTab = () => {
   const { userId, showAge, showPronoun } = getUserData();
   const [userData, setUserData] = useState({});
+  const [events, setEvents] = useState([]);
+
+  const fetchUserEvents = async (userId) => {
+    try {
+      const { data } = await axios.get(`${BASE_URL}/users/${userId}/events`);
+      setEvents(data.data || []);
+    } catch (e) {
+      hasHaptic &&
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Error", "Could not fetch events");
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
       if (userId) {
-        // Fetch request
-        axios
-          .get(`${BASE_URL}/users/${userId}`)
-          .then(({ data }) => {
-            setUserData(data.data);
+        axios.get(`${BASE_URL}/users/${userId}`)
+          .then(response => {
+            setUserData(response.data.data);
           })
-          .catch((e) => console.log(e));
+          .catch(error => {
+            console.error('Failed to fetch user data:', error);
+          });
+
+        fetchUserEvents(userId);
       }
-    }, [])
+    }, [userId, fetchUserEvents])
   );
 
   return (
@@ -62,23 +76,33 @@ const ProfileTab = () => {
           />
           <View style={styles.userDetails}>
             <View style={styles.userNameWrapper}>
-              <Text style={styles.userNameTitle}>{userData.name}</Text>
+              <Text style={styles.userNameTitle}>
+                {userData.name || "Unknown Name"}
+              </Text>
               <Text style={styles.age}>
-                {showAge ? userData.age : "??"} •{" "}
-                {showPronoun ? userData.gender : "??"}
+                {userData.age || "N/A"} • {userData.gender || "N/A"}
               </Text>
             </View>
-            <Text style={styles.yearOfStudy}>3rd year | Computer science</Text>
-            <LanguageRow languages={userData.languages} />
+            <Text style={styles.yearOfStudy}>
+              {userData.studyYear || "Unknown Year"} |{" "}
+              {userData.studyField || "Unknown Degree"}
+            </Text>
+            {userData.languages && userData.languages.length > 0 && (
+              <LanguageRow languages={userData.languages} />
+            )}
           </View>
         </View>
         <View style={styles.metricsContainer}>
           <View>
-            <Text style={styles.metricText}>11</Text>
+            <Text style={styles.metricText}>
+              {userData.friendIds ? userData.friendIds.length : 0}
+            </Text>
             <Text style={styles.metricSpan}>Friends</Text>
           </View>
           <View>
-            <Text style={styles.metricText}>3</Text>
+            <Text style={styles.metricText}>
+              {events.length}
+            </Text>
             <Text style={styles.metricSpan}>Events</Text>
           </View>
         </View>
@@ -86,7 +110,9 @@ const ProfileTab = () => {
       <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Self introduction</Text>
         <View style={styles.introBlock}>
-          <Text style={styles.introText}>{userData.bio}</Text>
+          <Text style={styles.introText}>
+            {userData.bio || "No bio available"}
+          </Text>
         </View>
       </View>
       <View style={styles.profileSection}>
@@ -98,14 +124,22 @@ const ProfileTab = () => {
         >
           <Text style={styles.mbtiText}>{userData.mbti}</Text>
         </LinearGradient>
-      </View>
-      <View style={styles.profileSection}>
+        </View>
+        <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Interests</Text>
-        <TagRow tags={userData.interests} />
+        {userData.interests && userData.interests.length > 0 ? (
+          <TagRow tags={userData.interests} />
+        ) : (
+          <Text style={styles.noDataText}>No interests</Text>
+        )}
       </View>
       <View style={styles.profileSection}>
         <Text style={styles.profileTitle}>Courses I'm doing</Text>
-        <TagRow tags={userData.courses} />
+        {userData.courses && userData.courses.length > 0 ? (
+          <TagRow tags={userData.courses} />
+        ) : (
+          <Text style={styles.noDataText}>No courses</Text>
+        )}
       </View>
       <View style={styles.overscroll} />
     </ScrollView>
@@ -313,5 +347,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
+  },
+  noDataText: {
+    fontFamily: 'Lexend_500Medium',
+    fontSize: 14,
+    color: '#8E8E93',
+    textAlign: 'center',
+    marginTop: 10,
   },
 });

@@ -244,7 +244,6 @@ const HomeTab = () => {
                 style={styles.eventImage}
               />
               <Text style={styles.eventTitle}>{event?.name}</Text>
-                <Text style={styles.eventName}>{event?.name}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
