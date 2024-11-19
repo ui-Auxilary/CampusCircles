@@ -275,11 +275,11 @@ export default function EventTab() {
 
       {/* quick filters */}
       <ScrollView horizontal={true} style={styles.filterContainer}>
-        {/* Time filter */}
+        {/* time filter */}
         <TouchableOpacity
           style={[styles.quickFilterButtons, styles.selectedFilter]}
           onPress={openTimePicker}>
-          <Text style={[styles.filterText, styles.selectedFilterText]}>{selectedTime}</Text>
+          <Text style={[styles.filterText, styles.selectedFilterText]}>Today's Times</Text>
         </TouchableOpacity>
 
         {/* category filters */}
