@@ -1,16 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ScrollView, View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
-import ActionSheet from 'react-native-actions-sheet';
-import languages from '../../data/languages.json';
+import React, { useState, useEffect, useRef } from "react";
+import { ScrollView, View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
+import ActionSheet from "react-native-actions-sheet";
+import languages from "../../data/languages.json";
 import { useNavigation, useIsFocused } from "@react-navigation/native";
 
 const FriendFilter = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const [initialFilters, setInitialFilters] = useState({});
-  const [currentFilters, setCurrentFilters] = useState({ selectedYear: "", selectedLanguage: "", course: "", interest: "" });
+  const [currentFilters, setCurrentFilters] = useState({
+    selectedYear: "",
+    selectedLanguage: "",
+    course: "",
+    interest: "",
+  });
   const actionSheetRef = useRef(null);
 
   useEffect(() => {
@@ -37,7 +42,12 @@ const FriendFilter = () => {
   };
 
   const showButton = () => {
-    return currentFilters.selectedYear || currentFilters.selectedLanguage || currentFilters.course || currentFilters.interest;
+    return (
+      currentFilters.selectedYear ||
+      currentFilters.selectedLanguage ||
+      currentFilters.course ||
+      currentFilters.interest
+    );
   };
 
   const buttonText = hasFiltersChanged() ? "Apply Filters" : "Clear Filters";
@@ -45,7 +55,9 @@ const FriendFilter = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate("addFriends")} style={styles.backButtonContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("addFriends")}
+          style={styles.backButtonContainer}>
           <Ionicons name="arrow-back" size={24} color="black" />
           <Text style={styles.backButton}> Back</Text>
         </TouchableOpacity>
@@ -57,7 +69,7 @@ const FriendFilter = () => {
         placeholder="Search for one primary course..."
         placeholderTextColor="#888"
         value={currentFilters.course}
-        onChangeText={text => setCurrentFilters({...currentFilters, course: text})}
+        onChangeText={(text) => setCurrentFilters({ ...currentFilters, course: text })}
       />
       <Text style={styles.sectionTitle}>Interests</Text>
       <TextInput
@@ -65,22 +77,27 @@ const FriendFilter = () => {
         placeholder="Search for one primary interest..."
         placeholderTextColor="#888"
         value={currentFilters.interest}
-        onChangeText={text => setCurrentFilters({...currentFilters, interest: text})}
+        onChangeText={(text) => setCurrentFilters({ ...currentFilters, interest: text })}
       />
       <Text style={styles.sectionTitle}>Languages</Text>
       <TouchableOpacity
         onPress={() => actionSheetRef.current?.setModalVisible(true)}
-        style={styles.languageButton}
-      >
-        <Text style={currentFilters.selectedLanguage ? styles.languageTextSelected : styles.languageTextUnselected}>
+        style={styles.languageButton}>
+        <Text
+          style={
+            currentFilters.selectedLanguage
+              ? styles.languageTextSelected
+              : styles.languageTextUnselected
+          }>
           {currentFilters.selectedLanguage || "Select Language"}
         </Text>
       </TouchableOpacity>
       <ActionSheet ref={actionSheetRef}>
         <Picker
           selectedValue={currentFilters.selectedLanguage}
-          onValueChange={(itemValue) => setCurrentFilters({...currentFilters, selectedLanguage: itemValue})}
-        >
+          onValueChange={(itemValue) =>
+            setCurrentFilters({ ...currentFilters, selectedLanguage: itemValue })
+          }>
           <Picker.Item label="Select Language" value="" />
           {languages.map(({ label, value }) => (
             <Picker.Item key={value} label={label} value={value} />
@@ -89,16 +106,30 @@ const FriendFilter = () => {
       </ActionSheet>
       <Text style={styles.sectionTitle}>Academic Year Group</Text>
       <View style={styles.tagRow}>
-        {['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year+'].map(year => (
-          <TouchableOpacity key={year} onPress={() => setCurrentFilters({...currentFilters, selectedYear: year === currentFilters.selectedYear ? "" : year})} style={[styles.tag, currentFilters.selectedYear === year ? styles.tagSelected : null]}>
-            <Text style={[styles.tagText, currentFilters.selectedYear === year ? styles.tagTextSelected : null]}>
+        {["1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year+"].map((year) => (
+          <TouchableOpacity
+            key={year}
+            onPress={() =>
+              setCurrentFilters({
+                ...currentFilters,
+                selectedYear: year === currentFilters.selectedYear ? "" : year,
+              })
+            }
+            style={[styles.tag, currentFilters.selectedYear === year ? styles.tagSelected : null]}>
+            <Text
+              style={[
+                styles.tagText,
+                currentFilters.selectedYear === year ? styles.tagTextSelected : null,
+              ]}>
               {year}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
       {showButton() && (
-        <TouchableOpacity style={styles.applyButton} onPress={hasFiltersChanged() ? applyFilters : clearFilters}>
+        <TouchableOpacity
+          style={styles.applyButton}
+          onPress={hasFiltersChanged() ? applyFilters : clearFilters}>
           <Text style={styles.applyButtonText}>{buttonText}</Text>
         </TouchableOpacity>
       )}
@@ -109,78 +140,78 @@ const FriendFilter = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20
+    padding: 20,
   },
   header: {
     marginBottom: 20,
   },
   backButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   backButton: {
     fontSize: 16,
-    color: '#000'
+    color: "#000",
   },
   title: {
     fontSize: 30,
-    fontWeight: 'bold',
-    fontFamily: 'Lexend_400Bold',
-    marginBottom: 20
+    fontWeight: "bold",
+    fontFamily: "Lexend_400Bold",
+    marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 20,
-    fontFamily: 'Lexend_400Regular',
-    marginBottom: 10
+    fontFamily: "Lexend_400Regular",
+    marginBottom: 10,
   },
   searchInput: {
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 10,
     fontSize: 16,
-    color: '#000'
+    color: "#000",
   },
   tagRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 20
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 20,
   },
   tag: {
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 20,
-    margin: 4
+    margin: 4,
   },
   tagSelected: {
-    backgroundColor: '#3A72FF',
+    backgroundColor: "#3A72FF",
   },
   tagText: {
     fontFamily: "Lexend_400Regular",
     fontSize: 14,
-    color: '#3A72FF'
+    color: "#3A72FF",
   },
   tagTextSelected: {
     fontFamily: "Lexend_400Regular",
-    color: '#fff'
+    color: "#fff",
   },
   languageButton: {
     height: 50,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
     paddingHorizontal: 10,
     marginBottom: 20,
-    justifyContent: 'center'
+    justifyContent: "center",
   },
   languageTextUnselected: {
-    color: '#888',
-    fontSize: 16
+    color: "#888",
+    fontSize: 16,
   },
   languageTextSelected: {
-    color: '#000',
-    fontSize: 16
+    color: "#000",
+    fontSize: 16,
   },
   applyButton: {
     backgroundColor: "#3b82f6",

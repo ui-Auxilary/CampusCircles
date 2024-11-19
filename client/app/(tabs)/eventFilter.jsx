@@ -25,12 +25,12 @@ const EventFilter = () => {
 
   const applyFilters = () => {
     setInitialFilters(currentFilters);
-    
+
     const filtersToSend = {
       ...currentFilters,
       selectedDate: currentFilters.selectedDate ? currentFilters.selectedDate.toISOString() : null,
     };
-  
+
     navigation.navigate("events", {
       filters: filtersToSend,
       openEventsList: true,
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   tag: {
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     backgroundColor: "#fff",
     borderRadius: 20,
@@ -216,12 +216,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 10,
     height: 45,
-    padding: 7.5,
+    padding: 10,
     justifyContent: "center",
     marginBottom: 20,
   },
   dateTimeText: {
-    color: "#454545",
+    color: "#818589",
     fontSize: 15,
   },
 });

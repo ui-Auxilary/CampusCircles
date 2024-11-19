@@ -26,8 +26,7 @@ const Login = () => {
   });
 
   const [show, setShow] = useState(false);
-  const { setShowAge, setShowPronoun, setHasHaptic, setAllowNotif, setUserId } =
-    getUserData();
+  const { setShowAge, setShowPronoun, setHasHaptic, setAllowNotif, setUserId } = getUserData();
 
   const handleLogin = async () => {
     let requiredFields = ["username", "password"];
@@ -67,23 +66,21 @@ const Login = () => {
           <View>
             <Text style={styles.inputLabel}>Email/Username</Text>
             <TextInput
-              onChangeText={(val) =>
-                setLoginData({ ...loginData, username: val })
-              }
+              onChangeText={(val) => setLoginData({ ...loginData, username: val })}
               style={styles.inputField}
-              placeholder='Email/Username'
+              placeholder="Email/Username"
+              placeholderTextColor="#D3D3D3"
             />
           </View>
           <View>
             <Text style={styles.inputLabel}>Password</Text>
             <Pressable style={styles.inputBox} onPress={() => setShow(!show)}>
               <TextInput
-                onChangeText={(val) =>
-                  setLoginData({ ...loginData, password: val })
-                }
+                onChangeText={(val) => setLoginData({ ...loginData, password: val })}
                 secureTextEntry={show ? false : true}
                 style={styles.inputField}
-                placeholder='Password'
+                placeholder="Password"
+                placeholderTextColor="#D3D3D3"
               />
               <Ionicons
                 name={show ? "eye-off" : "eye"}
