@@ -13,7 +13,11 @@ import axios from "axios";
 import TagRow from "@/components/TagRow/TagRow";
 import LanguageRow from "@/components/LanguageRow/LanguageRow";
 import * as Haptics from "expo-haptics";
-import { useFocusEffect, useRoute, useNavigation } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useRoute,
+  useNavigation,
+} from "@react-navigation/native";
 import { getUserData } from "@/hooks/userContext";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -42,7 +46,9 @@ const OtherProfile = () => {
       const response = await axios.get(`${BASE_URL}/users/${userId}`);
       if (response.data) {
         setUserData(response.data.data);
-        setIsFriend(response.data.data.friendIds?.includes(currentUserId) ?? false);
+        setIsFriend(
+          response.data.data.friendIds?.includes(currentUserId) ?? false
+        );
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -53,9 +59,13 @@ const OtherProfile = () => {
     useCallback(() => {
       const fetchData = async () => {
         try {
-          const userResponse = await axios.get(`${BASE_URL}/users/${userId}`);
+          const userResponse = await axios.get(
+            `${BASE_URL}/users/get/${userId}`
+          );
           setUserData(userResponse.data.data);
-          setIsFriend(userResponse.data.data.friendIds?.includes(currentUserId) ?? false);
+          setIsFriend(
+            userResponse.data.data.friendIds?.includes(currentUserId) ?? false
+          );
           fetchUserEvents(userId);
         } catch (error) {
           if (hasHaptic) {
@@ -79,7 +89,7 @@ const OtherProfile = () => {
   const handleAddFriend = async () => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/users/${currentUserId}/add-friend`,
+        `${BASE_URL}/users/add-friend/${currentUserId}`,
         {
           friendId: userId,
         }
@@ -108,7 +118,7 @@ const OtherProfile = () => {
   const handleRemoveFriend = async () => {
     try {
       const response = await axios.post(
-        `${BASE_URL}/users/${currentUserId}/remove-friend`,
+        `${BASE_URL}/users/remove-friend/${currentUserId}`,
         {
           friendId: userId,
         }
@@ -137,7 +147,7 @@ const OtherProfile = () => {
           onPress={() => navigation.navigate("friends")}
           style={styles.backButtonContainer}
         >
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name='arrow-back' size={24} color='black' />
           <Text style={styles.backButton}> Back</Text>
         </TouchableOpacity>
       </View>
@@ -177,9 +187,7 @@ const OtherProfile = () => {
             <Text style={styles.metricSpan}>Friends</Text>
           </View>
           <View>
-            <Text style={styles.metricText}>
-              {events.length}
-            </Text>
+            <Text style={styles.metricText}>{events.length}</Text>
             <Text style={styles.metricSpan}>Events</Text>
           </View>
         </View>
@@ -486,10 +494,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   noDataText: {
-    fontFamily: 'Lexend_500Medium',
+    fontFamily: "Lexend_500Medium",
     fontSize: 14,
-    color: '#8E8E93',
-    textAlign: 'center',
+    color: "#8E8E93",
+    textAlign: "center",
     marginTop: 10,
   },
 });

@@ -14,7 +14,7 @@ const AccountSettings = () => {
   useFocusEffect(
     useCallback(() => {
       axios
-        .get(`${BASE_URL}/users/${userId}`)
+        .get(`${BASE_URL}/users/get/${userId}`)
         .then(({ data }) => setEditData(data.data))
         .catch((e) => console.log(e));
     }, [])

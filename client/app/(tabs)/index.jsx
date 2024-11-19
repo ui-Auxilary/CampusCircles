@@ -37,7 +37,7 @@ const HomeTab = () => {
     if (userId) {
       // Fetch request
       axios
-        .get(`${BASE_URL}/users/${userId}`)
+        .get(`${BASE_URL}/users/get/${userId}`)
         .then(({ data }) => {
           setUserData(data.data);
         })
@@ -59,7 +59,7 @@ const HomeTab = () => {
   const fetchUserNotifications = async (userId) => {
     try {
       const notifs = await axios
-        .get(`${BASE_URL}/users/${userId}/notifications`)
+        .get(`${BASE_URL}/users/notifications/${userId}`)
         .catch((e) => console.log(e));
 
       console.log("NOTIFS", notifs.data.data);
@@ -76,7 +76,7 @@ const HomeTab = () => {
 
   const fetchUserEvents = async (userId) => {
     try {
-      const { data } = await axios.get(`${BASE_URL}/users/${userId}/events`);
+      const { data } = await axios.get(`${BASE_URL}/users/events/${userId}`);
       console.log("Fetched Events:", data.data);
       setEvents(data.data || []);
     } catch (e) {
@@ -236,14 +236,15 @@ const HomeTab = () => {
                   });
                 }}
               >
-              <Image
-                source={{
-                  uri:
-                    event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
-                }}
-                style={styles.eventImage}
-              />
-              <Text style={styles.eventTitle}>{event?.name}</Text>
+                <Image
+                  source={{
+                    uri:
+                      event?.photo ||
+                      "https://www.openday.unsw.edu.au/share.jpg",
+                  }}
+                  style={styles.eventImage}
+                />
+                <Text style={styles.eventTitle}>{event?.name}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>

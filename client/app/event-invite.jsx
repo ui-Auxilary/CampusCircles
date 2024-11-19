@@ -29,7 +29,7 @@ const EventInvite = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`${BASE_URL}/events/get/${id}`)
+        .get(`${BASE_URL}/events/event/${id}`)
         .then(({ data }) => setEventData(data.data))
         .catch((error) => console.error("Error fetching event data:", error));
     }
@@ -39,7 +39,9 @@ const EventInvite = () => {
     useCallback(() => {
       const fetchFriends = async () => {
         try {
-          const response = await axios.get(`${BASE_URL}/users/${userId}/friends`);
+          const response = await axios.get(
+            `${BASE_URL}/users/friends/${userId}`
+          );
           setFriends(response.data.data);
         } catch (error) {
           console.error("Error fetching friends:", error);
@@ -56,8 +58,13 @@ const EventInvite = () => {
     useCallback(() => {
       const fetchInvitations = async () => {
         try {
-          console.log("Fetching invitations from URL:", `${BASE_URL}/invitations/event/${id}`);
-          const response = await axios.get(`${BASE_URL}/invitations/event/${id}`);
+          console.log(
+            "Fetching invitations from URL:",
+            `${BASE_URL}/invitations/event/${id}`
+          );
+          const response = await axios.get(
+            `${BASE_URL}/invitations/event/${id}`
+          );
           console.log("Fetched Invitations:", response.data);
           setInvitations(response.data.data);
         } catch (error) {
@@ -91,11 +98,17 @@ const EventInvite = () => {
         }
       } else {
         // Unsend invitation
-        await axios.post(`${BASE_URL}/invitations/unsend`, { invitationId: invitation.id });
-        setInvitations((prev) => prev.filter((inv) => inv.id !== invitation.id));
+        await axios.post(`${BASE_URL}/invitations/unsend`, {
+          invitationId: invitation.id,
+        });
+        setInvitations((prev) =>
+          prev.filter((inv) => inv.id !== invitation.id)
+        );
       }
     } catch (error) {
-      Alert.alert("This user has already been invited to this event by another user");
+      Alert.alert(
+        "This user has already been invited to this event by another user"
+      );
     }
   };
 
@@ -118,7 +131,10 @@ const EventInvite = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.linkContainer} onPress={() => router.back()}>
+      <TouchableOpacity
+        style={styles.linkContainer}
+        onPress={() => router.back()}
+      >
         <Ionicons name={"arrow-back"} color={"#FFFFFF"} size={24} />
         <Text style={styles.backLink}>Go Back</Text>
       </TouchableOpacity>
@@ -132,18 +148,25 @@ const EventInvite = () => {
 
       {/* Search bar */}
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
+        <Ionicons
+          name='search'
+          size={20}
+          color='#888'
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchText}
           value={search}
-          placeholder="Search for friends"
+          placeholder='Search for friends'
           onChangeText={setSearch}
         />
       </View>
       <ScrollView>
         {filteredFriends.map((friend) => {
           const status = getFriendStatus(friend.id);
-          console.log(`Friend ID: ${friend.id}, Name: ${friend.name}, Status: ${status}`);
+          console.log(
+            `Friend ID: ${friend.id}, Name: ${friend.name}, Status: ${status}`
+          );
           return (
             <TouchableOpacity key={friend.id} style={styles.friendCard}>
               <View style={styles.imageContainer}>
@@ -159,9 +182,9 @@ const EventInvite = () => {
               <View style={styles.details}>
                 <Text style={styles.name}>{friend.name}</Text>
                 <View style={styles.separator} />
-                <Text style={styles.info}>{`${friend.studyYear || "Unknown Year"} | ${
-                  friend.degree || "Unknown Degree"
-                }`}</Text>
+                <Text style={styles.info}>{`${
+                  friend.studyYear || "Unknown Year"
+                } | ${friend.degree || "Unknown Degree"}`}</Text>
               </View>
               {status === "accepted" ? (
                 <Image
@@ -174,12 +197,26 @@ const EventInvite = () => {
                   style={styles.PendingIcon}
                 />
               ) : status === "pending" ? (
-                <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
-                  <Ionicons name="remove-circle-outline" size={40} color="#FF3B40" />
+                <TouchableOpacity
+                  onPress={() => toggleInvite(friend.id)}
+                  style={styles.addButton}
+                >
+                  <Ionicons
+                    name='remove-circle-outline'
+                    size={40}
+                    color='#FF3B40'
+                  />
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
-                  <Ionicons name="add-circle-outline" size={40} color="#116DFF" />
+                <TouchableOpacity
+                  onPress={() => toggleInvite(friend.id)}
+                  style={styles.addButton}
+                >
+                  <Ionicons
+                    name='add-circle-outline'
+                    size={40}
+                    color='#116DFF'
+                  />
                 </TouchableOpacity>
               )}
             </TouchableOpacity>

@@ -89,7 +89,7 @@ const Register = () => {
     }
 
     axios
-      .post(`${BASE_URL}/users`, userData)
+      .post(`${BASE_URL}/users/register`, userData)
       .then(({ data }) => {
         console.log("USR DATA", data);
         router.push({

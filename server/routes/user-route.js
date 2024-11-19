@@ -1,7 +1,6 @@
 import { Router } from "express";
 import {
   createUser,
-  getUsers,
   getUser,
   loginUser,
   updateUser,
@@ -17,18 +16,17 @@ import {
 
 const userRoute = Router();
 
-userRoute.get("", getUsers);
-userRoute.get("/:id", getUser);
+userRoute.get("/get/:id", getUser);
 userRoute.delete("/:id", deleteUser);
-userRoute.post("", createUser);
-userRoute.post("/:id/upload", uploadProfile);
+userRoute.post("/register", createUser);
+userRoute.post("/upload/:id", uploadProfile);
 userRoute.put("/:id", updateUser);
 userRoute.post("/login", loginUser);
-userRoute.get("/:id/friends", getUserFriends);
-userRoute.get("/:id/non-friends", getNonFriends);
-userRoute.post("/:id/add-friend", addFriend);
-userRoute.post("/:id/remove-friend", removeFriend);
-userRoute.get("/:id/notifications", getUserNotifs);
-userRoute.get("/:id/events", getUserEvents);
+userRoute.get("/friends/:id", getUserFriends);
+userRoute.get("/non-friends/:id", getNonFriends);
+userRoute.post("/add-friend/:id", addFriend);
+userRoute.post("/remove-friend/:id", removeFriend);
+userRoute.get("/notifications/:id", getUserNotifs);
+userRoute.get("/events/:id", getUserEvents);
 
 export default userRoute;
