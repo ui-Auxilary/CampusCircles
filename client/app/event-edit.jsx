@@ -330,7 +330,7 @@ const EditEvent = () => {
             try {
               await axios.delete(`${BASE_URL}/events/delete/${id}`);
               Alert.alert("Event Deleted", "The event has been deleted.");
-              router.push("events");
+              router.push("/(tabs)");
             } catch (error) {
               console.error("Could not delete event:", error);
               Alert.alert("Error", "An error has occured, event not deleted");
