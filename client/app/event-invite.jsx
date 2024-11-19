@@ -194,9 +194,10 @@ const EventInvite = () => {
               ) : status === "rejected" ? (
                 <Image
                   source={require("../assets/images/rejected.png")}
-                  style={styles.attendingIcon}
+                  style={styles.PendingIcon}
                 />
               ) : status === "pending" ? (
+<<<<<<< HEAD
                 <TouchableOpacity
                   onPress={() => toggleInvite(friend.id)}
                   style={styles.addButton}
@@ -217,6 +218,14 @@ const EventInvite = () => {
                     size={30}
                     color='#116DFF'
                   />
+=======
+                <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
+                  <Ionicons name="remove-circle-outline" size={40} color="#FF3B40" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => toggleInvite(friend.id)} style={styles.addButton}>
+                  <Ionicons name="add-circle-outline" size={40} color="#116DFF" />
+>>>>>>> 05cff5e5a1972761b40bcada01e7f0edc042a86a
                 </TouchableOpacity>
               )}
             </TouchableOpacity>
@@ -326,8 +335,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   attendingIcon: {
-    width: 27,
-    height: 27,
+    width: 37,
+    height: 37,
     marginRight: 12,
+  },
+  PendingIcon: {
+    width: 45,
+    height: 45,
+    marginRight: 8,
   },
 });

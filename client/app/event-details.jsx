@@ -391,6 +391,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 3,
     marginBottom: 8,
+    marginRight: 12,
   },
   detailsText: {
     fontSize: 18,

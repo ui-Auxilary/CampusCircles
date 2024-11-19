@@ -142,38 +142,50 @@ const UserList = () => {
       <Text style={styles.userCount}>Other Users ({filteredUsers.length})</Text>
 
       <ScrollView>
-        {filteredUsers.map((user) => (
-          <TouchableOpacity
-            key={user.id}
-            style={styles.friendCard}
-            onPress={() => handleNavigateToProfile(user.id)}
-          >
-            <View style={styles.imageContainer}>
-              <Image
-                source={{
-                  uri: user.photo
-                    ? user.photo
-                    : "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
-                }}
-                style={styles.image}
-              />
-            </View>
-            <View style={styles.details}>
-              <Text style={styles.name}>{user.name}</Text>
-              <View style={styles.separator} />
-              <Text style={styles.info}>
-                {user.studyYear || "Unknown Year"} |{" "}
-                {user.degree || "Unknown Degree"}
-              </Text>
-            </View>
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user) => (
             <TouchableOpacity
-              style={styles.addButton}
-              onPress={(e) => handleAddFriend(user.id, e)}
+              key={user.id}
+              style={styles.friendCard}
+              onPress={() => handleNavigateToProfile(user.id)}
             >
+<<<<<<< HEAD
               <Ionicons name='person-add' size={24} color='#3b82f6' />
+=======
+              <View style={styles.imageContainer}>
+                <Image
+                  source={{
+                    uri: user.photo
+                      ? user.photo
+                      : "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
+                  }}
+                  style={styles.image}
+                />
+              </View>
+              <View style={styles.details}>
+                <Text style={styles.name}>{user.name}</Text>
+                <View style={styles.separator} />
+                <Text style={styles.info}>
+                  {user.studyYear || "Unknown Year"} |{" "}
+                  {user.degree || "Unknown Degree"}
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => handleAddFriend(user.id)}
+              >
+                <Ionicons name="person-add" size={24} color="#3b82f6" />
+              </TouchableOpacity>
+>>>>>>> 05cff5e5a1972761b40bcada01e7f0edc042a86a
             </TouchableOpacity>
-          </TouchableOpacity>
-        ))}
+          ))
+        ) : (
+          <View style={styles.noResultsContainer}>
+            <Text style={styles.noResultsText}>
+              Oh no! There are no results matching your filter :(
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -280,6 +292,25 @@ const styles = StyleSheet.create({
   },
   addButton: {
     paddingLeft: 5,
+  },
+  noResultsContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  noResultsText: {
+    paddingTop: 50,
+    fontSize: 18,
+    fontFamily: "Lexend_400Regular",
+    color: "#555",
+    marginBottom: 15,
+  },
+  returnButton: {
+    marginTop: 20,
+    backgroundColor: "#4285F4",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
   },
 });
 

@@ -236,6 +236,7 @@ const HomeTab = () => {
                   });
                 }}
               >
+<<<<<<< HEAD
                 <Image
                   source={{
                     uri:
@@ -246,6 +247,16 @@ const HomeTab = () => {
                 />
                 <Text style={styles.eventTitle}>{event?.name}</Text>
                 <Text style={styles.eventName}>{event?.name}</Text>
+=======
+              <Image
+                source={{
+                  uri:
+                    event?.photo || "https://www.openday.unsw.edu.au/share.jpg",
+                }}
+                style={styles.eventImage}
+              />
+              <Text style={styles.eventTitle}>{event?.name}</Text>
+>>>>>>> 05cff5e5a1972761b40bcada01e7f0edc042a86a
               </TouchableOpacity>
             ))}
           </ScrollView>

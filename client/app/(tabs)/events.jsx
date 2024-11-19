@@ -21,14 +21,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 
-const categories = [
-  "All Categories",
-  "Hang",
-  "Study",
-  "Eat",
-  "Society",
-  "Other",
-];
+const categories = ["All Categories", "Hang", "Study", "Eat", "Society", "Other"];
 const timeOptions = ["Anytime", "Morning", "Midday", "Afternoon", "Night"];
 
 export default function EventTab() {
@@ -115,8 +108,7 @@ export default function EventTab() {
         : null;
 
       const categoryMatch =
-        !filters.selectedCategory ||
-        filters.selectedCategory === "All Categories"
+        !filters.selectedCategory || filters.selectedCategory === "All Categories"
           ? true
           : event.category === filters.selectedCategory;
 
@@ -136,16 +128,14 @@ export default function EventTab() {
         }
       }
 
-      const textMatch =
-        !filters.text || (event.name && event.name.includes(filters.text));
+      const textMatch = !filters.text || (event.name && event.name.includes(filters.text));
 
       const timeMatch =
         !filters.selectedTime || filters.selectedTime === "Anytime"
           ? true
           : filters.selectedTime === timeCategory;
 
-      const dateMatch =
-        !filterDateString || eventDateString === filterDateString;
+      const dateMatch = !filterDateString || eventDateString === filterDateString;
 
       return categoryMatch && timeMatch && dateMatch && textMatch;
     });
@@ -155,10 +145,15 @@ export default function EventTab() {
     useCallback(() => {
       const fetchEvents = async () => {
         try {
+<<<<<<< HEAD
+=======
+          console.log(
+            "FETCH LINK",
+            `${BASE_URL}/events/get/${fetchToday || !filters ? "today" : "upcoming"}`
+          );
+>>>>>>> 05cff5e5a1972761b40bcada01e7f0edc042a86a
           const { data } = await axios.get(
-            `${BASE_URL}/events/get/${
-              fetchToday || !filters ? "today" : "upcoming"
-            }`
+            `${BASE_URL}/events/get/${fetchToday || !filters ? "today" : "upcoming"}`
           );
           let fetchedEvents = data.data;
           // Apply filters if any
@@ -211,15 +206,12 @@ export default function EventTab() {
         },
       }}
       asChild
-      onPress={collapseActionSheet}
-    >
+      onPress={collapseActionSheet}>
       <TouchableOpacity style={styles.eventItem}>
         <View style={styles.eventContent}>
           <Image
             source={
-              item.category
-                ? getIcon(item.category)
-                : require("../../assets/images/hang.png")
+              item.category ? getIcon(item.category) : require("../../assets/images/hang.png")
             }
             style={styles.eventIcon}
           />
@@ -245,8 +237,7 @@ export default function EventTab() {
             latitudeDelta: 0.0088,
             longitudeDelta: 0.0091,
           }}
-          style={styles.map}
-        >
+          style={styles.map}>
           {events.map(({ id, lat, long, description, name, category }, idx) => (
             <Marker
               key={idx}
@@ -268,15 +259,12 @@ export default function EventTab() {
                     time: description,
                   },
                 })
-              }
-            >
+              }>
               <View>
                 <Image
                   style={styles.customMarker}
                   source={
-                    category
-                      ? getMarker(category)
-                      : require("../../assets/images/other_m.png")
+                    category ? getMarker(category) : require("../../assets/images/other_m.png")
                   }
                 />
               </View>
@@ -289,16 +277,16 @@ export default function EventTab() {
       <View style={styles.searchbarContainer}>
         <TextInput
           style={styles.searchbar}
-          placeholder='Search events'
+          placeholder="Search events"
           value={searchText}
           onChangeText={(text) => {
             handleSearchFilter(text);
           }}
         />
         {/* full events filter */}
-        <Link href='/eventFilter' asChild>
+        <Link href="/eventFilter" asChild>
           <TouchableOpacity style={styles.filterIcon}>
-            <Ionicons name='filter-circle-outline' size={30} color='#4285F4' />
+            <Ionicons name="filter-circle-outline" size={35} color="#4285F4" />
           </TouchableOpacity>
         </Link>
       </View>
@@ -308,11 +296,8 @@ export default function EventTab() {
         {/* time filter */}
         <TouchableOpacity
           style={[styles.quickFilterButtons, styles.selectedFilter]}
-          onPress={openTimePicker}
-        >
-          <Text style={[styles.filterText, styles.selectedFilterText]}>
-            Today's Times
-          </Text>
+          onPress={openTimePicker}>
+          <Text style={[styles.filterText, styles.selectedFilterText]}>Today's Times</Text>
         </TouchableOpacity>
 
         {/* category filters */}
@@ -326,16 +311,12 @@ export default function EventTab() {
             onPress={() => {
               setSelectedCategory(category);
               setTextFilter({ selectedCategory: category });
-            }}
-          >
+            }}>
             <Text
               style={[
                 styles.filterText,
-                selectedCategory === category
-                  ? styles.selectedFilterText
-                  : null,
-              ]}
-            >
+                selectedCategory === category ? styles.selectedFilterText : null,
+              ]}>
               {category}
             </Text>
           </TouchableOpacity>
@@ -345,32 +326,26 @@ export default function EventTab() {
         <Modal
           transparent={true}
           visible={TimePickerVisibility}
-          animationType='slide'
-          onRequestClose={closeTimePicker}
-        >
+          animationType="slide"
+          onRequestClose={closeTimePicker}>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Select Time Period</Text>
               {timeOptions.map((option) => (
                 <TouchableOpacity
                   key={option}
-                  style={[
-                    styles.modalOption,
-                    option === selectedTime && styles.selectedFilter,
-                  ]}
+                  style={[styles.modalOption, option === selectedTime && styles.selectedFilter]}
                   onPress={() => {
                     setSelectedTime(option);
                     console.log("OPTION", option);
                     setTextFilter({ selectedTime: option });
                     closeTimePicker();
-                  }}
-                >
+                  }}>
                   <Text
                     style={[
                       styles.modalOptionText,
                       option === selectedTime && styles.selectedFilterText,
-                    ]}
-                  >
+                    ]}>
                     {option}
                   </Text>
                 </TouchableOpacity>
@@ -387,8 +362,7 @@ export default function EventTab() {
           if (actionSheetRef.current) {
             actionSheetRef.current.setModalVisible(true);
           }
-        }}
-      >
+        }}>
         <Text style={styles.openSheetButtonText}>Events List</Text>
       </TouchableOpacity>
 
@@ -409,12 +383,11 @@ export default function EventTab() {
                 Oh no! There are no results matching your filter :(
               </Text>
               <Link
-                href='/eventFilter'
+                href="/eventFilter"
                 asChild
                 onPress={() => {
                   collapseActionSheet();
-                }}
-              >
+                }}>
                 <TouchableOpacity style={styles.returnButton}>
                   <Text style={styles.returnButtonText}>Return to Filters</Text>
                 </TouchableOpacity>
@@ -512,7 +485,7 @@ const styles = StyleSheet.create({
   },
   searchbar: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 12,
     fontSize: 16,
     fontFamily: "Lexend_400Regular",
     color: "#000",
@@ -534,7 +507,7 @@ const styles = StyleSheet.create({
     paddingLeft: 7,
   },
   quickFilterButtons: {
-    paddingVertical: 8,
+    paddingVertical: 11,
     paddingHorizontal: 16,
     borderRadius: 15,
     marginRight: 10,
