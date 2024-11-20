@@ -32,7 +32,7 @@ const OtherProfile = () => {
 
   const fetchUserEvents = async (userId) => {
     try {
-      const { data } = await axios.get(`${BASE_URL}/users/${userId}/events`);
+      const { data } = await axios.get(`${BASE_URL}/users/events/${userId}`);
       setEvents(data.data || []);
     } catch (e) {
       hasHaptic &&
@@ -43,7 +43,7 @@ const OtherProfile = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/users/${userId}`);
+      const response = await axios.get(`${BASE_URL}/users/get/${userId}`);
       if (response.data) {
         setUserData(response.data.data);
         setIsFriend(

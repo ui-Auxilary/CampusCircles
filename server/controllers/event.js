@@ -71,8 +71,10 @@ export const getEvents = async (req, res) => {
 
 export const getEventsToday = async (req, res) => {
   let tzoffset = new Date().getTimezoneOffset() * 60000;
-  let localISOTime = new Date(Date.now() - tzoffset).toISOString().slice(0, -1);
+  let localISOTime = new Date(Date.now() - tzoffset).toISOString();
 
+  console.log("TIME", localISOTime);
+  console.log("New date", new Date().toLocaleDateString());
   let splitDate = localISOTime.split("T")[0];
   let formatDate = `${splitDate}T00:00:00.000Z`;
   let formatRange = `${splitDate}T23:59:59.000Z`;
@@ -97,7 +99,7 @@ export const getEventsToday = async (req, res) => {
 
 export const getEventsUpcoming = async (req, res) => {
   let tzoffset = new Date().getTimezoneOffset() * 60000;
-  let localISOTime = new Date(Date.now() - tzoffset).toISOString().slice(0, -1);
+  let localISOTime = new Date(Date.now() - tzoffset).toISOString();
 
   let splitDate = localISOTime.split("T")[0];
   let formatDate = `${splitDate}T00:00:00.000Z`;
