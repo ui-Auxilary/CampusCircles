@@ -73,8 +73,6 @@ export const getEventsToday = async (req, res) => {
   let tzoffset = new Date().getTimezoneOffset() * 60000;
   let localISOTime = new Date(Date.now() - tzoffset).toISOString();
 
-  console.log("TIME", localISOTime);
-  console.log("New date", new Date().toLocaleDateString());
   let splitDate = localISOTime.split("T")[0];
   let formatDate = `${splitDate}T00:00:00.000Z`;
   let formatRange = `${splitDate}T23:59:59.000Z`;
@@ -87,8 +85,6 @@ export const getEventsToday = async (req, res) => {
       },
     },
   });
-
-  console.log("EVENTS", events);
 
   res.json({
     status: true,

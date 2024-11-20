@@ -27,10 +27,8 @@ export const handleOAuthSignUp = async (req, res) => {
     // get the user data from the verify data
     const { name, email, picture } = verifyData;
 
-    // This res.send is the key to redirecting back to our expo go app.
-    // ex: you have to enter your IP adress that is running your expo go application.
     res.send(
-      `<script>window.location.replace("exp://10.0.0.59:8081/--/register?email=${email}&name=${name}&picture=${picture}")</script>`
+      `<script>window.location.replace("exp://10.0.0.59:8081/--/create-profile?email=${email}&name=${name}&picture=${picture}")</script>`
     );
   } else {
     res.status(500).json({

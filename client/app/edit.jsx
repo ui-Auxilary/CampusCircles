@@ -9,7 +9,12 @@ import {
   Pressable,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useLocalSearchParams, router, Link } from "expo-router";
+import {
+  useLocalSearchParams,
+  router,
+  Link,
+  useFocusEffect,
+} from "expo-router";
 import Logo from "../assets/logo2.svg";
 
 import { Picker } from "@react-native-picker/picker";
@@ -28,7 +33,15 @@ import AboutBlock from "@/components/Edit/AboutBlock";
 
 const Edit = () => {
   const params = useLocalSearchParams();
-  const { editData, userId } = getUserData();
+  const { setEditData, editData, userId } = getUserData();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (params.photo) {
+        setEditData({ ...editData, photo: params.photo });
+      }
+    }, [params])
+  );
 
   const renderEditBlock = useCallback(() => {
     switch (params.type) {
@@ -77,7 +90,6 @@ const Edit = () => {
     }
   };
   const handleSave = () => {
-    console.log("Updated", editData);
     axios
       .put(`${BASE_URL}/users/${userId}`, editData)
       .then(() => {
@@ -85,7 +97,6 @@ const Edit = () => {
         navigate();
       })
       .catch((e) => console.log(e));
-    1;
   };
 
   return (

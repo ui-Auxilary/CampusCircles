@@ -6,10 +6,13 @@ import {
   TouchableOpacity,
   Pressable,
   Alert,
+  Image,
 } from "react-native";
 import React, { useState } from "react";
 import Logo from "../assets/campuslogo.svg";
 import { Link, router } from "expo-router";
+
+import * as WebBrowser from "expo-web-browser";
 
 import S from "../styles/global";
 import axios from "axios";
@@ -26,7 +29,55 @@ const Login = () => {
   });
 
   const [show, setShow] = useState(false);
-  const { setShowAge, setShowPronoun, setHasHaptic, setAllowNotif, setUserId } = getUserData();
+  const { setShowAge, setShowPronoun, setHasHaptic, setAllowNotif, setUserId } =
+    getUserData();
+
+  const handleCallback = (e) => {
+    let url = e.url;
+
+    let regex = /[?&]([^=#]+)=([^&#]*)/g,
+      params = {},
+      match;
+
+    while ((match = regex.exec(url))) {
+      params[match[1]] = match[2];
+      console.log(match[1], match[2]);
+    }
+
+    let submitData = {};
+    submitData["username"] = params.name;
+    submitData["password"] = "";
+
+    axios
+      .post(`${BASE_URL}/users/login`, submitData)
+      .then(({ data }) => {
+        let { showAge, showPronoun, allowNotif, hasHaptic, id } = data.data;
+        setShowAge(showAge);
+        setShowPronoun(showPronoun);
+        setAllowNotif(allowNotif);
+        setHasHaptic(hasHaptic);
+        setUserId(id);
+        router.push({ pathname: "/(tabs)" });
+      })
+      .catch((e) => {
+        if (e.response && e.response.status === 400) {
+          Alert.alert(e.response?.data?.message);
+        } else {
+          console.log(e);
+        }
+      });
+  };
+
+  const handleOAuth = async () => {
+    console.log("Here", process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID);
+    const REDIRECT_URI = "https://campus-circles.vercel.app/swg";
+    let res = await WebBrowser.openAuthSessionAsync(
+      `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&access_type=offline&state=1234_purpleGoogle&prompt=consent`,
+      REDIRECT_URI
+    );
+
+    handleCallback(res);
+  };
 
   const handleLogin = async () => {
     let requiredFields = ["username", "password"];
@@ -39,11 +90,9 @@ const Login = () => {
       }
     }
 
-    console.log("POSTING TO", BASE_URL);
     await axios
       .post(`${BASE_URL}/users/login`, loginData)
       .then(({ data }) => {
-        console.log("DATA", data);
         let { showAge, showPronoun, allowNotif, hasHaptic, id } = data.data;
         setShowAge(showAge);
         setShowPronoun(showPronoun);
@@ -67,21 +116,25 @@ const Login = () => {
           <View>
             <Text style={styles.inputLabel}>Email/Username</Text>
             <TextInput
-              onChangeText={(val) => setLoginData({ ...loginData, username: val })}
+              onChangeText={(val) =>
+                setLoginData({ ...loginData, username: val })
+              }
               style={styles.inputField}
-              placeholder="Email/Username"
-              placeholderTextColor="#D3D3D3"
+              placeholder='Email/Username'
+              placeholderTextColor='#D3D3D3'
             />
           </View>
           <View>
             <Text style={styles.inputLabel}>Password</Text>
             <Pressable style={styles.inputBox} onPress={() => setShow(!show)}>
               <TextInput
-                onChangeText={(val) => setLoginData({ ...loginData, password: val })}
+                onChangeText={(val) =>
+                  setLoginData({ ...loginData, password: val })
+                }
                 secureTextEntry={show ? false : true}
                 style={styles.inputField}
-                placeholder="Password"
-                placeholderTextColor="#D3D3D3"
+                placeholder='Password'
+                placeholderTextColor='#D3D3D3'
               />
               <Ionicons
                 name={show ? "eye-off" : "eye"}
@@ -95,6 +148,18 @@ const Login = () => {
             <Text style={S.txtLrg}>Login</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.lineBreak}>
+          <Text style={styles.lineBreakText}>OR</Text>
+        </View>
+
+        <TouchableOpacity onPress={handleOAuth} style={styles.swg}>
+          <Image
+            style={styles.googleLogo}
+            source={require("../assets/google.png")}
+          />
+          <Text style={styles.swgText}>Sign in with google</Text>
+          <View />
+        </TouchableOpacity>
         <Logo style={styles.logo} />
         <View style={styles.loginFooter}>
           <Link href={{ pathname: "register" }}>
@@ -192,5 +257,43 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 2,
     right: 10,
+  },
+  lineBreak: {
+    height: 3,
+    position: "relative",
+    backgroundColor: "#FFFFFF",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  lineBreakText: {
+    position: "absolute",
+    backgroundColor: "#3A72FF",
+    paddingHorizontal: 20,
+    color: "#FFFFFF",
+    zIndex: 2,
+    fontFamily: "Lexend_700Bold",
+  },
+  swg: {
+    marginTop: 20,
+    padding: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 5,
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  swgText: {
+    alignSelf: "center",
+    fontFamily: "Lexend_400Regular",
+  },
+  googleLogo: {
+    width: 29,
+    height: 30,
+  },
+  inputBox: {
+    justifyContent: "center",
   },
 });

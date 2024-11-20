@@ -87,19 +87,23 @@ const CreateProfile = () => {
   };
 
   useEffect(() => {
-    if (params.data) {
-      setEditData(JSON.parse(params.data));
+    if (params.profile) {
+      setEditData(JSON.parse(params.profile));
     }
+
     if (params.id) {
       // Set context
+      if (params.photo !== "") {
+        console.log("PARAMS", params.photo);
+        setPhoto(params.photo);
+        setEditData({ ...editData, [photo]: params.photo });
+      }
       setUserId(params.id);
     }
   }, []);
 
   const handleCreateProfile = () => {
     let userData = editData;
-
-    console.log("ID", userId, editData);
     axios
       .put(`${BASE_URL}/users/${userId}`, userData)
       .then(() => {
@@ -133,6 +137,8 @@ const CreateProfile = () => {
             source={{
               uri:
                 photo ||
+                editData?.photo ||
+                params?.photo ||
                 "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
             }}
           />

@@ -473,7 +473,6 @@ const CreateTab = () => {
                 mode='time'
                 value={displayTime || new Date()}
                 onChange={(_, d) => {
-                  console.log("TIME", d);
                   setEvent({ ...event, time: d });
                   setDisplayTime(d);
                 }}

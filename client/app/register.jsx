@@ -9,15 +9,13 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Link, router } from "expo-router";
 import axios from "axios";
 
 import S from "../styles/global";
 import { BASE_URL } from "@/constants/api";
-import Google from "../assets/google.png";
 import * as WebBrowser from "expo-web-browser";
-import * as Linking from "expo-linking";
 import { Ionicons } from "@expo/vector-icons";
 
 import * as Haptics from "expo-haptics";
@@ -32,6 +30,17 @@ const Register = () => {
   const [show, setShow] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const broofa = () => {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        var r = (Math.random() * 16) | 0,
+          v = c == "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      }
+    );
+  };
+
   const handleCallback = (e) => {
     let url = e.url;
 
@@ -44,19 +53,38 @@ const Register = () => {
       console.log(match[1], match[2]);
     }
 
-    router.push({ pathname: "/create-profile", params });
+    let submitData = {};
+    submitData["photo"] = params.picture;
+    submitData["username"] = params.name;
+    submitData["username"] = params.name;
+    submitData["email"] = params.email;
+    submitData["password"] = "";
+
+    axios
+      .post(`${BASE_URL}/users/register`, submitData)
+      .then(({ data }) => {
+        router.push({
+          pathname: "/create-profile",
+          params: { id: data.data.id, photo: data.data.photo },
+        });
+      })
+      .catch((e) => {
+        if (e.response && e.response.status === 400) {
+          Alert.alert(e.response?.data?.message);
+        } else {
+          console.log(e);
+        }
+      });
   };
 
   const handleOAuth = async () => {
     const REDIRECT_URI = "https://campus-circles.vercel.app/swg";
-    await WebBrowser.openAuthSessionAsync(
+    let res = await WebBrowser.openAuthSessionAsync(
       `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile&access_type=offline&state=1234_purpleGoogle&prompt=consent`,
       REDIRECT_URI
     );
 
-    let link = Linking.addEventListener("url", (e) => {
-      handleCallback(e);
-    });
+    handleCallback(res);
   };
 
   const handleRegister = () => {
@@ -91,10 +119,9 @@ const Register = () => {
     axios
       .post(`${BASE_URL}/users/register`, userData)
       .then(({ data }) => {
-        console.log("USR DATA", data);
         router.push({
           pathname: "/create-profile",
-          params: { id: data.data },
+          params: { id: data.data.id },
         });
       })
       .catch((e) => {

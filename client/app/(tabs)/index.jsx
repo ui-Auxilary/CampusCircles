@@ -48,7 +48,6 @@ const HomeTab = () => {
   useFocusEffect(
     useCallback(() => {
       if (userId) {
-        console.log("Home ID", params);
         setUsername(params.name);
         fetchUserNotifications(userId);
         fetchUserEvents(userId);
@@ -61,8 +60,6 @@ const HomeTab = () => {
       const notifs = await axios
         .get(`${BASE_URL}/users/notifications/${userId}`)
         .catch((e) => console.log(e));
-
-      console.log("NOTIFS", notifs.data.data);
       setNotifications(notifs.data.data);
     } catch (e) {
       {

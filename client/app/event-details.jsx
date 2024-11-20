@@ -82,8 +82,6 @@ const EventDetails = () => {
     try {
       if (id) {
         const response = await axios.get(`${BASE_URL}/events/get/${id}`);
-        console.log("EVENT DATA", response.data);
-
         setEventData(response.data.data);
       }
     } catch (e) {

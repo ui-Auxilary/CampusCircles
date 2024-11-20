@@ -53,13 +53,11 @@ export const uploadProfile = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
-  console.log("Request", req.body);
-
   let userData = req.body;
 
   let defaultUser = {
     name: "",
-    photo: "",
+    photo: userData?.photo || "",
     gender: "",
     age: "",
     bio: "",
@@ -90,7 +88,7 @@ export const createUser = async (req, res) => {
     res.status(201).json({
       status: true,
       message: "User created successfully",
-      data: user.id,
+      data: { id: user.id, photo: userData.photo },
     });
   } catch (e) {
     console.log("Error", e);
@@ -111,7 +109,6 @@ export const createUser = async (req, res) => {
 };
 
 export const loginUser = async (req, res) => {
-  console.log("Request", req.body);
   let { username, password } = req.body;
   try {
     const user = await prisma.user.findFirstOrThrow({

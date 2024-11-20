@@ -56,7 +56,7 @@ const ProfileTab = () => {
           onPress={() =>
             router.push({
               pathname: "edit-profile",
-              params: { data: JSON.stringify(userData) },
+              params: { profile: JSON.stringify(userData) },
             })
           }
           style={styles.editWrapper}

@@ -394,7 +394,6 @@ export default function EventTab() {
                   ]}
                   onPress={() => {
                     setSelectedTime(option);
-                    console.log("OPTION", option);
                     setTextFilter({ selectedTime: option });
                     closeTimePicker();
                   }}
