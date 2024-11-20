@@ -97,7 +97,7 @@ const EditEvent = () => {
 
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/events/event/${id}`);
+        const response = await axios.get(`${BASE_URL}/events/get/${id}`);
         const fetchedEvent = response.data.data;
         console.log("Fetched event");
 
