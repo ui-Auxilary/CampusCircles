@@ -21,7 +21,6 @@ import axios from "axios";
 
 // imported components
 import * as ImagePicker from "expo-image-picker";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 // imported assets
 import pic from "../assets/images/Image.png";
@@ -93,14 +92,15 @@ const EditEvent = () => {
   const [event, setEvent] = useState(defaultEventData);
 
   useEffect(() => {
+    console.log("ID", id);
     if (!id) return;
-  
+
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/events/get/${id}`);
+        const response = await axios.get(`${BASE_URL}/events/event/${id}`);
         const fetchedEvent = response.data.data;
         console.log("Fetched event");
-  
+
         setEvent({
           name: fetchedEvent.name || "",
           photo: fetchedEvent.photo || "",
@@ -123,11 +123,11 @@ const EditEvent = () => {
           invitations: fetchedEvent.invitations || {},
           creator: {
             connect: {
-              id: fetchedEvent.creator?.id || userId,
+              id: fetchedEvent.creator?.id || "",
             },
           },
         });
-  
+
         setEventType(fetchedEvent.category || "Hang");
         setImage(fetchedEvent.photo || null);
         setLocationQuery(fetchedEvent.location || "");
@@ -135,7 +135,7 @@ const EditEvent = () => {
         console.error("Error fetching event data:", error);
       }
     };
-  
+
     fetchEvent();
   }, [id]);
 
