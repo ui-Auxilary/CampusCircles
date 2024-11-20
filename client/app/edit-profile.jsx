@@ -60,6 +60,7 @@ const EditProfile = () => {
         photo: result.assets ? result.assets[0].base64 : "",
       })
         .then(({ data }) => {
+          Alert.alert("Image uploaded successfully");
           setPhoto(data.data);
           setEditData({ ...editData, photo: data.data });
         })

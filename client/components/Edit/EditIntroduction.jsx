@@ -24,7 +24,7 @@ export default function EditIntroduction() {
       />
 
       <Text style={styles.editCount}>
-        {bio.length} / {250}
+        {bio?.length} / {250}
       </Text>
     </View>
   );
