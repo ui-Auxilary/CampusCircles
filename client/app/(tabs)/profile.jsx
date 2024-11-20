@@ -20,7 +20,6 @@ const ProfileTab = () => {
   const { userId, showAge, showPronoun } = getUserData();
   const [userData, setUserData] = useState({});
   const [events, setEvents] = useState([]);
-
   const fetchUserEvents = async (userId) => {
     try {
       const { data } = await axios.get(`${BASE_URL}/users/events/${userId}`);
@@ -38,7 +37,6 @@ const ProfileTab = () => {
         axios
           .get(`${BASE_URL}/users/get/${userId}`)
           .then((response) => {
-            console.log(response.data.data);
             setUserData(response.data.data);
           })
           .catch((error) => {
@@ -87,7 +85,7 @@ const ProfileTab = () => {
             </View>
             <Text style={styles.yearOfStudy}>
               {userData.studyYear || "Unknown Year"} |{" "}
-              {userData.studyField || "Unknown Degree"}
+              {userData.degree || "Unknown Degree"}
             </Text>
             {userData.languages && userData.languages.length > 0 && (
               <LanguageRow languages={userData.languages} />
