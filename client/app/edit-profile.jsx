@@ -44,7 +44,7 @@ const EditProfile = () => {
   );
 
   const pickImage = async () => {
-    if (Platform.OS === "ios" && !mediaLibraryPermissions?.granted) {
+    if (!mediaLibraryPermissions?.granted) {
       const hasPermissions = await checkPermissions();
       if (!hasPermissions) return;
     }
@@ -55,18 +55,18 @@ const EditProfile = () => {
       base64: true,
     });
 
-    if (result) {
-      uploadImage(userId, {
-        photo: result.assets ? result.assets[0].base64 : "",
-      })
-        .then(({ data }) => {
-          Alert.alert("Image uploaded successfully");
-          setPhoto(data.data);
-          setEditData({ ...editData, photo: data.data });
-        })
-        .catch((e) => console.log(e));
+    if (result && !result.canceled) {
+      const base64Image = result.assets ? result.assets[0].base64 : "";
 
-      setPhoto(result.assets ? result.assets[0].uri : "");
+      try {
+        const response = await uploadImage(userId, {
+          photo: base64Image,
+        });
+        setEditData({ ...editData, photo: response.data.data });
+        setPhoto(result.assets[0].uri);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     }
   };
 
