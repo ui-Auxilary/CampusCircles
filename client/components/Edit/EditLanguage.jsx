@@ -17,7 +17,9 @@ export default function EditLanguage() {
   const actionSheetRef = useRef([]);
   let pickerRef = useRef();
   const { editData, setEditData } = getUserData();
-  const [selectedLanguage, setSelectedLanguage] = useState(editData.languages);
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    editData?.languages || []
+  );
 
   const updateLanguage = (language, langIdx, idx) => {
     let newLanguages = selectedLanguage;

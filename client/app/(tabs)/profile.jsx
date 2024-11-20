@@ -45,7 +45,7 @@ const ProfileTab = () => {
 
         fetchUserEvents(userId);
       }
-    }, [])
+    }, [userId])
   );
 
   return (

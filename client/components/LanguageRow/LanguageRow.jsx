@@ -12,7 +12,6 @@ export default function LanguageRow({ languages }) {
   };
 
   useEffect(() => {
-    console.log("Languages", languages);
     if (languages) {
       let languageArray = [];
       languages = languages.filter((language) => language);
