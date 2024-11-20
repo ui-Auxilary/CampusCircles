@@ -244,7 +244,6 @@ const CreateTab = () => {
   };
 
   const handleCreate = async () => {
-    router.push("/event-details");
     if (!validateForm()) {
       return;
     }
@@ -273,11 +272,14 @@ const CreateTab = () => {
 
     let formatDateTime = `${date}T${time}`;
 
+    if (event.society) {
+      postData["category"] = "Society";
+    }
+
     postData["date"] = formatDateTime;
     postData["time"] = formatDateTime;
 
     Haptics.selectionAsync();
-
     await axios
       .post(`${BASE_URL}/events/create`, postData)
       .then(({ data }) => {
@@ -450,12 +452,7 @@ const CreateTab = () => {
               <RNDateTimePicker
                 style={{ flex: 1, width: 100 }}
                 mode='date'
-                value={
-                  event.date ||
-                  new Date(
-                    Date.now() - Date.now().getTimezoneOffset() * 60 * 1000
-                  )
-                }
+                value={event.date || new Date(Date.now())}
                 onChange={(_, d) => {
                   let today = new Date(
                     d.getTime() - d.getTimezoneOffset() * 60 * 1000
@@ -476,11 +473,8 @@ const CreateTab = () => {
                 mode='time'
                 value={displayTime || new Date()}
                 onChange={(_, d) => {
-                  let today = new Date(
-                    d.getTime() - d.getTimezoneOffset() * 60 * 1000
-                  );
-
-                  setEvent({ ...event, time: today });
+                  console.log("TIME", d);
+                  setEvent({ ...event, time: d });
                   setDisplayTime(d);
                 }}
               />
@@ -550,12 +544,12 @@ const CreateTab = () => {
           </View>
 
           {/* Create Button */}
-          <Pressable
+          <TouchableOpacity
             onPress={handleCreate}
             style={[styles.createButton, styles.shadow]}
           >
             <Text style={styles.createText}>Create</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.footerArea} />

@@ -87,7 +87,6 @@ export const createUser = async (req, res) => {
       data: { ...userData, ...defaultUser },
     });
 
-    console.log("USER created", user);
     res.status(201).json({
       status: true,
       message: "User created successfully",

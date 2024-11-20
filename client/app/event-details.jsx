@@ -53,22 +53,25 @@ const EventDetails = () => {
 
   useEffect(() => {
     if (eventData.time) {
-      const parsedDate = new Date(eventData.time);
+      let tzOffset = new Date(eventData.time).getTimezoneOffset() * 60000;
+      let isoTime = new Date(new Date(eventData.time) - tzOffset);
 
-      if (!isNaN(parsedDate)) {
+      if (!isNaN(isoTime)) {
         setFormattedDate(
-          parsedDate.toLocaleDateString(undefined, {
+          isoTime.toLocaleDateString(undefined, {
             weekday: "long",
             month: "long",
             day: "numeric",
+            timeZone: "UTC",
           })
         );
 
         setFormattedTime(
-          parsedDate.toLocaleTimeString(undefined, {
+          isoTime.toLocaleTimeString(undefined, {
             hour: "2-digit",
             minute: "2-digit",
             hour12: true,
+            timeZone: "UTC",
           })
         );
       }
@@ -78,7 +81,7 @@ const EventDetails = () => {
   const fetchEventData = async () => {
     try {
       if (id) {
-        const response = await axios.get(`${BASE_URL}/events/event/${id}`);
+        const response = await axios.get(`${BASE_URL}/events/get/${id}`);
         console.log("EVENT DATA", response.data);
 
         setEventData(response.data.data);
@@ -144,7 +147,7 @@ const EventDetails = () => {
       const checkUserJoined = async () => {
         try {
           if (id) {
-            const response = await axios.get(`${BASE_URL}/events/event/${id}`);
+            const response = await axios.get(`${BASE_URL}/events/get/${id}`);
             const event = response.data.data;
 
             setJoined(event.eventAttendees?.includes(userId) ?? false);
@@ -227,7 +230,26 @@ const EventDetails = () => {
 
         <View style={styles.contentContainer}>
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>{eventData.name}</Text>
+            <View
+              style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
+            >
+              <Text style={styles.title}>{eventData.name}</Text>
+              {eventData.society ? (
+                <Text
+                  style={{
+                    backgroundColor: "#76DA69",
+                    padding: 2,
+                    paddingHorizontal: 10,
+                    borderRadius: 5,
+                    top: -2,
+                    color: "#FFFFFF",
+                    fontFamily: "Lexend_500Medium",
+                  }}
+                >
+                  Society
+                </Text>
+              ) : null}
+            </View>
 
             {userId === eventData.creatorId && (
               <TouchableOpacity

@@ -29,7 +29,7 @@ const EventInvite = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`${BASE_URL}/events/event/${id}`)
+        .get(`${BASE_URL}/events/get/${id}`)
         .then(({ data }) => setEventData(data.data))
         .catch((error) => console.error("Error fetching event data:", error));
     }
@@ -58,10 +58,6 @@ const EventInvite = () => {
     useCallback(() => {
       const fetchInvitations = async () => {
         try {
-          console.log(
-            "Fetching invitations from URL:",
-            `${BASE_URL}/invitations/event/${id}`
-          );
           const response = await axios.get(
             `${BASE_URL}/invitations/event/${id}`
           );

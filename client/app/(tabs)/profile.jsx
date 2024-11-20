@@ -23,7 +23,7 @@ const ProfileTab = () => {
 
   const fetchUserEvents = async (userId) => {
     try {
-      const { data } = await axios.get(`${BASE_URL}/users/${userId}/events`);
+      const { data } = await axios.get(`${BASE_URL}/users/events/${userId}`);
       setEvents(data.data || []);
     } catch (e) {
       hasHaptic &&

@@ -77,7 +77,6 @@ const HomeTab = () => {
   const fetchUserEvents = async (userId) => {
     try {
       const { data } = await axios.get(`${BASE_URL}/users/events/${userId}`);
-      console.log("Fetched Events:", data.data);
       setEvents(data.data || []);
     } catch (e) {
       hasHaptic &&

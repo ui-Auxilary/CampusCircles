@@ -61,7 +61,7 @@ export default function EventTab() {
       case "Other":
         return require("../../assets/images/other_m.png");
       default:
-        return require("../../assets/images/other.png");
+        return require("../../assets/images/society.png");
     }
   };
 
@@ -161,6 +161,7 @@ export default function EventTab() {
             }`
           );
           let fetchedEvents = data.data;
+
           // Apply filters if any
           if (filters || textFilter) {
             fetchedEvents = filterEvents(fetchedEvents, {
@@ -185,11 +186,24 @@ export default function EventTab() {
   const closeTimePicker = () => setTimePickerVisibility(false);
 
   const formatDate = (date) => {
-    if (date) {
-      let [strDate, time] = date.split("T");
-      time = time.split(".")[0];
+    const parsedDate = new Date(date);
 
-      return [strDate, " ", time];
+    if (!isNaN(parsedDate)) {
+      return [
+        parsedDate.toLocaleDateString(undefined, {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          timeZone: "UTC",
+        }),
+        " at ",
+        parsedDate.toLocaleTimeString(undefined, {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+          timeZone: "UTC",
+        }),
+      ];
     }
     return;
   };
@@ -224,7 +238,27 @@ export default function EventTab() {
             style={styles.eventIcon}
           />
           <View>
-            <Text style={styles.eventTitle}>{item.name}</Text>
+            <View
+              style={{ flexDirection: "row", gap: 10, alignItems: "center" }}
+            >
+              <Text style={styles.eventTitle}>{item.name}</Text>
+              {item.society ? (
+                <Text
+                  style={{
+                    backgroundColor: "#76DA69",
+                    padding: 2,
+                    paddingHorizontal: 10,
+                    borderRadius: 5,
+                    top: -2,
+                    color: "#FFFFFF",
+                    fontFamily: "Lexend_500Medium",
+                  }}
+                >
+                  Society
+                </Text>
+              ) : null}
+            </View>
+
             <Text style={styles.eventDetails}>{formatDate(item.time)}</Text>
             <Text style={styles.eventDetails}>{item.location}</Text>
           </View>

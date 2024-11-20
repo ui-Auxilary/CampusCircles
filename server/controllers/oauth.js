@@ -1,7 +1,6 @@
 import "dotenv/config";
 
 export const handleOAuthSignUp = async (req, res) => {
-  console.log("REQUEST", req.query.code);
   if (req.query) {
     const url = `https://oauth2.googleapis.com/token?code=${req.query.code}&client_id=${process.env.GOOGLE_CLIENT_ID}&client_secret=${process.env.GOOGLE_CLIENT_SECRET}&redirect_uri=https://campus-circles.vercel.app/swg&grant_type=authorization_code`;
 
@@ -12,9 +11,7 @@ export const handleOAuthSignUp = async (req, res) => {
       },
     }).catch((e) => console.log(e));
 
-    console.log("here");
     const data = await response.json();
-    console.log("data : ", response);
 
     // get the id token from the response
     const { id_token } = data;
