@@ -1,7 +1,8 @@
-import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Image,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -19,16 +20,35 @@ import { getUserData } from "@/hooks/userContext";
 import axios from "axios";
 import S from "../styles/global";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { uploadImage } from "@/helper/uploadImage";
 
 const EditProfile = () => {
-  const pickerRef = useRef();
-
   const params = useLocalSearchParams();
   const { userId, setUserId, editData, setEditData, hasHaptic } = getUserData();
-  const [age, setAge] = useState(editData.age);
-  const [name, setName] = useState(editData.name);
+  const [photo, setPhoto] = useState("");
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userId) {
+        axios
+          .get(`${BASE_URL}/users/get/${userId}`)
+          .then((response) => {
+            console.log(response.data.data);
+            setEditData(response.data.data);
+          })
+          .catch((error) => {
+            console.error("Failed to fetch user data:", error);
+          });
+      }
+    }, [userId])
+  );
 
   const pickImage = async () => {
+    if (Platform.OS === "ios" && !mediaLibraryPermissions?.granted) {
+      const hasPermissions = await checkPermissions();
+      if (!hasPermissions) return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images", "videos"],
       quality: 1,
@@ -36,10 +56,33 @@ const EditProfile = () => {
     });
 
     if (result) {
-      setEditData({
-        ...editData,
-        photo: result.assets ? result.assets[0].uri : "",
-      });
+      uploadImage(userId, {
+        photo: result.assets ? result.assets[0].base64 : "",
+      })
+        .then(({ data }) => {
+          setPhoto(data.data);
+          setEditData({ ...editData, photo: data.data });
+        })
+        .catch((e) => console.log(e));
+
+      setPhoto(result.assets ? result.assets[0].uri : "");
+    }
+  };
+
+  const checkPermissions = async () => {
+    if (!mediaLibraryPermissions?.granted) {
+      const libraryStatus = await requestMediaLibraryPermissions();
+
+      if (!libraryStatus.granted) {
+        {
+          hasHaptic &&
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+        Alert.alert(
+          "Permissions Required",
+          "Please grant camera and media library permissions in settings to use this feature."
+        );
+      }
     }
   };
 
@@ -104,6 +147,7 @@ const EditProfile = () => {
             style={styles.profileImg}
             source={{
               uri:
+                photo ||
                 editData.photo ||
                 "https://www.shutterstock.com/image-vector/blank-avatar-photo-place-holder-600nw-1114445501.jpg",
             }}

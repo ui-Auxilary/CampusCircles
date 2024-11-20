@@ -15,7 +15,7 @@ import TagRow from "@/components/TagRow/TagRow";
 import LanguageRow from "@/components/LanguageRow/LanguageRow";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 const ProfileTab = () => {
   const { userId, showAge, showPronoun } = getUserData();
   const [userData, setUserData] = useState({});
@@ -38,6 +38,7 @@ const ProfileTab = () => {
         axios
           .get(`${BASE_URL}/users/get/${userId}`)
           .then((response) => {
+            console.log(response.data.data);
             setUserData(response.data.data);
           })
           .catch((error) => {
@@ -46,7 +47,7 @@ const ProfileTab = () => {
 
         fetchUserEvents(userId);
       }
-    }, [userId, fetchUserEvents])
+    }, [])
   );
 
   return (

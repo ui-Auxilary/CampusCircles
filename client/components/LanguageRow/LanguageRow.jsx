@@ -22,11 +22,7 @@ export default function LanguageRow({ languages }) {
         setLangCodes(languageArray);
       }
     }
-  }, [languages]);
-
-  useEffect(() => {
-    console.log("Languages!", langCodes);
-  }, [langCode]);
+  }, []);
 
   return (
     <View style={styles.languageWrapper}>

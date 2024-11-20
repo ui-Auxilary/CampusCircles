@@ -38,10 +38,10 @@ export const uploadProfile = async (req, res) => {
   let { photo } = req.body;
   let id = req.params.id;
 
-  console.log("Received upload data");
-
   try {
     let image = await uploadImage(photo, id);
+    console.log("Received upload data", image);
+
     res.status(200).json({
       status: true,
       message: "Image uploaded successfully",
